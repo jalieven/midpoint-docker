@@ -1,4 +1,4 @@
-FROM osixia/openldap:1.2.3
+FROM osixia/openldap:1.2.2
 
 MAINTAINER info@evolveum.com
 

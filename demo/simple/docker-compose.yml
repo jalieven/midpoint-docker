@@ -41,15 +41,15 @@ services:
      - REPO_DATABASE=midpoint
      - REPO_USER=midpoint
      - REPO_PASSWORD_FILE=/run/secrets/mp_database_password.txt
-     - REPO_MISSING_SCHEMA_ACTION
-     - REPO_UPGRADEABLE_SCHEMA_ACTION
+     - REPO_MISSING_SCHEMA_ACTION=create
+     - REPO_UPGRADEABLE_SCHEMA_ACTION=stop
      - REPO_SCHEMA_VERSION_IF_MISSING
      - REPO_SCHEMA_VARIANT
      - MP_KEYSTORE_PASSWORD_FILE=/run/secrets/mp_keystore_password.txt
-     - MP_MEM_MAX
-     - MP_MEM_INIT
+     - MP_MEM_MAX=2048m
+     - MP_MEM_INIT=1024m
      - MP_JAVA_OPTS
-     - TIMEZONE
+     - TIMEZONE=UTC
     networks:
      - net
     secrets:
