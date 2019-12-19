@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<q:query xmlns:q="http://prism.evolveum.com/xml/ns/public/query-3">
+    <q:filter>
+        <q:and>
+            <q:ref>
+                <q:path>resourceRef</q:path>
+                <q:value>
+                    <oid>ef2bc95b-76e0-59e2-86d6-9999cccccccc</oid>
+                </q:value>
+            </q:ref>
+            <q:equal>
+                <q:path>objectClass</q:path>
+                <q:value xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">ri:AccountObjectClass</q:value>
+            </q:equal>
+        </q:and>
+    </q:filter>
+</q:query>

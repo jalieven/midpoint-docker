@@ -52,5 +52,28 @@ $ docker-compose up --build
 - username: Administrator
 - password: 5ecr3t
 
+## Starting overnew
+
+Since this is a playground the need to start all over again with a clean PostgreSQL and LDAP perform these 2 steps:
+
+```
+$ docker system prune --all
+$ docker volume rm $(docker volume ls -q)
+```
+
+The first command is kind of intrusive in that it deletes everything from your docker.
+See the docker documentation to perform a filtered system prune.
+
+## Checks after startup
+
+To see which object xml files that were successfully imported at startup perform these commands
+and verify that these files have a .done extension:
+
+```
+docker ps
+docker exec -it <container_id_of_simple_midpoint_server> bash
+ls -alt /opt/midpoint/var/post-initial-objects
+```
+
 ## Documentation
 Please see [Dockerized midPoint](https://wiki.evolveum.com/display/midPoint/Dockerized+midPoint) wiki page.

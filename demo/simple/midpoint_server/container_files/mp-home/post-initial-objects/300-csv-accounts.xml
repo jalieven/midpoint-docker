@@ -25,9 +25,9 @@
 	  xmlns:cap="http://midpoint.evolveum.com/xml/ns/public/resource/capabilities-3"
 	  xmlns:org="http://midpoint.evolveum.com/xml/ns/public/common/org-3">
 								  
-	<name>Test CSV: username</name>
+	<name>Test CSV: accountId</name>
 	
-	<description>Simple CSV resource that is using single identifier (username)</description>
+	<description>Simple CSV resource that is using single identifier (accountId)</description>
 	
 	<connectorRef type="ConnectorType">
 		<filter>
@@ -41,7 +41,7 @@
 	<connectorConfiguration xmlns:icfi="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/bundle/com.evolveum.polygon.connector-csv/com.evolveum.polygon.connector.csv.CsvConnector">
 					   
 		<icfc:configurationProperties>
-			<icfi:filePath>/opt/midpoint/var/resources/midpoint-username.csv</icfi:filePath>
+			<icfi:filePath>/opt/midpoint/var/resources/csv-account.csv</icfi:filePath>
 			<icfi:encoding>utf-8</icfi:encoding>
 			<icfi:fieldDelimiter>,</icfi:fieldDelimiter>
 			<icfi:multivalueDelimiter>;</icfi:multivalueDelimiter>

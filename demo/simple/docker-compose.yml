@@ -4,7 +4,7 @@ services:
   ldap:
     build: ./ldap_server/
     environment:
-      - LDAP_DOMAIN=evolveum.com
+      - LDAP_DOMAIN=didm.be
       - LDAP_ADMIN_PASSWORD=secret
       - LDAP_TLS=false
     ports:
