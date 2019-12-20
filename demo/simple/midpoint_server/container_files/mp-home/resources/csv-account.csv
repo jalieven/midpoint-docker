@@ -1,3 +1,3 @@
-accountId,username,firstname,lastname,rrn,disabled,locked,password
+accountId,username,firstname,lastname,rijksregisternummer,disabled,locked,password
 00001,jalie,Jan,Lievens,81071040575,false,false,secret
 00002,tvgulck,Tom,Van Gulck,78101240574,false,false,secret

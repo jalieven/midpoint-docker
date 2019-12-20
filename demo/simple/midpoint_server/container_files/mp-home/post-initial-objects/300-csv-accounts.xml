@@ -22,8 +22,9 @@
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3"
           xmlns:icfc="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/connector-schema-3"
-	  xmlns:cap="http://midpoint.evolveum.com/xml/ns/public/resource/capabilities-3"
-	  xmlns:org="http://midpoint.evolveum.com/xml/ns/public/common/org-3">
+		  xmlns:cap="http://midpoint.evolveum.com/xml/ns/public/resource/capabilities-3"
+		  xmlns:org="http://midpoint.evolveum.com/xml/ns/public/common/org-3"
+		  xmlns:didm="http://didm.be/xml/ns">
 								  
 	<name>Test CSV: accountId</name>
 	
@@ -58,49 +59,59 @@
 		<objectType>
 			<displayName>Default Account</displayName>
 			<default>true</default>
+			<intent>default</intent>
 			<objectClass>ri:AccountObjectClass</objectClass>
 			
 			<attribute>
 				<ref>ri:username</ref>
 				<inbound>
-                        <target>
-                        	<path>$user/name</path>
-                        </target>
-                    </inbound>
+					<target>
+						<path>$user/name</path>
+					</target>
+				</inbound>
 			</attribute>
 			<attribute>
 				<ref>ri:firstname</ref>
 				<inbound>
-                        <target>
-                        	<path>$user/givenName</path>
-                        </target>
-                    </inbound>
+					<target>
+						<path>$user/givenName</path>
+					</target>
+				</inbound>
 			</attribute>
 			<attribute>
 				<ref>ri:lastname</ref>
 				<inbound>
-                        <target>
-                        	<path>$user/familyName</path>
-                        </target>
-                    </inbound>
+					<target>
+						<path>$user/familyName</path>
+					</target>
+				</inbound>
+			</attribute>
+
+			<attribute>
+				<ref>ri:rijksregisternummer</ref>
+				<inbound>
+					<target>
+						<path>$user/extension/didm:rijksregisternummer</path>
+					</target>
+				</inbound>
 			</attribute>
 
 			<activation>
 				<administrativeStatus>
 					<inbound>
-							<strength>weak</strength>
-                        </inbound>
+						<strength>weak</strength>
+					</inbound>
 				</administrativeStatus>
 			</activation>
 
 			<credentials>
 				<password>
 					<inbound>
-                            <strength>weak</strength>
-                            <expression>
-                                <generate/>
-                            </expression>
-                        </inbound>
+						<strength>weak</strength>
+						<expression>
+							<generate/>
+						</expression>
+					</inbound>
 				</password>
 			</credentials>
 
@@ -128,6 +139,22 @@
             <objectTemplateRef oid="10000000-0000-0000-0000-000000000223" relation="org:default" type="c:ObjectTemplateType">
                 <targetName>User Object Template</targetName>
             </objectTemplateRef>
+			<correlation>
+				<q:description>
+					Correlation expression is a search query.
+					Following search query will look for users that have "name"
+					equal to the "name" attribute of the account. Simply speaking,
+					it will look for match in usernames in the IDM and the resource.
+					The correlation rule always looks for users, so it will not match
+					any other object type.
+				</q:description>
+				<q:equal>
+					<q:path>c:name</q:path>
+					<expression>
+						<path>$c:account/c:attributes/ri:username</path>
+					</expression>
+				</q:equal>
+			</correlation>
             <reconcile>false</reconcile>
             <reaction>
                 <situation>linked</situation>

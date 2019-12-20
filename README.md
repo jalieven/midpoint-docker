@@ -61,8 +61,20 @@ $ docker system prune --all
 $ docker volume rm $(docker volume ls -q)
 ```
 
-The first command is kind of intrusive in that it deletes everything from your docker.
-See the docker documentation to perform a filtered system prune.
+The first command is kind of intrusive in that it deletes everything from your docker :(
+To be more precise in your cleanup:
+
+```
+$ docker rm $(docker ps -a --filter name=simple | awk '{print$1}'| tail -n +2)
+$ docker volume rm $(docker volume ls -q --filter name=simple)
+```
+
+Or if you are in a lazy mood: go to root of this project and just go
+
+```
+$ make restart
+```
+
 
 ## Checks after startup
 
