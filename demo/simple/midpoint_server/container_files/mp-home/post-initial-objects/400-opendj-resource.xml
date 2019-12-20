@@ -203,6 +203,7 @@
     </capabilities>
     <synchronization>
         <objectSynchronization>
+            <focusType>c:UserType</focusType>
             <enabled>true</enabled>
             <correlation>
                 <q:equal>

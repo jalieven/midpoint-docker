@@ -1,9 +1,9 @@
-dn: ou=groups,dc=didm,dc=be
-objectClass: top
-objectClass: organizationalUnit
-ou: groups
-
 dn: ou=people,dc=didm,dc=be
 objectClass: top
 objectClass: organizationalUnit
 ou: people
+
+dn: ou=groups,dc=didm,dc=be
+objectClass: top
+objectClass: organizationalUnit
+ou: groups
