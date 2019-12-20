@@ -4,16 +4,14 @@ services:
   ldap:
     build: ./ldap_server/
     environment:
-      - LDAP_DOMAIN=didm.be
-      - LDAP_ADMIN_PASSWORD=secret
-      - LDAP_TLS=false
+      - PORT=1389
+      - BASE_DN=dc=didm,dc=be
+      - ROOT_PASSWORD=secret
+      - ROOT_USER_DN=cn=admin,dc=didm,dc=be
     ports:
-      - 389:389
+      - 1389:1389
     networks:
      - net
-    volumes:
-      - ldap_conf:/etc/ldap/slapd.d
-      - ldap_data:/var/lib/ldap      
   midpoint_data:
     image: postgres:9.5
     environment:

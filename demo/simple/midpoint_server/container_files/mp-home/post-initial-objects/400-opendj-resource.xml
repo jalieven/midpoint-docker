@@ -7,7 +7,7 @@
           xmlns:t="http://prism.evolveum.com/xml/ns/public/types-3"
           xmlns:didm="http://didm.be/xml/ns"
           oid="d0811790-6420-11e4-86b2-3c9755567874" version="12">
-	<name>OpenLDAP</name>
+	<name>OpenDJ</name>
 	<connectorRef type="ConnectorType">
             <filter>
                 <q:equal>
@@ -19,18 +19,16 @@
     <connectorConfiguration xmlns:icfc="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/connector-schema-3">
         <icfc:configurationProperties xmlns:gen67="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/bundle/com.evolveum.polygon.connector-ldap/com.evolveum.polygon.connector.ldap.LdapConnector">
             <gen67:host>ldap</gen67:host>
-            <gen67:port>389</gen67:port>
+            <gen67:port>1389</gen67:port>
             <gen67:baseContext>dc=didm,dc=be</gen67:baseContext>
             <gen67:bindDn>cn=admin,dc=didm,dc=be</gen67:bindDn>
 	        <gen67:bindPassword>
 		        <t:clearValue>secret</t:clearValue>
             </gen67:bindPassword>
             <gen67:pagingStrategy>auto</gen67:pagingStrategy>
-            <gen67:passwordHashAlgorithm>SSHA</gen67:passwordHashAlgorithm>
-            <gen67:vlvSortAttribute>uid</gen67:vlvSortAttribute>
-            <gen67:vlvSortOrderingRule>2.5.13.3</gen67:vlvSortOrderingRule>
-            <gen67:operationalAttributes>memberOf</gen67:operationalAttributes>
-            <gen67:operationalAttributes>createTimestamp</gen67:operationalAttributes>
+            <gen67:vlvSortAttribute>entryUUID</gen67:vlvSortAttribute>
+            <gen67:operationalAttributes>ds-pwp-account-disabled</gen67:operationalAttributes>
+            <gen67:operationalAttributes>isMemberOf</gen67:operationalAttributes>
         </icfc:configurationProperties>
     </connectorConfiguration>
     <schema>
