@@ -1,4 +1,12 @@
-<resource xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3" xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3" xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3" xmlns:org="http://midpoint.evolveum.com/xml/ns/public/common/org-3" xmlns:q="http://prism.evolveum.com/xml/ns/public/query-3" xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3" xmlns:t="http://prism.evolveum.com/xml/ns/public/types-3" oid="d0811790-6420-11e4-86b2-3c9755567874" version="12">
+<resource xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
+          xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
+          xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3"
+          xmlns:org="http://midpoint.evolveum.com/xml/ns/public/common/org-3"
+          xmlns:q="http://prism.evolveum.com/xml/ns/public/query-3"
+          xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3"
+          xmlns:t="http://prism.evolveum.com/xml/ns/public/types-3"
+          xmlns:didm="http://didm.be/xml/ns"
+          oid="d0811790-6420-11e4-86b2-3c9755567874" version="12">
 	<name>OpenLDAP</name>
 	<connectorRef type="ConnectorType">
             <filter>
@@ -111,7 +119,18 @@
                     </source>
                 </outbound>
             </attribute>
+            <!--
             <attribute id="7">
+                <c:ref>ri:rijksregisternummer</c:ref>
+                <displayName>Rijksregisternummer</displayName>
+                <outbound>
+                    <source>
+                        <c:path>$user/extension/didm:rijksregisternummer</c:path>
+                    </source>
+                </outbound>
+            </attribute>
+            -->
+            <attribute id="8">
                 <c:ref>ri:uid</c:ref>
                 <displayName>Login Name</displayName>
                 <matchingRule xmlns:mr="http://prism.evolveum.com/xml/ns/public/matching-rule-3">mr:stringIgnoreCase</matchingRule>
