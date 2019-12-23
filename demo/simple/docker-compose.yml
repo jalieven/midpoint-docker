@@ -69,5 +69,3 @@ secrets:
 volumes:
   midpoint_data:
   midpoint_home:
-  ldap_conf:
-  ldap_data:

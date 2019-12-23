@@ -8,6 +8,7 @@
           xmlns:didm="http://didm.be/xml/ns"
           oid="d0811790-6420-11e4-86b2-3c9755567874" version="12">
 	<name>OpenDJ</name>
+    <description>OpenDJ server connected by ICF LDAP connector.</description>
 	<connectorRef type="ConnectorType">
             <filter>
                 <q:equal>
@@ -32,18 +33,58 @@
         </icfc:configurationProperties>
     </connectorConfiguration>
     <schema>
+
 		<generationConstraints>
 			<generateObjectClass>ri:inetOrgPerson</generateObjectClass>
 		</generationConstraints>
-	</schema>
+
+        <definition>
+            <xsd:schema elementFormDefault="qualified"
+                     targetNamespace="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3"
+                     xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3"
+                     xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
+                     xmlns:a="http://prism.evolveum.com/xml/ns/public/annotation-3"
+                     xmlns:ra="http://midpoint.evolveum.com/xml/ns/public/resource/annotation-3"
+                     xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+             <xsd:import namespace="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3" />
+
+             <xsd:import namespace="http://prism.evolveum.com/xml/ns/public/annotation-3" />
+
+             <xsd:complexType name="IdmAccount">
+                 <xsd:annotation>
+                     <xsd:appinfo>
+                         <ra:resourceObject/>
+                         <ra:identifier xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">icfs:uid</ra:identifier>
+                         <ra:secondaryIdentifier xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">icfs:name</ra:secondaryIdentifier>
+                         <ra:displayNameAttribute xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">icfs:name</ra:displayNameAttribute>
+                         <ra:namingAttribute xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">icfs:name</ra:namingAttribute>
+                         <!-- <ra:nativeObjectClass>account</ra:nativeObjectClass> -->
+                         <ra:account/>
+                         <ra:default/>
+                     </xsd:appinfo>
+                 </xsd:annotation>
+                 <xsd:sequence>
+                     <xsd:element ref="icfs:name" />
+                     <xsd:element minOccurs="0" ref="icfs:uid" />
+                     <xsd:element maxOccurs="unbounded" name="cn" type="xsd:string" />
+                     <xsd:element maxOccurs="unbounded" name="sn" type="xsd:string" />
+                     <xsd:element maxOccurs="unbounded" minOccurs="0" name="givenName" type="xsd:string" />
+                     <xsd:element maxOccurs="unbounded" minOccurs="0" name="uid" type="xsd:string" />
+                     <xsd:element maxOccurs="unbounded" minOccurs="0" name="rijksregisternummer" type="xsd:string" />
+                 </xsd:sequence>
+             </xsd:complexType>
+            </xsd:schema>
+        </definition>
+    </schema>
     <schemaHandling>
         <objectType id="1">
             <kind>account</kind>
-            <displayName>Normal Account</displayName>
+            <displayName>IDM Account</displayName>
             <default>true</default>
-            <objectClass>ri:inetOrgPerson</objectClass>
+            <objectClass>ri:IdmAccount</objectClass>
             <attribute id="2">
-                <c:ref>ri:dn</c:ref>
+                <c:ref>icfs:name</c:ref>
                 <displayName>Distinguished Name</displayName>
                 <limitations>
                     <minOccurs>0</minOccurs>
@@ -68,7 +109,7 @@
                 </outbound>
             </attribute>
             <attribute id="3">
-                <c:ref>ri:entryUUID</c:ref>
+                <c:ref>icfs:uid</c:ref>
                 <displayName>Entry UUID</displayName>
                 <limitations>
                     <access>
@@ -117,7 +158,6 @@
                     </source>
                 </outbound>
             </attribute>
-            <!--
             <attribute id="7">
                 <c:ref>ri:rijksregisternummer</c:ref>
                 <displayName>Rijksregisternummer</displayName>
@@ -127,7 +167,6 @@
                     </source>
                 </outbound>
             </attribute>
-            -->
             <attribute id="8">
                 <c:ref>ri:uid</c:ref>
                 <displayName>Login Name</displayName>
@@ -135,24 +174,11 @@
                 <outbound>
                     <strength>weak</strength>
                     <source>
-                        <c:path>$user/name</c:path>
+                        <description>Source may have description</description>
+                        <path>$user/name</path>
                     </source>
-                    <expression>
-                        <script xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="c:ScriptExpressionEvaluatorType">
-                            <code>name</code>
-                        </script>
-                    </expression>
                 </outbound>
             </attribute>
-            <protected>
-                <filter>
-                    <q:equal>
-                        <q:matching>http://prism.evolveum.com/xml/ns/public/matching-rule-3#stringIgnoreCase</q:matching>
-                        <q:path>attributes/ri:dn</q:path>
-                        <q:value>cn=admin,dc=didm,dc=be</q:value>
-                    </q:equal>
-                </filter>
-            </protected>
             <activation>
                 <administrativeStatus>
                     <outbound id="8"/>
@@ -207,7 +233,7 @@
             <enabled>true</enabled>
             <correlation>
                 <q:equal>
-                    <q:path>name</q:path>
+                    <q:path>c:name</q:path>
                     <expression>
                         <path>
 								declare namespace ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3";

@@ -11,4 +11,4 @@ attributeTypes: ( accountlocked-oid NAME 'accountlocked' DESC 'IDM Account Locke
 dn: cn=schema
 changetype: modify
 add: objectclasses
-objectclasses: ( idmaccount-oid NAME 'idmAccount' SUP top STRUCTURAL MUST ( rijksregisternummer ) X-ORIGIN 'user defined' )
+objectclasses: ( idmaccount-oid NAME 'IdmAccount' SUP inetOrgPerson STRUCTURAL MUST ( rijksregisternummer ) X-ORIGIN 'user defined' )
