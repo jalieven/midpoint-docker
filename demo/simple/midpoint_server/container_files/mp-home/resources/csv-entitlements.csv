@@ -1,2 +1,3 @@
 entitlementId,accountId,email,organisatiecode,departement,dienst,functie,personeelsnummer,fax,gsm,telefoonnr,privileges
-20001-Milieumedewerker,00001,jan.lievens@vlaanderen.be,20001,Omgeving,DIDM,developer,jalie,,+32494846697,053839066,Milieumedewerker;Developer
+20001-Milieumedewerker,00001,jan.lievens@vlaanderen.be,20001,Omgeving,DIDM,developer,jalie,,+32494846697,,Milieumedewerker;Developer
+20000-Burger,00003,jan.lievens@biggerfish.be,20000,HR,Thuis,CEO,jalie,,,053839066,IMJVPlichtige;VIP

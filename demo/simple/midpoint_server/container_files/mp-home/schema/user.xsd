@@ -5,6 +5,10 @@
             xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 
+    <xsd:simpleType name="accountIds">
+        <xsd:list itemType="xsd:string"/>
+    </xsd:simpleType>
+
     <xsd:complexType name="UserExtensionType">
         <xsd:annotation>
             <xsd:appinfo>
@@ -12,6 +16,16 @@
             </xsd:appinfo>
         </xsd:annotation>
         <xsd:sequence>
+            <xsd:element name="accountIds" type="xsd:string" minOccurs="0" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:appinfo>
+                        <a:indexed>false</a:indexed>
+                        <a:displayName>Account IDs</a:displayName>
+                        <a:displayOrder>105</a:displayOrder>
+                        <a:help>Beschrijving van Account ID</a:help>
+                    </xsd:appinfo>
+                </xsd:annotation>
+            </xsd:element>
             <xsd:element name="rijksregisternummer" type="xsd:string" minOccurs="1" maxOccurs="1">
                 <xsd:annotation>
                     <xsd:appinfo>

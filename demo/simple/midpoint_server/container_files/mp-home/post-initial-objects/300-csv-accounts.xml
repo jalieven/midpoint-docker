@@ -63,7 +63,20 @@
 			<default>true</default>
 			<intent>default</intent>
 			<objectClass>ri:AccountObjectClass</objectClass>
-			
+
+			<attribute>
+				<!-- IDEA: or should we use linkRef's here? -->
+				<ref>ri:accountIds</ref>
+				<limitations>
+					<minOccurs>0</minOccurs>
+					<maxOccurs>-1</maxOccurs>
+				</limitations>
+				<inbound>
+					<target>
+						<path>$user/extension/didm:accountIds</path>
+					</target>
+				</inbound>
+			</attribute>
 			<attribute>
 				<ref>ri:username</ref>
 				<inbound>
