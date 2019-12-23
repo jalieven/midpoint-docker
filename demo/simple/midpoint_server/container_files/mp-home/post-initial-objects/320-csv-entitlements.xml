@@ -15,7 +15,7 @@
   ~ limitations under the License.
   -->
 
-<resource oid="ef2bc95b-76e0-59e2-86d6-9999cccccccc"
+<resource oid="df2bc95b-76e0-59e2-86d6-9999eeeeeeee"
           xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
           xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
           xmlns:q="http://prism.evolveum.com/xml/ns/public/query-3"
@@ -27,9 +27,9 @@
 		  xmlns:org="http://midpoint.evolveum.com/xml/ns/public/common/org-3"
 		  xmlns:didm="http://didm.be/xml/ns">
 								  
-	<name>CSV: accounts</name>
+	<name>CSV: Entitlements</name>
 	
-	<description>Simple CSV resource that is using single identifier (accountId) for accounts</description>
+	<description>Simple CSV resource that is using single identifier (accountId) for entitlements</description>
 	
 	<connectorRef type="ConnectorType">
 		<filter>
@@ -43,13 +43,13 @@
 	<connectorConfiguration xmlns:icfi="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/bundle/com.evolveum.polygon.connector-csv/com.evolveum.polygon.connector.csv.CsvConnector">
 					   
 		<icfc:configurationProperties>
-			<icfi:filePath>/opt/midpoint/var/resources/csv-account.csv</icfi:filePath>
+			<icfi:filePath>/opt/midpoint/var/resources/csv-entitlements.csv</icfi:filePath>
 			<icfi:encoding>utf-8</icfi:encoding>
 			<icfi:fieldDelimiter>,</icfi:fieldDelimiter>
 			<icfi:multivalueDelimiter>;</icfi:multivalueDelimiter>
-			<icfi:uniqueAttribute>username</icfi:uniqueAttribute>
-			<icfi:nameAttribute>username</icfi:nameAttribute>
-			<icfi:passwordAttribute>password</icfi:passwordAttribute>
+			<icfi:uniqueAttribute>entitlementId</icfi:uniqueAttribute>
+			<icfi:nameAttribute>entitlementId</icfi:nameAttribute>
+			<!-- <icfi:passwordAttribute>password</icfi:passwordAttribute> -->
 		</icfc:configurationProperties>
 
 	</connectorConfiguration>
@@ -59,76 +59,19 @@
 	<schemaHandling>
 
 		<objectType>
-			<displayName>Default Account</displayName>
+			<displayName>Default Entitlement</displayName>
 			<default>true</default>
 			<intent>default</intent>
 			<objectClass>ri:AccountObjectClass</objectClass>
 
 			<attribute>
-				<!-- FIXME: or should we use linkRef's here? -->
-				<ref>ri:accountIds</ref>
-				<limitations>
-					<minOccurs>0</minOccurs>
-					<maxOccurs>-1</maxOccurs>
-				</limitations>
+				<ref>ri:entitlementId</ref>
 				<inbound>
 					<target>
-						<path>$user/extension/didm:accountIds</path>
+						<path>$focus/name</path>
 					</target>
 				</inbound>
 			</attribute>
-			<attribute>
-				<ref>ri:username</ref>
-				<inbound>
-					<target>
-						<path>$user/name</path>
-					</target>
-				</inbound>
-			</attribute>
-			<attribute>
-				<ref>ri:firstname</ref>
-				<inbound>
-					<target>
-						<path>$user/givenName</path>
-					</target>
-				</inbound>
-			</attribute>
-			<attribute>
-				<ref>ri:lastname</ref>
-				<inbound>
-					<target>
-						<path>$user/familyName</path>
-					</target>
-				</inbound>
-			</attribute>
-
-			<attribute>
-				<ref>ri:rijksregisternummer</ref>
-				<inbound>
-					<target>
-						<path>$user/extension/didm:rijksregisternummer</path>
-					</target>
-				</inbound>
-			</attribute>
-
-			<activation>
-				<administrativeStatus>
-					<inbound>
-						<strength>weak</strength>
-					</inbound>
-				</administrativeStatus>
-			</activation>
-
-			<credentials>
-				<password>
-					<inbound>
-						<strength>weak</strength>
-						<expression>
-							<generate/>
-						</expression>
-					</inbound>
-				</password>
-			</credentials>
 
 		</objectType>
 	</schemaHandling>
@@ -144,16 +87,16 @@
 			</cap:activation>
 		</configured>
 	</capabilities>
+
 	<synchronization>
         <objectSynchronization>
-            <objectClass>ri:AccountObjectClass</objectClass>
+			<name>Entitlement Sync</name>
+			<description>Entitlement Sync</description>
+			<objectClass>ri:AccountObjectClass</objectClass>
             <kind>account</kind>
             <intent>default</intent>
-            <focusType>c:UserType</focusType>
+            <focusType>c:RoleType</focusType>
             <enabled>true</enabled>
-            <objectTemplateRef oid="10000000-0000-0000-0000-000000000223" relation="org:default" type="c:ObjectTemplateType">
-                <targetName>User Object Template</targetName>
-            </objectTemplateRef>
 			<correlation>
 				<q:description>
 					Correlation expression is a search query.
@@ -166,33 +109,34 @@
 				<q:equal>
 					<q:path>c:name</q:path>
 					<expression>
-						<path>$c:account/c:attributes/ri:username</path>
+						<path>$c:focus/c:attributes/ri:entitlementId</path>
 					</expression>
 				</q:equal>
 			</correlation>
             <reconcile>false</reconcile>
             <reaction>
                 <situation>linked</situation>
-                <action>
-                    <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#modifyUser</handlerUri>
-                </action>
+				<synchronize>true</synchronize>
             </reaction>
             <reaction>
                 <situation>deleted</situation>
+				<synchronize>true</synchronize>
                 <action>
-                    <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#unlinkAccount</handlerUri>
+                    <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#unlink</handlerUri>
                 </action>
             </reaction>
             <reaction>
+				<synchronize>true</synchronize>
                 <situation>unlinked</situation>
                 <action>
-                    <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#linkAccount</handlerUri>
+                    <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#link</handlerUri>
                 </action>
             </reaction>
             <reaction>
                 <situation>unmatched</situation>
+				<synchronize>true</synchronize>
                 <action>
-                    <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#addUser</handlerUri>
+                    <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#addFocus</handlerUri>
                 </action>
             </reaction>
         </objectSynchronization>
