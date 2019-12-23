@@ -27,9 +27,9 @@
 		  xmlns:org="http://midpoint.evolveum.com/xml/ns/public/common/org-3"
 		  xmlns:didm="http://didm.be/xml/ns">
 								  
-	<name>Test CSV: accountId</name>
+	<name>CSV: accounts</name>
 	
-	<description>Simple CSV resource that is using single identifier (accountId)</description>
+	<description>Simple CSV resource that is using single identifier (accountId) for accounts</description>
 	
 	<connectorRef type="ConnectorType">
 		<filter>

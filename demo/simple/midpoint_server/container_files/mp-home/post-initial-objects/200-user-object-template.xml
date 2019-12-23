@@ -34,7 +34,7 @@
         </condition>
     </mapping>
     <mapping id="3">
-        <name>basic role</name>
+        <name>basic webidm role</name>
         <strength>strong</strength>
         <expression>
             <assignmentTargetSearch xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="c:AssignmentTargetSearchExpressionEvaluatorType">
