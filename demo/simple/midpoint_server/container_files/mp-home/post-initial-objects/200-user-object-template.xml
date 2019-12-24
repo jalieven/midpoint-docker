@@ -6,7 +6,7 @@
         xmlns:q="http://prism.evolveum.com/xml/ns/public/query-3"
         xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3"
         xmlns:t="http://prism.evolveum.com/xml/ns/public/types-3"
-        xmlns:didm="http://didm.be/xml/ns"
+        xmlns:didmu="http://didm.be/xml/ns/user"
         oid="10000000-0000-0000-0000-000000000223" version="3">
     <name>User Object Template</name>
     <mapping id="1">

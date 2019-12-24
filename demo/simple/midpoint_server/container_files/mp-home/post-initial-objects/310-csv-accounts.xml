@@ -25,7 +25,7 @@
 		  xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3"
 		  xmlns:cap="http://midpoint.evolveum.com/xml/ns/public/resource/capabilities-3"
 		  xmlns:org="http://midpoint.evolveum.com/xml/ns/public/common/org-3"
-		  xmlns:didm="http://didm.be/xml/ns">
+		  xmlns:didmu="http://didm.be/xml/ns/user">
 								  
 	<name>CSV: accounts</name>
 	
@@ -73,7 +73,7 @@
 				</limitations>
 				<inbound>
 					<target>
-						<path>$user/extension/didm:accountIds</path>
+						<path>$user/extension/didmu:accountIds</path>
 					</target>
 				</inbound>
 			</attribute>
@@ -106,7 +106,7 @@
 				<ref>ri:rijksregisternummer</ref>
 				<inbound>
 					<target>
-						<path>$user/extension/didm:rijksregisternummer</path>
+						<path>$user/extension/didmu:rijksregisternummer</path>
 					</target>
 				</inbound>
 			</attribute>

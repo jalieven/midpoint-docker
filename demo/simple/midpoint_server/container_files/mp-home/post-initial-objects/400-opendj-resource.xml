@@ -3,9 +3,11 @@
           xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3"
           xmlns:org="http://midpoint.evolveum.com/xml/ns/public/common/org-3"
           xmlns:q="http://prism.evolveum.com/xml/ns/public/query-3"
+          xmlns:mr="http://prism.evolveum.com/xml/ns/public/matching-rule-3"
           xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3"
           xmlns:t="http://prism.evolveum.com/xml/ns/public/types-3"
-          xmlns:didm="http://didm.be/xml/ns"
+          xmlns:didmu="http://didm.be/xml/ns/user"
+          xmlns:didme="http://didm.be/xml/ns/entitlement"
           oid="d0811790-6420-11e4-86b2-3c9755567874" version="12">
 	<name>OpenDJ</name>
     <description>OpenDJ server connected by ICF LDAP connector.</description>
@@ -36,6 +38,9 @@
 
 		<generationConstraints>
 			<generateObjectClass>ri:inetOrgPerson</generateObjectClass>
+            <generateObjectClass>ri:groupOfUniqueNames</generateObjectClass>
+            <generateObjectClass>ri:groupOfNames</generateObjectClass>
+            <generateObjectClass>ri:organizationalUnit</generateObjectClass>
 		</generationConstraints>
 
         <definition>
@@ -163,7 +168,7 @@
                 <displayName>Rijksregisternummer</displayName>
                 <outbound>
                     <source>
-                        <c:path>$user/extension/didm:rijksregisternummer</c:path>
+                        <c:path>$user/extension/didmu:rijksregisternummer</c:path>
                     </source>
                 </outbound>
             </attribute>
@@ -179,6 +184,17 @@
                     </source>
                 </outbound>
             </attribute>
+            <!--
+            <association>
+                <ref>ri:accountIds</ref>
+                <displayName>LDAP Group Membership</displayName>
+                <kind>entitlement</kind>
+                <intent>ldapGroup</intent>
+                <direction>objectToSubject</direction>
+                <associationAttribute>ri:uniqueMember</associationAttribute>
+                <valueAttribute>ri:dn</valueAttribute>
+            </association>
+            -->
             <activation>
                 <administrativeStatus>
                     <outbound id="8"/>
@@ -194,6 +210,50 @@
                 </password>
             </credentials>
         </objectType>
+        <!--
+        <objectType>
+            <kind>entitlement</kind>
+            <intent>group</intent>
+            <displayName>LDAP Group</displayName>
+            <objectClass>ri:groupOfUniqueNames</objectClass>
+            <attribute>
+                <ref>ri:uniqueMember</ref>
+                <matchingRule>mr:distinguishedName</matchingRule>
+                <fetchStrategy>minimal</fetchStrategy>
+            </attribute>
+            <attribute>
+                <ref>ri:dn</ref>
+                <matchingRule>mr:stringIgnoreCase</matchingRule>
+                <outbound>
+                    <source>
+                        <path>$focus/extension/didme:accountId</path>
+                    </source>
+                    <expression>
+                        <script>
+                            <code>
+                                import javax.naming.ldap.Rdn
+                                import javax.naming.ldap.LdapName
+
+                                dn = new LdapName('ou=entitlements,dc=didm,dc=be')
+                                dn.add(new Rdn('cn', name.toString()))
+                                return dn.toString()
+                            </code>
+                        </script>
+                    </expression>
+                </outbound>
+            </attribute>
+            <attribute>
+                <ref>ri:cn</ref>
+                <matchingRule>mr:stringIgnoreCase</matchingRule>
+                <outbound>
+                    <strength>weak</strength>
+                    <source>
+                        <path>$focus/name</path>
+                    </source>
+                </outbound>
+            </attribute>
+        </objectType>
+        -->
     </schemaHandling>
     <capabilities>
         <cachingMetadata>
