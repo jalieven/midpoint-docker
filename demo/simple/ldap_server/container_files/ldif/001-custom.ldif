@@ -12,3 +12,9 @@ dn: cn=schema
 changetype: modify
 add: objectclasses
 objectclasses: ( idmaccount-oid NAME 'IdmAccount' SUP inetOrgPerson STRUCTURAL MUST ( rijksregisternummer ) X-ORIGIN 'user defined' )
+
+# Custom ObjectClasses
+dn: cn=schema
+changetype: modify
+add: objectclasses
+objectclasses: ( idmentitlement-oid NAME 'IdmEntitlement' SUP inetOrgPerson STRUCTURAL MUST ( accountid ) X-ORIGIN 'user defined' )

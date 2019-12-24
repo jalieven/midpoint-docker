@@ -52,33 +52,53 @@
                      xmlns:ra="http://midpoint.evolveum.com/xml/ns/public/resource/annotation-3"
                      xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 
-             <xsd:import namespace="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3" />
+                 <xsd:import namespace="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3" />
 
-             <xsd:import namespace="http://prism.evolveum.com/xml/ns/public/annotation-3" />
+                 <xsd:import namespace="http://prism.evolveum.com/xml/ns/public/annotation-3" />
 
-             <xsd:complexType name="IdmAccount">
-                 <xsd:annotation>
-                     <xsd:appinfo>
-                         <ra:resourceObject/>
-                         <ra:identifier xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">icfs:uid</ra:identifier>
-                         <ra:secondaryIdentifier xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">icfs:name</ra:secondaryIdentifier>
-                         <ra:displayNameAttribute xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">icfs:name</ra:displayNameAttribute>
-                         <ra:namingAttribute xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">icfs:name</ra:namingAttribute>
-                         <!-- <ra:nativeObjectClass>account</ra:nativeObjectClass> -->
-                         <ra:account/>
-                         <ra:default/>
-                     </xsd:appinfo>
-                 </xsd:annotation>
-                 <xsd:sequence>
-                     <xsd:element ref="icfs:name" />
-                     <xsd:element minOccurs="0" ref="icfs:uid" />
-                     <xsd:element maxOccurs="unbounded" name="cn" type="xsd:string" />
-                     <xsd:element maxOccurs="unbounded" name="sn" type="xsd:string" />
-                     <xsd:element maxOccurs="unbounded" minOccurs="0" name="givenName" type="xsd:string" />
-                     <xsd:element maxOccurs="unbounded" minOccurs="0" name="uid" type="xsd:string" />
-                     <xsd:element maxOccurs="unbounded" minOccurs="0" name="rijksregisternummer" type="xsd:string" />
-                 </xsd:sequence>
-             </xsd:complexType>
+                 <xsd:complexType name="IdmAccount">
+                     <xsd:annotation>
+                         <xsd:appinfo>
+                             <ra:resourceObject/>
+                             <ra:identifier xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">icfs:uid</ra:identifier>
+                             <ra:secondaryIdentifier xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">icfs:name</ra:secondaryIdentifier>
+                             <ra:displayNameAttribute xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">icfs:name</ra:displayNameAttribute>
+                             <ra:namingAttribute xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">icfs:name</ra:namingAttribute>
+                             <!-- <ra:nativeObjectClass>account</ra:nativeObjectClass> -->
+                             <ra:account/>
+                             <ra:default/>
+                         </xsd:appinfo>
+                     </xsd:annotation>
+                     <xsd:sequence>
+                         <xsd:element ref="icfs:name" />
+                         <xsd:element minOccurs="0" ref="icfs:uid" />
+                         <xsd:element maxOccurs="unbounded" name="cn" type="xsd:string" />
+                         <xsd:element maxOccurs="unbounded" name="sn" type="xsd:string" />
+                         <xsd:element maxOccurs="unbounded" minOccurs="0" name="givenName" type="xsd:string" />
+                         <xsd:element maxOccurs="unbounded" minOccurs="0" name="uid" type="xsd:string" />
+                         <xsd:element maxOccurs="unbounded" minOccurs="0" name="rijksregisternummer" type="xsd:string" />
+                     </xsd:sequence>
+                 </xsd:complexType>
+
+                <xsd:complexType name="IdmEntitlement">
+                    <xsd:annotation>
+                        <xsd:appinfo>
+                            <ra:resourceObject/>
+                            <ra:identifier xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">icfs:uid</ra:identifier>
+                            <ra:secondaryIdentifier xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">icfs:name</ra:secondaryIdentifier>
+                            <ra:displayNameAttribute xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">icfs:name</ra:displayNameAttribute>
+                            <ra:namingAttribute xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">icfs:name</ra:namingAttribute>
+                            <!-- <ra:nativeObjectClass>account</ra:nativeObjectClass> -->
+                            <ra:account/>
+                            <ra:default/>
+                        </xsd:appinfo>
+                    </xsd:annotation>
+                    <xsd:sequence>
+                        <xsd:element ref="icfs:name" />
+                        <xsd:element minOccurs="0" ref="icfs:uid" />
+                        <xsd:element minOccurs="1" maxOccurs="1" name="accountId" type="xsd:string" />
+                    </xsd:sequence>
+                </xsd:complexType>
             </xsd:schema>
         </definition>
     </schema>
@@ -86,6 +106,7 @@
         <objectType id="1">
             <kind>account</kind>
             <displayName>IDM Account</displayName>
+            <intent>default</intent>
             <default>true</default>
             <objectClass>ri:IdmAccount</objectClass>
             <attribute id="2">
@@ -184,6 +205,7 @@
                     </source>
                 </outbound>
             </attribute>
+
             <!--
             <association>
                 <ref>ri:accountIds</ref>
@@ -195,6 +217,15 @@
                 <valueAttribute>ri:dn</valueAttribute>
             </association>
             -->
+
+            <association>
+                <ref>ri:accountIds</ref>
+                <kind>entitlement</kind>
+                <intent>privilege</intent>
+                <direction>subjectToObject</direction>
+                <associationAttribute>ri:accountId</associationAttribute>
+                <valueAttribute>icfs:name</valueAttribute>
+            </association>
             <activation>
                 <administrativeStatus>
                     <outbound id="8"/>
@@ -210,50 +241,60 @@
                 </password>
             </credentials>
         </objectType>
-        <!--
+
         <objectType>
             <kind>entitlement</kind>
-            <intent>group</intent>
-            <displayName>LDAP Group</displayName>
-            <objectClass>ri:groupOfUniqueNames</objectClass>
-            <attribute>
-                <ref>ri:uniqueMember</ref>
-                <matchingRule>mr:distinguishedName</matchingRule>
-                <fetchStrategy>minimal</fetchStrategy>
-            </attribute>
-            <attribute>
-                <ref>ri:dn</ref>
-                <matchingRule>mr:stringIgnoreCase</matchingRule>
+            <intent>default</intent>
+            <default>false</default>
+            <objectClass>ri:IdmEntitlement</objectClass>
+            <attribute id="2">
+                <c:ref>icfs:name</c:ref>
+                <displayName>Distinguished Name</displayName>
+                <limitations>
+                    <minOccurs>0</minOccurs>
+                    <access>
+                        <read>true</read>
+                        <add>true</add>
+                        <modify>true</modify>
+                    </access>
+                </limitations>
+                <matchingRule xmlns:mr="http://prism.evolveum.com/xml/ns/public/matching-rule-3">mr:stringIgnoreCase</matchingRule>
                 <outbound>
                     <source>
-                        <path>$focus/extension/didme:accountId</path>
+                        <c:path>$focus/name</c:path>
                     </source>
                     <expression>
-                        <script>
+                        <script xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="c:ScriptExpressionEvaluatorType">
                             <code>
-                                import javax.naming.ldap.Rdn
-                                import javax.naming.ldap.LdapName
-
-                                dn = new LdapName('ou=entitlements,dc=didm,dc=be')
-                                dn.add(new Rdn('cn', name.toString()))
-                                return dn.toString()
+                                'uid=' + name + iterationToken + ',ou=entitlements,dc=didm,dc=be'
                             </code>
                         </script>
                     </expression>
                 </outbound>
             </attribute>
-            <attribute>
-                <ref>ri:cn</ref>
-                <matchingRule>mr:stringIgnoreCase</matchingRule>
+            <attribute id="3">
+                <c:ref>icfs:uid</c:ref>
+                <displayName>Entry UUID</displayName>
+                <limitations>
+                    <access>
+                        <read>true</read>
+                        <add>false</add>
+                        <modify>true</modify>
+                    </access>
+                </limitations>
+                <matchingRule xmlns:mr="http://prism.evolveum.com/xml/ns/public/matching-rule-3">mr:stringIgnoreCase</matchingRule>
+            </attribute>
+            <attribute id="4">
+                <c:ref>ri:accountId</c:ref>
+                <displayName>Account ID</displayName>
                 <outbound>
-                    <strength>weak</strength>
                     <source>
-                        <path>$focus/name</path>
+                        <c:path>$c:focus/extension/didme:accountId</c:path>
                     </source>
                 </outbound>
             </attribute>
         </objectType>
-        -->
+
     </schemaHandling>
     <capabilities>
         <cachingMetadata>
