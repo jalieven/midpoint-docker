@@ -15,7 +15,7 @@
             <xsd:element name="accountId" type="xsd:string" minOccurs="0" maxOccurs="1">
                 <xsd:annotation>
                     <xsd:appinfo>
-                        <a:indexed>false</a:indexed>
+                        <a:indexed>true</a:indexed>
                         <a:displayName>Account ID</a:displayName>
                         <a:displayOrder>105</a:displayOrder>
                         <a:help>Beschrijving van Account ID van de Entitlement</a:help>

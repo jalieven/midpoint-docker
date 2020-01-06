@@ -7,6 +7,7 @@
         xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3"
         xmlns:t="http://prism.evolveum.com/xml/ns/public/types-3"
         xmlns:didmu="http://didm.be/xml/ns/user"
+        xmlns:didme="http://didm.be/xml/ns/entitlement"
         oid="10000000-0000-0000-0000-000000000223" version="3">
     <name>User Object Template</name>
     <mapping id="1">
@@ -46,5 +47,28 @@
             <c:path>assignment</c:path>
         </target>
     </mapping>
+
+    <mapping id="4">
+        <name>web idm entitlements</name>
+        <strength>strong</strength>
+        <expression>
+            <assignmentTargetSearch xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="c:AssignmentTargetSearchExpressionEvaluatorType">
+                <targetType>c:RoleType</targetType>
+                <filter>
+                    <q:equal>
+                        <q:path>extension/didme:accountId</q:path>
+                        <expression>
+                            <value>$user/extension/didmu:accountIds</value>
+                        </expression>
+                    </q:equal>
+                </filter>
+            </assignmentTargetSearch>
+        </expression>
+        <target>
+            <c:path>assignment</c:path>
+        </target>
+    </mapping>
+
+
 </objectTemplate>
 
