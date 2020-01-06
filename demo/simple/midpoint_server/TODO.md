@@ -9,3 +9,9 @@
 -   Privileges in entitlement to effective role via mapping somewhere (dynamic and GUI editable)
 -   Contact info stays on entitlement (find a way to map it to LDAP)
 -   Map everything (orgs, roles, contactinfo) into LDAP structure
+
+
+
+- When entitlements are created it has privileges (meta-roles),
+    those meta-roles could be pre-populated and could have inducements to technical roles
+    which is a mapping that can be done in the GUI?

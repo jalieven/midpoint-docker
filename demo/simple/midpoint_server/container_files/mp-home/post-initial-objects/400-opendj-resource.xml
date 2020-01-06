@@ -77,6 +77,7 @@
                          <xsd:element maxOccurs="unbounded" minOccurs="0" name="givenName" type="xsd:string" />
                          <xsd:element maxOccurs="unbounded" minOccurs="0" name="uid" type="xsd:string" />
                          <xsd:element maxOccurs="unbounded" minOccurs="0" name="rijksregisternummer" type="xsd:string" />
+                         <xsd:element maxOccurs="unbounded" minOccurs="0" name="accountIds" type="xsd:string" />
                      </xsd:sequence>
                  </xsd:complexType>
 
@@ -205,7 +206,15 @@
                     </source>
                 </outbound>
             </attribute>
-
+            <attribute id="9">
+                <c:ref>ri:accountIds</c:ref>
+                <displayName>Account IDs</displayName>
+                <outbound>
+                    <source>
+                        <c:path>$user/extension/didmu:accountIds</c:path>
+                    </source>
+                </outbound>
+            </attribute>
             <!--
             <association>
                 <ref>ri:accountIds</ref>
@@ -221,8 +230,8 @@
             <association>
                 <ref>ri:accountIds</ref>
                 <kind>entitlement</kind>
-                <intent>privilege</intent>
-                <direction>subjectToObject</direction>
+                <intent>default</intent>
+                <direction>objectToSubject</direction>
                 <associationAttribute>ri:accountId</associationAttribute>
                 <valueAttribute>icfs:name</valueAttribute>
             </association>
@@ -245,7 +254,7 @@
         <objectType>
             <kind>entitlement</kind>
             <intent>default</intent>
-            <default>false</default>
+            <default>true</default>
             <objectClass>ri:IdmEntitlement</objectClass>
             <attribute id="2">
                 <c:ref>icfs:name</c:ref>
@@ -330,6 +339,7 @@
     </capabilities>
     <synchronization>
         <objectSynchronization>
+            <name>IDM Account Sync</name>
             <focusType>c:UserType</focusType>
             <enabled>true</enabled>
             <correlation>
@@ -367,6 +377,45 @@
                 <action/>
             </reaction>
         </objectSynchronization>
+        <!-- FIXME we need to tell midPoint to sync the Meta-Roles (i.e. entitlements)
+        <objectSynchronization>
+            <name>IDM Entitlement Sync</name>
+            <focusType>c:RoleType</focusType>
+            <enabled>true</enabled>
+            <kind>entitlement</kind>
+            <intent>default</intent>
+            <objectClass>ri:IdmEntitlement</objectClass>
+            <correlation>
+                <q:equal>
+                    <q:path>c:name</q:path>
+                    <expression>
+                        <path>$shadow/attributes/ri:dn</path>
+                    </expression>
+                </q:equal>
+            </correlation>
+            <reaction>
+                <situation>linked</situation>
+                <synchronize>true</synchronize>
+            </reaction>
+            <reaction>
+                <situation>deleted</situation>
+                <synchronize>true</synchronize>
+                <action>
+                    <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#unlink</handlerUri>
+                </action>
+            </reaction>
+            <reaction>
+                <situation>unlinked</situation>
+                <synchronize>true</synchronize>
+                <action>
+                    <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#link</handlerUri>
+                </action>
+            </reaction>
+            <reaction>
+                <situation>unmatched</situation>
+            </reaction>
+        </objectSynchronization>
+        -->
     </synchronization>
 </resource>
 
