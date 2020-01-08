@@ -10,7 +10,7 @@ clean_simple:
 	- docker volume rm $$(docker volume ls -q --filter name=simple)
 
 start_simple:
-	cd demo/simple/; docker-compose up --build -d
+	cd demo/simple/; docker-compose up -d --build
 
 restart: stop_simple clean_simple start_simple logs
 

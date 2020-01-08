@@ -50,6 +50,7 @@
         </target>
     </mapping>
 
+    <!--
     <mapping id="4">
         <name>web idm entitlements</name>
         <strength>strong</strength>
@@ -70,6 +71,7 @@
             <c:path>assignment</c:path>
         </target>
     </mapping>
+    -->
 
 </objectTemplate>
 

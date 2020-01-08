@@ -15,3 +15,7 @@
 - When entitlements are created it has privileges (meta-roles),
     those meta-roles could be pre-populated and could have inducements to technical roles
     which is a mapping that can be done in the GUI?
+    
+- Multiple accounts in one resource: can we correlate this to one user in midpoint?
+
+

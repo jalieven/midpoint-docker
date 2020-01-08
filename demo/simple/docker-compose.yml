@@ -12,8 +12,26 @@ services:
       - 1389:1389
     networks:
      - net
+
+  postgres_resource:
+    image: postgres:11.6
+    environment:
+      - POSTGRES_PASSWORD_FILE=/run/secrets/src_database_password.txt
+      - POSTGRES_USER=pgres
+      - POSTGRES_INITDB_ARGS=--lc-collate=en_US.utf8 --lc-ctype=en_US.utf8
+    ports:
+      - 8432:8432
+    command: -p 8432
+    networks:
+      - net
+    secrets:
+      - src_database_password.txt
+    volumes:
+      - source_data:/var/lib/postgresql/data
+      - ./configs-and-secrets/source-db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
   midpoint_data:
-    image: postgres:9.5
+    image: postgres:11.6
     environment:
      - POSTGRES_PASSWORD_FILE=/run/secrets/mp_database_password.txt
      - POSTGRES_USER=midpoint
@@ -31,6 +49,7 @@ services:
     build: ./midpoint_server/
     depends_on:
      - midpoint_data
+     - postgres_resource
     ports:
       - 8080:8080
     environment:
@@ -61,11 +80,14 @@ networks:
     driver: bridge
 
 secrets:
+  src_database_password.txt:
+    file: ./configs-and-secrets/source-db/database_password.txt
   mp_database_password.txt:
     file: ./configs-and-secrets/midpoint/database_password.txt
   mp_keystore_password.txt:
     file: ./configs-and-secrets/midpoint/keystore_password.txt
     
 volumes:
+  source_data:
   midpoint_data:
   midpoint_home:
