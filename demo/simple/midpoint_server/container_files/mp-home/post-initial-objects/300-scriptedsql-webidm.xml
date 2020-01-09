@@ -14,268 +14,466 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
+<c:objects
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
+        xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
+        xmlns:q="http://prism.evolveum.com/xml/ns/public/query-3"
+        xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3"
+        xmlns:icfc="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/connector-schema-3"
+        xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3"
+        xmlns:cap="http://midpoint.evolveum.com/xml/ns/public/resource/capabilities-3"
+        xmlns:org="http://midpoint.evolveum.com/xml/ns/public/common/org-3"
+        xmlns:t="http://prism.evolveum.com/xml/ns/public/types-3"
+        xmlns:mext="http://midpoint.evolveum.com/xml/ns/public/model/extension-3"
+        xmlns:didmu="http://didm.be/xml/ns/user">
 
-<resource oid="dafe0482-faef-47b7-ae08-66b150929bb7"
-          xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
-          xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
-          xmlns:q="http://prism.evolveum.com/xml/ns/public/query-3"
-          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-          xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3"
-          xmlns:icfc="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/connector-schema-3"
-          xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3"
-          xmlns:cap="http://midpoint.evolveum.com/xml/ns/public/resource/capabilities-3"
-          xmlns:org="http://midpoint.evolveum.com/xml/ns/public/common/org-3"
-          xmlns:didmu="http://didm.be/xml/ns/user">
+    <resource oid="dafe0482-faef-47b7-ae08-66b150929bb7">
 
-    <name>Scripted SQL</name>
+        <name>Scripted SQL</name>
 
-    <description>Scripted SQL resource that is using single identifier (accountId) for accounts</description>
+        <description>Scripted SQL resource that is using single identifier (accountId) for accounts</description>
 
-    <!-- Reference to the ICF DatabaseTable connector. OID is "virtual" for now. -->
-    <connectorRef type="ConnectorType">
-        <filter>
-            <q:equal>
-                <q:path>c:connectorType</q:path>
-                <q:value>com.evolveum.polygon.connector.scripted.sql.ScriptedSQLConnector</q:value>
-            </q:equal>
-        </filter>
-    </connectorRef>
-
-    <!-- Configuration section contains configuration of the connector,
-             such as hostnames and passwords -->
-    <c:connectorConfiguration>
-
-        <!-- Configuration specific for the ScriptedSQL connector -->
-        <icfc:configurationProperties
-                xmlns:icscscriptedsql="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/bundle/com.evolveum.polygon.connector-scripted-sql/com.evolveum.polygon.connector.scripted.sql.ScriptedSQLConnector">
-            <icscscriptedsql:user>pgres</icscscriptedsql:user>
-            <icscscriptedsql:password><clearValue>WJzesbe3poNZ91qIbmR7</clearValue></icscscriptedsql:password>
-            <icscscriptedsql:jdbcDriver>org.postgresql.Driver</icscscriptedsql:jdbcDriver>
-            <icscscriptedsql:jdbcUrlTemplate>jdbc:postgresql://postgres_resource:8432/pgres</icscscriptedsql:jdbcUrlTemplate>
-            <icscscriptedsql:recompileGroovySource>true</icscscriptedsql:recompileGroovySource>
-            <icscscriptedsql:scriptRoots>/opt/midpoint/var/scripts</icscscriptedsql:scriptRoots>
-            <icscscriptedsql:scriptBaseClass>BaseScript</icscscriptedsql:scriptBaseClass>
-            <icscscriptedsql:createScriptFileName>CreateScript.groovy</icscscriptedsql:createScriptFileName>
-            <icscscriptedsql:updateScriptFileName>UpdateScript.groovy</icscscriptedsql:updateScriptFileName>
-            <icscscriptedsql:deleteScriptFileName>DeleteScript.groovy</icscscriptedsql:deleteScriptFileName>
-            <icscscriptedsql:schemaScriptFileName>SchemaScript.groovy</icscscriptedsql:schemaScriptFileName>
-            <icscscriptedsql:searchScriptFileName>SearchScript.groovy</icscscriptedsql:searchScriptFileName>
-            <icscscriptedsql:testScriptFileName>TestScript.groovy</icscscriptedsql:testScriptFileName>
-            <icscscriptedsql:syncScriptFileName>SyncScript.groovy</icscscriptedsql:syncScriptFileName>
-            <icscscriptedsql:classpath>.</icscscriptedsql:classpath>
-        </icfc:configurationProperties>
-
-        <!-- Generic ICF configuration -->
-
-
-    </c:connectorConfiguration>
-
-    <schema>
-        <definition>
-            <xsd:schema xmlns:a="http://prism.evolveum.com/xml/ns/public/annotation-3"
-                        xmlns:ra="http://midpoint.evolveum.com/xml/ns/public/resource/annotation-3"
-                        xmlns:tns="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3"
-                        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-                        elementFormDefault="qualified"
-                        targetNamespace="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">
-                <xsd:import namespace="http://prism.evolveum.com/xml/ns/public/annotation-3"/>
-                <xsd:import namespace="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3"/>
-                <xsd:import namespace="http://midpoint.evolveum.com/xml/ns/public/resource/annotation-3"/>
-                <xsd:complexType name="AccountObjectClass">
-                    <xsd:annotation>
-                        <xsd:appinfo>
-                            <ra:resourceObject/>
-                            <ra:identifier>icfs:uid</ra:identifier>
-                            <ra:secondaryIdentifier>icfs:name</ra:secondaryIdentifier>
-                            <ra:displayNameAttribute>icfs:name</ra:displayNameAttribute>
-                            <ra:namingAttribute>icfs:name</ra:namingAttribute>
-                            <ra:nativeObjectClass>__ACCOUNT__</ra:nativeObjectClass>
-                            <ra:kind>account</ra:kind>
-                            <ra:default>true</ra:default>
-                        </xsd:appinfo>
-                    </xsd:annotation>
-                    <xsd:sequence>
-                        <xsd:element minOccurs="1" maxOccurs="1" name="username" type="xsd:string">
-                            <xsd:annotation>
-                                <xsd:appinfo>
-                                    <a:displayOrder>150</a:displayOrder>
-                                    <ra:frameworkAttributeName>username</ra:frameworkAttributeName>
-                                </xsd:appinfo>
-                            </xsd:annotation>
-                        </xsd:element>
-                        <xsd:element minOccurs="0" name="firstname" type="xsd:string">
-                            <xsd:annotation>
-                                <xsd:appinfo>
-                                    <a:displayOrder>160</a:displayOrder>
-                                    <ra:frameworkAttributeName>firstname</ra:frameworkAttributeName>
-                                </xsd:appinfo>
-                            </xsd:annotation>
-                        </xsd:element>
-                        <xsd:element minOccurs="0" name="lastname" type="xsd:string">
-                            <xsd:annotation>
-                                <xsd:appinfo>
-                                    <a:displayOrder>170</a:displayOrder>
-                                    <ra:frameworkAttributeName>lastname</ra:frameworkAttributeName>
-                                </xsd:appinfo>
-                            </xsd:annotation>
-                        </xsd:element>
-                        <xsd:element minOccurs="0" name="rijksregisternummer" type="xsd:int">
-                            <xsd:annotation>
-                                <xsd:appinfo>
-                                    <a:displayOrder>180</a:displayOrder>
-                                    <ra:frameworkAttributeName>rijksregisternummer</ra:frameworkAttributeName>
-                                </xsd:appinfo>
-                            </xsd:annotation>
-                        </xsd:element>
-                        <xsd:element ref="icfs:name">
-                            <xsd:annotation>
-                                <xsd:appinfo>
-                                    <a:displayName>ConnId Name</a:displayName>
-                                    <a:displayOrder>110</a:displayOrder>
-                                    <ra:frameworkAttributeName>__NAME__</ra:frameworkAttributeName>
-                                </xsd:appinfo>
-                            </xsd:annotation>
-                        </xsd:element>
-                        <xsd:element minOccurs="0" ref="icfs:uid">
-                            <xsd:annotation>
-                                <xsd:appinfo>
-                                    <a:displayName>ConnId UID</a:displayName>
-                                    <a:displayOrder>100</a:displayOrder>
-                                    <a:access>read</a:access>
-                                </xsd:appinfo>
-                            </xsd:annotation>
-                        </xsd:element>
-                    </xsd:sequence>
-                </xsd:complexType>
-            </xsd:schema>
-        </definition>
-    </schema>
-
-    <schemaHandling>
-
-        <objectType>
-            <displayName>Default Account</displayName>
-            <default>true</default>
-            <intent>default</intent>
-            <objectClass>ri:AccountObjectClass</objectClass>
-
-            <attribute>
-                <ref>icfs:name</ref>
-                <inbound>
-                    <target>
-                        <path>$user/name</path>
-                    </target>
-                </inbound>
-            </attribute>
-            <attribute>
-                <ref>ri:firstname</ref>
-                <inbound>
-                    <target>
-                        <path>$user/givenName</path>
-                    </target>
-                </inbound>
-            </attribute>
-            <attribute>
-                <ref>ri:lastname</ref>
-                <inbound>
-                    <target>
-                        <path>$user/familyName</path>
-                    </target>
-                </inbound>
-            </attribute>
-
-            <attribute>
-                <ref>ri:rijksregisternummer</ref>
-                <inbound>
-                    <target>
-                        <path>$user/extension/didmu:rijksregisternummer</path>
-                    </target>
-                </inbound>
-            </attribute>
-
-            <activation>
-                <administrativeStatus>
-                    <inbound>
-                        <strength>weak</strength>
-                    </inbound>
-                </administrativeStatus>
-            </activation>
-
-            <credentials>
-                <password>
-                    <inbound>
-                        <strength>weak</strength>
-                        <expression>
-                            <generate/>
-                        </expression>
-                    </inbound>
-                </password>
-            </credentials>
-
-        </objectType>
-    </schemaHandling>
-    <capabilities>
-        <configured>
-            <cap:activation>
-                <cap:status>
-                    <cap:attribute>ri:disabled</cap:attribute>
-                    <cap:enableValue>false</cap:enableValue>
-                    <cap:disableValue>true</cap:disableValue>
-                </cap:status>
-            </cap:activation>
-        </configured>
-    </capabilities>
-    <synchronization>
-        <objectSynchronization>
-            <objectClass>ri:AccountObjectClass</objectClass>
-            <kind>account</kind>
-            <intent>default</intent>
-            <focusType>c:UserType</focusType>
-            <enabled>true</enabled>
-            <objectTemplateRef oid="10000000-0000-0000-0000-000000000223" relation="org:default" type="c:ObjectTemplateType">
-                <targetName>User Object Template</targetName>
-            </objectTemplateRef>
-            <correlation>
-                <q:description>
-                    Correlation expression is a search query.
-                    Following search query will look for users that have "name"
-                    equal to the "name" attribute of the account. Simply speaking,
-                    it will look for match in usernames in the IDM and the resource.
-                    The correlation rule always looks for users, so it will not match
-                    any other object type.
-                </q:description>
+        <!-- Reference to the ICF DatabaseTable connector. OID is "virtual" for now. -->
+        <connectorRef type="ConnectorType">
+            <filter>
                 <q:equal>
-                    <q:path>c:name</q:path>
-                    <expression>
-                        <path>$c:account/c:attributes/ri:username</path>
-                    </expression>
+                    <q:path>c:connectorType</q:path>
+                    <q:value>com.evolveum.polygon.connector.scripted.sql.ScriptedSQLConnector</q:value>
                 </q:equal>
-            </correlation>
-            <reconcile>false</reconcile>
-            <reaction>
-                <situation>linked</situation>
-                <action>
-                    <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#modifyUser</handlerUri>
-                </action>
-            </reaction>
-            <reaction>
-                <situation>deleted</situation>
-                <action>
-                    <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#unlinkAccount</handlerUri>
-                </action>
-            </reaction>
-            <reaction>
-                <situation>unlinked</situation>
-                <action>
-                    <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#linkAccount</handlerUri>
-                </action>
-            </reaction>
-            <reaction>
-                <situation>unmatched</situation>
-                <action>
-                    <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#addUser</handlerUri>
-                </action>
-            </reaction>
-        </objectSynchronization>
-    </synchronization>
-</resource>
+            </filter>
+        </connectorRef>
+
+        <!-- Configuration section contains configuration of the connector,
+                 such as hostnames and passwords -->
+        <c:connectorConfiguration>
+
+            <!-- Configuration specific for the ScriptedSQL connector -->
+            <icfc:configurationProperties
+                    xmlns:icscscriptedsql="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/bundle/com.evolveum.polygon.connector-scripted-sql/com.evolveum.polygon.connector.scripted.sql.ScriptedSQLConnector">
+                <icscscriptedsql:user>pgres</icscscriptedsql:user>
+                <icscscriptedsql:password><clearValue>WJzesbe3poNZ91qIbmR7</clearValue></icscscriptedsql:password>
+                <icscscriptedsql:jdbcDriver>org.postgresql.Driver</icscscriptedsql:jdbcDriver>
+                <icscscriptedsql:jdbcUrlTemplate>jdbc:postgresql://postgres_resource:8432/pgres</icscscriptedsql:jdbcUrlTemplate>
+                <icscscriptedsql:recompileGroovySource>true</icscscriptedsql:recompileGroovySource>
+                <icscscriptedsql:scriptRoots>/opt/midpoint/var/scripts</icscscriptedsql:scriptRoots>
+                <icscscriptedsql:scriptBaseClass>BaseScript</icscscriptedsql:scriptBaseClass>
+                <icscscriptedsql:createScriptFileName>CreateScript.groovy</icscscriptedsql:createScriptFileName>
+                <icscscriptedsql:updateScriptFileName>UpdateScript.groovy</icscscriptedsql:updateScriptFileName>
+                <icscscriptedsql:deleteScriptFileName>DeleteScript.groovy</icscscriptedsql:deleteScriptFileName>
+                <icscscriptedsql:schemaScriptFileName>SchemaScript.groovy</icscscriptedsql:schemaScriptFileName>
+                <icscscriptedsql:searchScriptFileName>SearchScript.groovy</icscscriptedsql:searchScriptFileName>
+                <icscscriptedsql:testScriptFileName>TestScript.groovy</icscscriptedsql:testScriptFileName>
+                <icscscriptedsql:syncScriptFileName>SyncScript.groovy</icscscriptedsql:syncScriptFileName>
+                <icscscriptedsql:classpath>.</icscscriptedsql:classpath>
+            </icfc:configurationProperties>
+
+            <!-- Generic ICF configuration -->
+
+
+        </c:connectorConfiguration>
+
+        <schema>
+            <definition>
+                <xsd:schema xmlns:a="http://prism.evolveum.com/xml/ns/public/annotation-3"
+                            xmlns:ra="http://midpoint.evolveum.com/xml/ns/public/resource/annotation-3"
+                            xmlns:tns="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3"
+                            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                            elementFormDefault="qualified"
+                            targetNamespace="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">
+                    <xsd:import namespace="http://prism.evolveum.com/xml/ns/public/annotation-3"/>
+                    <xsd:import namespace="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3"/>
+                    <xsd:import namespace="http://midpoint.evolveum.com/xml/ns/public/resource/annotation-3"/>
+                    <xsd:complexType name="AccountObjectClass">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <ra:resourceObject/>
+                                <ra:identifier>icfs:uid</ra:identifier>
+                                <ra:secondaryIdentifier>icfs:name</ra:secondaryIdentifier>
+                                <ra:displayNameAttribute>icfs:name</ra:displayNameAttribute>
+                                <ra:namingAttribute>icfs:name</ra:namingAttribute>
+                                <ra:nativeObjectClass>__ACCOUNT__</ra:nativeObjectClass>
+                                <ra:kind>account</ra:kind>
+                                <ra:default>true</ra:default>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                        <xsd:sequence>
+                            <xsd:element minOccurs="1" maxOccurs="1" name="username" type="xsd:string">
+                                <xsd:annotation>
+                                    <xsd:appinfo>
+                                        <a:displayOrder>150</a:displayOrder>
+                                        <ra:frameworkAttributeName>username</ra:frameworkAttributeName>
+                                    </xsd:appinfo>
+                                </xsd:annotation>
+                            </xsd:element>
+                            <xsd:element minOccurs="0" name="firstname" type="xsd:string">
+                                <xsd:annotation>
+                                    <xsd:appinfo>
+                                        <a:displayOrder>160</a:displayOrder>
+                                        <ra:frameworkAttributeName>firstname</ra:frameworkAttributeName>
+                                    </xsd:appinfo>
+                                </xsd:annotation>
+                            </xsd:element>
+                            <xsd:element minOccurs="0" name="lastname" type="xsd:string">
+                                <xsd:annotation>
+                                    <xsd:appinfo>
+                                        <a:displayOrder>170</a:displayOrder>
+                                        <ra:frameworkAttributeName>lastname</ra:frameworkAttributeName>
+                                    </xsd:appinfo>
+                                </xsd:annotation>
+                            </xsd:element>
+                            <xsd:element minOccurs="0" name="rijksregisternummer" type="xsd:int">
+                                <xsd:annotation>
+                                    <xsd:appinfo>
+                                        <a:displayOrder>180</a:displayOrder>
+                                        <ra:frameworkAttributeName>rijksregisternummer</ra:frameworkAttributeName>
+                                    </xsd:appinfo>
+                                </xsd:annotation>
+                            </xsd:element>
+                            <xsd:element maxOccurs="unbounded" minOccurs="0" name="entitlements" type="xsd:string">
+                                <xsd:annotation>
+                                    <xsd:appinfo>
+                                        <a:displayOrder>140</a:displayOrder>
+                                        <ra:frameworkAttributeName>entitlements</ra:frameworkAttributeName>
+                                    </xsd:appinfo>
+                                </xsd:annotation>
+                            </xsd:element>
+                            <xsd:element ref="icfs:name">
+                                <xsd:annotation>
+                                    <xsd:appinfo>
+                                        <a:displayName>ConnId Name</a:displayName>
+                                        <a:displayOrder>110</a:displayOrder>
+                                        <ra:frameworkAttributeName>__NAME__</ra:frameworkAttributeName>
+                                    </xsd:appinfo>
+                                </xsd:annotation>
+                            </xsd:element>
+                            <xsd:element minOccurs="0" ref="icfs:uid">
+                                <xsd:annotation>
+                                    <xsd:appinfo>
+                                        <a:displayName>ConnId UID</a:displayName>
+                                        <a:displayOrder>100</a:displayOrder>
+                                        <a:access>read</a:access>
+                                    </xsd:appinfo>
+                                </xsd:annotation>
+                            </xsd:element>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                    <xsd:complexType name="CustomEntitlementObjectClass">
+                        <xsd:annotation>
+                            <xsd:appinfo>
+                                <ra:resourceObject/>
+                                <ra:identifier>icfs:uid</ra:identifier>
+                                <ra:secondaryIdentifier>icfs:name</ra:secondaryIdentifier>
+                                <ra:displayNameAttribute>icfs:name</ra:displayNameAttribute>
+                                <ra:namingAttribute>icfs:name</ra:namingAttribute>
+                                <ra:nativeObjectClass>Entitlement</ra:nativeObjectClass>
+                            </xsd:appinfo>
+                        </xsd:annotation>
+                        <xsd:sequence>
+                            <xsd:element ref="icfs:name">
+                                <xsd:annotation>
+                                    <xsd:appinfo>
+                                        <a:displayName>ConnId Name</a:displayName>
+                                        <a:displayOrder>110</a:displayOrder>
+                                        <ra:frameworkAttributeName>__NAME__</ra:frameworkAttributeName>
+                                    </xsd:appinfo>
+                                </xsd:annotation>
+                            </xsd:element>
+                            <xsd:element minOccurs="0" ref="icfs:uid">
+                                <xsd:annotation>
+                                    <xsd:appinfo>
+                                        <a:displayName>ConnId UID</a:displayName>
+                                        <a:displayOrder>100</a:displayOrder>
+                                        <a:access>read</a:access>
+                                    </xsd:appinfo>
+                                </xsd:annotation>
+                            </xsd:element>
+                            <xsd:element minOccurs="0" name="accountId" type="xsd:string">
+                                <xsd:annotation>
+                                    <xsd:appinfo>
+                                        <a:displayOrder>180</a:displayOrder>
+                                        <ra:frameworkAttributeName>accountId</ra:frameworkAttributeName>
+                                    </xsd:appinfo>
+                                </xsd:annotation>
+                            </xsd:element>
+                            <xsd:element maxOccurs="unbounded" minOccurs="0" name="privileges" type="xsd:string">
+                                <xsd:annotation>
+                                    <xsd:appinfo>
+                                        <a:displayOrder>190</a:displayOrder>
+                                        <ra:frameworkAttributeName>privileges</ra:frameworkAttributeName>
+                                    </xsd:appinfo>
+                                </xsd:annotation>
+                            </xsd:element>
+                        </xsd:sequence>
+                    </xsd:complexType>
+                </xsd:schema>
+            </definition>
+        </schema>
+
+        <schemaHandling>
+
+            <objectType>
+                <displayName>Default Account</displayName>
+                <kind>account</kind>
+                <default>true</default>
+                <intent>default</intent>
+                <objectClass>ri:AccountObjectClass</objectClass>
+
+                <attribute>
+                    <ref>icfs:name</ref>
+                    <inbound>
+                        <target>
+                            <path>$user/name</path>
+                        </target>
+                    </inbound>
+                </attribute>
+                <attribute>
+                    <ref>ri:firstname</ref>
+                    <inbound>
+                        <target>
+                            <path>$user/givenName</path>
+                        </target>
+                    </inbound>
+                </attribute>
+                <attribute>
+                    <ref>ri:lastname</ref>
+                    <inbound>
+                        <target>
+                            <path>$user/familyName</path>
+                        </target>
+                    </inbound>
+                </attribute>
+
+                <attribute>
+                    <ref>ri:rijksregisternummer</ref>
+                    <inbound>
+                        <target>
+                            <path>$user/extension/didmu:rijksregisternummer</path>
+                        </target>
+                    </inbound>
+                </attribute>
+
+                <!--
+                <association>
+                    <c:ref>ri:accEntitlements</c:ref>
+                    <displayName>Entitlements</displayName>
+                    <tolerant>false</tolerant>
+                    <exclusiveStrong>false</exclusiveStrong>
+                    <kind>entitlement</kind>
+                    <intent>privileges</intent>
+                    <direction>subjectToObject</direction>
+                    <associationAttribute>ri:entitlements</associationAttribute>
+                    <valueAttribute>icfs:name</valueAttribute>
+                    <explicitReferentialIntegrity>true</explicitReferentialIntegrity>
+                </association>
+                -->
+
+                <activation>
+                    <administrativeStatus>
+                        <inbound>
+                            <strength>weak</strength>
+                        </inbound>
+                    </administrativeStatus>
+                </activation>
+
+                <credentials>
+                    <password>
+                        <inbound>
+                            <strength>weak</strength>
+                            <expression>
+                                <generate/>
+                            </expression>
+                        </inbound>
+                    </password>
+                </credentials>
+
+            </objectType>
+
+            <!--
+            #################################
+                OBJECT CLASS ENTITLEMENT
+            #################################
+            -->
+            <objectType>
+                <displayName>Entitlements</displayName>
+                <kind>entitlement</kind>
+                <intent>privileges</intent>
+                <default>false</default>
+                <objectClass>ri:CustomEntitlementObjectClass</objectClass>
+                <attribute>
+                    <c:ref>icfs:name</c:ref>
+                    <tolerant>true</tolerant>
+                    <exclusiveStrong>false</exclusiveStrong>
+                    <inbound>
+                        <authoritative>true</authoritative>
+                        <exclusive>false</exclusive>
+                        <strength>normal</strength>
+                        <target>
+                            <c:path>$focus/name</c:path>
+                        </target>
+                    </inbound>
+                </attribute>
+            </objectType>
+
+        </schemaHandling>
+        <capabilities>
+            <configured>
+                <cap:activation>
+                    <cap:status>
+                        <cap:attribute>ri:disabled</cap:attribute>
+                        <cap:enableValue>false</cap:enableValue>
+                        <cap:disableValue>true</cap:disableValue>
+                    </cap:status>
+                </cap:activation>
+            </configured>
+        </capabilities>
+        <synchronization>
+            <objectSynchronization>
+                <objectClass>ri:AccountObjectClass</objectClass>
+                <kind>account</kind>
+                <intent>default</intent>
+                <focusType>c:UserType</focusType>
+                <enabled>true</enabled>
+                <objectTemplateRef oid="10000000-0000-0000-0000-000000000223" relation="org:default" type="c:ObjectTemplateType">
+                    <targetName>User Object Template</targetName>
+                </objectTemplateRef>
+                <correlation>
+                    <q:description>
+                        Correlation expression is a search query.
+                        Following search query will look for users that have "name"
+                        equal to the "name" attribute of the account. Simply speaking,
+                        it will look for match in usernames in the IDM and the resource.
+                        The correlation rule always looks for users, so it will not match
+                        any other object type.
+                    </q:description>
+                    <q:equal>
+                        <q:path>c:name</q:path>
+                        <expression>
+                            <path>$c:account/c:attributes/ri:username</path>
+                        </expression>
+                    </q:equal>
+                </correlation>
+                <reconcile>false</reconcile>
+                <reaction>
+                    <situation>linked</situation>
+                    <action>
+                        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#modifyUser</handlerUri>
+                    </action>
+                </reaction>
+                <reaction>
+                    <situation>deleted</situation>
+                    <action>
+                        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#unlinkAccount</handlerUri>
+                    </action>
+                </reaction>
+                <reaction>
+                    <situation>unlinked</situation>
+                    <action>
+                        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#linkAccount</handlerUri>
+                    </action>
+                </reaction>
+                <reaction>
+                    <situation>unmatched</situation>
+                    <action>
+                        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#addUser</handlerUri>
+                    </action>
+                </reaction>
+            </objectSynchronization>
+
+            <objectSynchronization>
+                <objectClass>ri:CustomEntitlementObjectClass</objectClass>
+                <kind>entitlement</kind>
+                <intent>privileges</intent>
+                <focusType>c:RoleType</focusType>
+                <enabled>true</enabled>
+                <correlation>
+                    <q:description>
+                        Correlation expression is a search query.
+                        Following search query will look for users that have "name"
+                        equal to the "name" attribute of the account. Simply speaking,
+                        it will look for match in usernames in the IDM and the resource.
+                        The correlation rule always looks for users, so it will not match
+                        any other object type.
+                    </q:description>
+                    <q:equal>
+                        <q:path>c:name</q:path>
+                        <expression>
+                            <path>$c:focus/c:attributes/ri:entitlementId</path>
+                        </expression>
+                    </q:equal>
+                </correlation>
+                <!-- FIXME Do we really need this?
+                <objectTemplateRef oid="5b9dbcb1-a4a5-4d70-83a5-4dccad15b3b9" relation="org:default" type="c:ObjectTemplateType">
+                    <targetName>Import grup - rezerwacja</targetName>
+                </objectTemplateRef>
+                -->
+                <reconcile>false</reconcile>
+                <reaction>
+                    <situation>deleted</situation>
+                    <action>
+                        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#deleteFocus</handlerUri>
+                    </action>
+                </reaction>
+                <reaction>
+                    <situation>linked</situation>
+                    <synchronize>true</synchronize>
+                </reaction>
+                <reaction>
+                    <situation>unlinked</situation>
+                    <action>
+                        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#link</handlerUri>
+                    </action>
+                </reaction>
+                <reaction>
+                    <situation>unmatched</situation>
+                    <reconcile>false</reconcile>
+                    <action>
+                        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#addFocus</handlerUri>
+                    </action>
+                </reaction>
+            </objectSynchronization>
+        </synchronization>
+    </resource>
+
+    <task oid="ef99c20d-215d-4c76-91ba-24380f342c59">
+        <name>Initial accounts import from resource</name>
+        <extension xsi:type="c:ExtensionType">
+            <mext:kind>account</mext:kind>
+            <mext:intent>default</mext:intent>
+        </extension>
+        <taskIdentifier>1539330292502-0-1</taskIdentifier>
+        <ownerRef oid="00000000-0000-0000-0000-000000000002"/>
+        <executionStatus>runnable</executionStatus>
+        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/synchronization/task/import/handler-3</handlerUri>
+        <objectRef oid="dafe0482-faef-47b7-ae08-66b150929bb7" type="c:ResourceType">
+        </objectRef>
+        <recurrence>single</recurrence>
+        <binding>loose</binding>
+        <schedule>
+            <misfireAction>executeImmediately</misfireAction>
+        </schedule>
+        <threadStopAction>restart</threadStopAction>
+    </task>
+
+    <task oid="da99c20d-215d-4c76-91ba-24380f342c60">
+        <name>Initial entitlements import from resource</name>
+        <extension xsi:type="c:ExtensionType">
+            <mext:kind>entitlement</mext:kind>
+            <mext:intent>privileges</mext:intent>
+        </extension>
+        <taskIdentifier>1539330292502-0-2</taskIdentifier>
+        <ownerRef oid="00000000-0000-0000-0000-000000000002"/>
+        <executionStatus>runnable</executionStatus>
+        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/synchronization/task/import/handler-3</handlerUri>
+        <objectRef oid="dafe0482-faef-47b7-ae08-66b150929bb7" type="c:ResourceType">
+        </objectRef>
+        <recurrence>single</recurrence>
+        <binding>loose</binding>
+        <schedule>
+            <misfireAction>executeImmediately</misfireAction>
+        </schedule>
+        <threadStopAction>restart</threadStopAction>
+    </task>
+
+</c:objects>

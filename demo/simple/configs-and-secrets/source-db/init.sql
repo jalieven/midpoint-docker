@@ -21,14 +21,17 @@ CREATE TABLE source_entitlements (
     gsm                     VARCHAR(32),
     telefoonnr              VARCHAR(32),
     privileges              VARCHAR(32),
+    disabled                BOOLEAN,
     PRIMARY KEY (entitlementid)
 );
+
+alter table source_entitlements add constraint c_source_entitlements_fk_source_accounts foreign key (accountid) references source_accounts;
 
 INSERT INTO public.source_accounts(
 	accountId, username, firstname, lastname, rijksregisternummer, disabled)
 	VALUES ('3fd83cd4-d1bb-4d7f-9a1a-12a02ed85a95', 'jalie', 'Jan', 'Lievens', '81071040575', false);
 
 INSERT INTO public.source_entitlements(
-	entitlementid, accountid, email, organisatiecode, departement, dienst, functie, personeelsnummer, fax, gsm, telefoonnr, privileges)
-	VALUES ('20000-Burger-01', '3fd83cd4-d1bb-4d7f-9a1a-12a02ed85a95', 'jan.lievens@biggerfish.be', '20000', 'HR', 'Thuis', 'CEO', NULL, NULL, '0494846697', '053839066', 'IMJVPlichtige;VIP');
+	entitlementid, accountid, email, organisatiecode, departement, dienst, functie, personeelsnummer, fax, gsm, telefoonnr, privileges, disabled)
+	VALUES ('20000-Burger-01', '3fd83cd4-d1bb-4d7f-9a1a-12a02ed85a95', 'jan.lievens@biggerfish.be', '20000', 'HR', 'Thuis', 'CEO', NULL, NULL, '0494846697', '053839066', 'IMJVPlichtige;VIP', false);
 

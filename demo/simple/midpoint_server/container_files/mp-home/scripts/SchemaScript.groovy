@@ -14,7 +14,7 @@ def operation = operation as OperationType
 def builder = builder as ICFObjectBuilder
 def configuration = configuration as ScriptedSQLConfiguration
 
-log.info("Entering " + operation + " Script")
+log.info("#### Entering {0} Script", operation)
 
 builder.schema({
     objectClass {
@@ -23,17 +23,19 @@ builder.schema({
             firstname()
             lastname()
             rijksregisternummer()
+            entitlements String.class, MULTIVALUED
             OperationalAttributeInfos.ENABLE
             OperationalAttributeInfos.LOCK_OUT
         }
     }
-//    objectClass {
-//        type BaseScript.ENTITLEMENT
-//        attributes {
-//            name String.class, MULTIVALUED
-//            description()
-//        }
-//    }
+    objectClass {
+        type BaseScript.ENTITLEMENT_NAME
+        attributes {
+            accountId()
+            privileges String.class, MULTIVALUED
+            OperationalAttributeInfos.ENABLE
+        }
+    }
 //    objectClass {
 //        type BaseScript.ORGANIZATION
 //        attributes {

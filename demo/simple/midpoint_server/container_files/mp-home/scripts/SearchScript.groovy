@@ -1,3 +1,4 @@
+import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import org.forgerock.openicf.connectors.scriptedsql.ScriptedSQLConfiguration
 import org.forgerock.openicf.misc.scriptedcommon.ICFObjectBuilder
@@ -73,9 +74,9 @@ switch (objectClass) {
     case ObjectClass.ACCOUNT:
         handleAccount(sql)
         break
-//    case BaseScript.GROUP:
-//        handleGroup(sql)
-//        break
+    case BaseScript.ENTITLEMENT:
+        handleEntitlement(sql)
+        break
 //    case BaseScript.ORGANIZATION:
 //        handleOrganization(sql)
 //        break
@@ -86,11 +87,17 @@ switch (objectClass) {
 // =================================================================================
 
 void handleAccount(Sql sql) {
+
     Closure closure = { row ->
-        log.info("#### Row from DB: {0}, with parameters {1} ####", row)
+        log.info("#### Account Row from DB: {0} ####", row)
+        //def entitlementsQuery = "select g.name from groups g join user_groups ug on ug.group_id = g.group_id join users u on u.user_id = ug.user_id" + where;
+        // String entitlementsQuery = "SELECT s_ent.entitlementid FROM source_entitlements s_ent WHERE s_ent.accountid = " + row.accountid
+        // List<GroovyRowResult> entitlementsResults = sql.rows(entitlementsQuery);
+        // List entitlementIds = entitlementsResults.entitlementid as List;
+        // log.info("#### Found Entitlements: {0} for Account: ", entitlementIds, row.accountid)
         handler(ICFObjectBuilder.co {
             uid row.accountid as String
-            id row.username
+            id row.rijksregisternummer
             attribute '__UID__', row.accountid
             attribute '__ENABLE__', !row.disabled
             attribute '__NAME__', row.username
@@ -98,6 +105,7 @@ void handleAccount(Sql sql) {
             attribute 'firstname', row.firstname
             attribute 'lastname', row.lastname
             attribute 'rijksregisternummer', row.rijksregisternummer
+            // attribute 'entitlements', entitlementIds
         })
     }
 
@@ -108,19 +116,24 @@ void handleAccount(Sql sql) {
 }
 
 
-void handleGroup(Sql sql) {
+void handleEntitlement(Sql sql) {
     Closure closure = { row ->
-        ICFObjectBuilder.co {
-            uid row.id as String
-            id row.name
-            attribute 'description', row.description
-        }
+        log.info("#### Entitlement Row from DB: {0} ####", row)
+        handler(ICFObjectBuilder.co {
+            uid row.entitlementid as String
+            id row.entitlementid
+            attribute '__NAME__', row.entitlementid
+            attribute '__ENABLE__', !row.disabled
+            attribute 'accountId', row.accountid
+            //attribute 'organisatiecode', row.organisatiecode
+            attribute 'privileges', row.privileges//.split(";")
+        })
     }
 
     Map params = [:]
-    String where = buildWhereClause(filter, params, 'id', 'name')
+    String where = buildWhereClause(filter, params, 'entitlementid', 'name')
 
-    sql.eachRow(params, "SELECT * FROM Groups " + where, closure)
+    sql.eachRow(params, "SELECT * FROM source_entitlements " + where, closure)
 }
 
 void handleOrganization(Sql sql) {
