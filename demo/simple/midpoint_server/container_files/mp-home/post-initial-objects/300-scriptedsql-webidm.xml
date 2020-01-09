@@ -69,9 +69,6 @@
                 <icscscriptedsql:classpath>.</icscscriptedsql:classpath>
             </icfc:configurationProperties>
 
-            <!-- Generic ICF configuration -->
-
-
         </c:connectorConfiguration>
 
         <schema>
