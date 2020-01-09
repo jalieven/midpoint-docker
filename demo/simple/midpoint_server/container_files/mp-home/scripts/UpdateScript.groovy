@@ -13,7 +13,7 @@ def uid = uid as Uid
 def id = id as Name
 def configuration = configuration as ScriptedSQLConfiguration
 
-log.info("Entering " + operation + " Script")
+log.info("#### Entering Update {0} Script for {1} and attributes {2} ####", operation, objectClass, attributes)
 
 def sql = new Sql(connection)
 

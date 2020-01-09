@@ -120,7 +120,7 @@
                                     </xsd:appinfo>
                                 </xsd:annotation>
                             </xsd:element>
-                            <xsd:element minOccurs="0" name="rijksregisternummer" type="xsd:int">
+                            <xsd:element minOccurs="0" name="rijksregisternummer" type="xsd:string">
                                 <xsd:annotation>
                                     <xsd:appinfo>
                                         <a:displayOrder>180</a:displayOrder>
@@ -251,7 +251,12 @@
                     </inbound>
                 </attribute>
 
+                <!-- Adding this performs the following sql query: SELECT * FROM source_entitlements WHERE entitlementid = :entitlementid -->
                 <!--
+                    FIXME: But it also enters the UpdateScript with:
+                        #### Entering Update REMOVE_ATTRIBUTE_VALUES Script for ObjectClass: __ACCOUNT__ and attributes [Attribute: {Name=entitlements, Value=[20000-Burger-01, 20001-Milieumedewerker-01]}] ####
+
+
                 <association>
                     <c:ref>ri:accEntitlements</c:ref>
                     <displayName>Entitlements</displayName>
@@ -262,7 +267,7 @@
                     <direction>subjectToObject</direction>
                     <associationAttribute>ri:entitlements</associationAttribute>
                     <valueAttribute>icfs:name</valueAttribute>
-                    <explicitReferentialIntegrity>true</explicitReferentialIntegrity>
+                    <explicitReferentialIntegrity>false</explicitReferentialIntegrity>   <- iterate to see behaviour change
                 </association>
                 -->
 

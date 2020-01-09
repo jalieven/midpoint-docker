@@ -131,7 +131,7 @@ void handleEntitlement(Sql sql) {
     }
 
     Map params = [:]
-    String where = buildWhereClause(filter, params, 'entitlementid', 'name')
+    String where = buildWhereClause(filter, params, 'entitlementid', 'entitlementid')
 
     sql.eachRow(params, "SELECT * FROM source_entitlements " + where, closure)
 }
