@@ -23,51 +23,88 @@ def connection = connection as Connection
 def query = query as Closure
 def handler = handler as ResultsHandler
 
-log.info("Entering " + operation + " Script")
+/**
+    The handling code of this thing: https://github.com/OpenRock/OpenICF-groovy-connector/blob/master/src/main/groovy/org/forgerock/openicf/misc/scriptedcommon/ScriptedConnectorBase.groovy
+    more specifically the executeQuery method which provides 3 arguments to this script:
+        - Filter: org.identityconnectors.framework.common.objects.filter.Filter
+        - Query:
+        - Handler: Closure<Boolean>
+    Then there are auxiliary arguments provided to this script:
+        - connection: handler to the SQL connection
+        - objectClass: a String describing the Object class (__ACCOUNT__ / __GROUP__ / other)
+        - log: a handler to the Log facility
+        - options: a handler to the OperationOptions Map
+        - query: a handler to the Query Map
+            The Query map describes the filter used.
+
+                 query = [ operation: "CONTAINS", left: attribute, right: "value", not: true/false ]
+                 query = [ operation: "ENDSWITH", left: attribute, right: "value", not: true/false ]
+                 query = [ operation: "STARTSWITH", left: attribute, right: "value", not: true/false ]
+                 query = [ operation: "EQUALS", left: attribute, right: "value", not: true/false ]
+                 query = [ operation: "GREATERTHAN", left: attribute, right: "value", not: true/false ]
+                 query = [ operation: "GREATERTHANOREQUAL", left: attribute, right: "value", not: true/false ]
+                 query = [ operation: "LESSTHAN", left: attribute, right: "value", not: true/false ]
+                 query = [ operation: "LESSTHANOREQUAL", left: attribute, right: "value", not: true/false ]
+                 query = null : then we assume we fetch everything
+
+                 AND and OR filter just embed a left/right couple of queries.
+                 query = [ operation: "AND", left: query1, right: query2 ]
+                 query = [ operation: "OR", left: query1, right: query2 ]
+
+    Apparently you have 2 options to provide the actual data from the DB:
+        - Returning one of the following:
+            * org.identityconnectors.framework.common.objects.SearchResult
+            * String (which will be packaged into aforementioned SearchResult
+        - Calling the Handler with one of the following:
+            * ICFObjectBuilder.co call that wraps a closure
+                (see https://github.com/OpenRock/OpenICF-groovy-connector/blob/master/src/main/groovy/org/forgerock/openicf/misc/scriptedcommon/ICFObjectBuilder.groovy)
+            * Just a plain Closure
+    What to return:
+         Returns: A list of Maps. Each map describing one row.
+         !!!! Each Map must contain a '__UID__' and '__NAME__' attribute.
+         This is required to build a ConnectorObject.
+*/
+
+log.info("#### Entering {0} Script for {1} #####", operation, objectClass)
 
 def sql = new Sql(connection)
 
-// todo use handler to result  connector objects
-
-return new SearchResult()   // update search result values if needed
-
-/*
 switch (objectClass) {
     case ObjectClass.ACCOUNT:
         handleAccount(sql)
         break
-    case BaseScript.ENTITLEMENT:
-        handleGroup(sql)
-        break
-    case BaseScript.ORGANIZATION:
-        handleOrganization(sql)
-        break
+//    case BaseScript.GROUP:
+//        handleGroup(sql)
+//        break
+//    case BaseScript.ORGANIZATION:
+//        handleOrganization(sql)
+//        break
     default:
         throw new ConnectorException("Unknown object class " + objectClass)
 }
-
-return new SearchResult()
 
 // =================================================================================
 
 void handleAccount(Sql sql) {
     Closure closure = { row ->
-        ICFObjectBuilder.co {
-            uid row.id as String
-            id row.login
+        log.info("#### Row from DB: {0}, with parameters {1} ####", row)
+        handler(ICFObjectBuilder.co {
+            uid row.accountid as String
+            id row.username
+            attribute '__UID__', row.accountid
             attribute '__ENABLE__', !row.disabled
-            attribute 'fullname', row.fullname
+            attribute '__NAME__', row.username
+            attribute 'username', row.username
             attribute 'firstname', row.firstname
             attribute 'lastname', row.lastname
-            attribute 'email', row.email
-            attribute 'organization', row.organization
-        }
+            attribute 'rijksregisternummer', row.rijksregisternummer
+        })
     }
 
     Map params = [:]
-    String where = buildWhereClause(filter, params, 'id', 'login')
+    String where = buildWhereClause(filter, params, 'accountid', 'username')
 
-    sql.eachRow(params, "SELECT * FROM Users " + where, closure);
+    sql.eachRow(params, "SELECT * FROM source_accounts " + where, closure);
 }
 
 
@@ -101,15 +138,15 @@ void handleOrganization(Sql sql) {
     sql.eachRow(params, "SELECT * FROM Organizations " + where, closure)
 }
 
-static String buildWhereClause(Filter filter, Map sqlParams, String uidColumn, String nameColumn) {
+String buildWhereClause(Filter filter, Map sqlParams, String uidColumn, String nameColumn) {
     if (filter == null) {
-        log.info("Returning empty where clause")
+        log.info("#### Returning empty where clause #####")
         return ""
     }
 
     Map query = filter.accept(MapFilterVisitor.INSTANCE, null)
 
-    log.info("Building where clause, query {0}, uidcolumn {1}, nameColumn {2}", query, uidColumn, nameColumn)
+    log.info("#### Building where clause, query {0}, uidcolumn: {1}, nameColumn: {2} ####", query, uidColumn, nameColumn)
 
     String columnName = uidColumn.replaceFirst("[\\w]+\\.", "")
 
@@ -141,14 +178,14 @@ static String buildWhereClause(Filter filter, Map sqlParams, String uidColumn, S
     def engine = new groovy.text.SimpleTemplateEngine()
 
     def whereTemplates = [
-            CONTAINS          : ' $left ${not ? "not " : ""}like $right',
-            ENDSWITH          : ' $left ${not ? "not " : ""}like $right',
-            STARTSWITH        : ' $left ${not ? "not " : ""}like $right',
-            EQUALS            : ' $left ${not ? "<>" : "="} $right',
-            GREATERTHAN       : ' $left ${not ? "<=" : ">"} $right',
-            GREATERTHANOREQUAL: ' $left ${not ? "<" : ">="} $right',
-            LESSTHAN          : ' $left ${not ? ">=" : "<"} $right',
-            LESSTHANOREQUAL   : ' $left ${not ? ">" : "<="} $right'
+            CONTAINS          : 'WHERE $left ${not ? "not " : ""}like $right',
+            ENDSWITH          : 'WHERE $left ${not ? "not " : ""}like $right',
+            STARTSWITH        : 'WHERE $left ${not ? "not " : ""}like $right',
+            EQUALS            : 'WHERE $left ${not ? "<>" : "="} $right',
+            GREATERTHAN       : 'WHERE $left ${not ? "<=" : ">"} $right',
+            GREATERTHANOREQUAL: 'WHERE $left ${not ? "<" : ">="} $right',
+            LESSTHAN          : 'WHERE $left ${not ? ">=" : "<"} $right',
+            LESSTHANOREQUAL   : 'WHERE $left ${not ? ">" : "<="} $right'
     ]
 
     def wt = whereTemplates.get(operation)
@@ -156,9 +193,8 @@ static String buildWhereClause(Filter filter, Map sqlParams, String uidColumn, S
     def template = engine.createTemplate(wt).make(binding)
     def where = template.toString()
 
-    log.info("Where clause: {0}, with parameters {1}", where, sqlParams)
+    log.info("#### Where clause: {0}, with parameters {1} ####", where, sqlParams)
 
     return where
 }
-*/
 

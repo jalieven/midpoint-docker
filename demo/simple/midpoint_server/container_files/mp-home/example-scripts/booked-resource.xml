@@ -1,0 +1,749 @@
+<resource xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3" xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3" xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3" xmlns:org="http://midpoint.evolveum.com/xml/ns/public/common/org-3" xmlns:q="http://prism.evolveum.com/xml/ns/public/query-3" xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3" xmlns:t="http://prism.evolveum.com/xml/ns/public/types-3" oid="12345678-9012-3456-7890-123456789012" version="1">
+    <name>Reservation system</name>
+    <description>Meeting rooms reservation system</description>
+    <operationalState>
+        <lastAvailabilityStatus>up</lastAvailabilityStatus>
+    </operationalState>
+    <connectorRef oid="97d430f1-d2b0-4487-b60b-4905dc76d2ca" relation="org:default" type="c:ConnectorType"/>
+    <connectorConfiguration xmlns:icfc="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/connector-schema-3">
+        <icfc:configurationProperties xmlns:gen230="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/bundle/org.forgerock.openicf.connectors.scriptedsql-connector/org.forgerock.openicf.connectors.scriptedsql.ScriptedSQLConnector">
+            <gen230:createScriptFileName>/opt/midpoint/scripts/booked/CreateScript.groovy</gen230:createScriptFileName>
+            <gen230:reloadScriptOnExecution>false</gen230:reloadScriptOnExecution>
+            <gen230:authenticateScriptFileName>/opt/midpoint/scripts/booked/AuthenticateScript.groovy</gen230:authenticateScriptFileName>
+            <gen230:deleteScriptFileName>/opt/midpoint/scripts/booked/DeleteScript.groovy</gen230:deleteScriptFileName>
+            <gen230:clearTextPasswordToScript>true</gen230:clearTextPasswordToScript>
+            <gen230:searchScriptFileName>/opt/midpoint/scripts/booked/SearchScript.groovy</gen230:searchScriptFileName>
+            <gen230:updateScriptFileName>/opt/midpoint/scripts/booked/UpdateScript.groovy</gen230:updateScriptFileName>
+            <gen230:scriptingLanguage>GROOVY</gen230:scriptingLanguage>
+            <gen230:schemaScriptFileName>/opt/midpoint/scripts/booked/SchemaScript.groovy</gen230:schemaScriptFileName>
+            <gen230:testScriptFileName>/opt/midpoint/scripts/booked/TestScript.groovy</gen230:testScriptFileName>
+            <gen230:syncScriptFileName>/opt/midpoint/scripts/booked/SyncScript.groovy</gen230:syncScriptFileName>
+            <gen230:host>xxx.xxx.xx</gen230:host>
+            <gen230:port>3306</gen230:port>
+            <gen230:user>root</gen230:user>
+            <gen230:password>
+                <t:encryptedData>
+                    <t:encryptionMethod>
+                        <t:algorithm>http://www.w3.org/2001/04/xmlenc#aes256-cbc</t:algorithm>
+                    </t:encryptionMethod>
+                    <t:keyInfo>
+                        <t:keyName>********************************</t:keyName>
+                    </t:keyInfo>
+                    <t:cipherData>
+                        <t:cipherValue>*****************************************</t:cipherValue>
+                    </t:cipherData>
+                </t:encryptedData>
+            </gen230:password>
+            <gen230:database>booked</gen230:database>
+            <gen230:jdbcDriver>org.gjt.mm.mysql.Driver</gen230:jdbcDriver>
+            <gen230:jdbcUrlTemplate>jdbc:mysql://xxx.xxx.xx:3306/booked?useUnicode=yes&amp;characterEncoding=utf8</gen230:jdbcUrlTemplate>
+            <gen230:enableEmptyString>true</gen230:enableEmptyString>
+            <gen230:rethrowAllSQLExceptions>true</gen230:rethrowAllSQLExceptions>
+            <gen230:nativeTimestamps>true</gen230:nativeTimestamps>
+            <gen230:allNative>false</gen230:allNative>
+        </icfc:configurationProperties>
+    </connectorConfiguration>
+    <schema>
+        <cachingMetadata>
+            <retrievalTimestamp>2018-06-28T19:29:04.582+02:00</retrievalTimestamp>
+            <serialNumber>c0e02db5ead29f12-1dbe9a560add56ef</serialNumber>
+        </cachingMetadata>
+        <definition>
+            <xsd:schema xmlns:a="http://prism.evolveum.com/xml/ns/public/annotation-3" xmlns:ra="http://midpoint.evolveum.com/xml/ns/public/resource/annotation-3" xmlns:tns="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3" xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">
+            <xsd:import namespace="http://prism.evolveum.com/xml/ns/public/annotation-3"/>
+            <xsd:import namespace="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3"/>
+            <xsd:import namespace="http://midpoint.evolveum.com/xml/ns/public/resource/annotation-3"/>
+            <xsd:complexType name="CustomGroupObjectClass">
+               <xsd:annotation>
+                  <xsd:appinfo>
+                     <ra:resourceObject/>
+                     <ra:identifier>icfs:uid</ra:identifier>
+                     <ra:secondaryIdentifier>icfs:name</ra:secondaryIdentifier>
+                     <ra:displayNameAttribute>icfs:name</ra:displayNameAttribute>
+                     <ra:namingAttribute>icfs:name</ra:namingAttribute>
+                     <ra:nativeObjectClass>Group</ra:nativeObjectClass>
+                  </xsd:appinfo>
+               </xsd:annotation>
+               <xsd:sequence>
+                  <xsd:element maxOccurs="unbounded" minOccurs="0" name="members" type="xsd:string">
+                     <xsd:annotation>
+                        <xsd:appinfo>
+                           <a:displayOrder>120</a:displayOrder>
+                           <ra:frameworkAttributeName>members</ra:frameworkAttributeName>
+                        </xsd:appinfo>
+                     </xsd:annotation>
+                  </xsd:element>
+                  <xsd:element ref="icfs:name">
+                     <xsd:annotation>
+                        <xsd:appinfo>
+                           <a:displayName>ConnId Name</a:displayName>
+                           <a:displayOrder>110</a:displayOrder>
+                           <ra:frameworkAttributeName>__NAME__</ra:frameworkAttributeName>
+                        </xsd:appinfo>
+                     </xsd:annotation>
+                  </xsd:element>
+                  <xsd:element minOccurs="0" ref="icfs:uid">
+                     <xsd:annotation>
+                        <xsd:appinfo>
+                           <a:displayName>ConnId UID</a:displayName>
+                           <a:displayOrder>100</a:displayOrder>
+                           <a:access>read</a:access>
+                        </xsd:appinfo>
+                     </xsd:annotation>
+                  </xsd:element>
+               </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="AccountObjectClass">
+               <xsd:annotation>
+                  <xsd:appinfo>
+                     <ra:resourceObject/>
+                     <ra:identifier>icfs:uid</ra:identifier>
+                     <ra:secondaryIdentifier>icfs:name</ra:secondaryIdentifier>
+                     <ra:displayNameAttribute>icfs:name</ra:displayNameAttribute>
+                     <ra:namingAttribute>icfs:name</ra:namingAttribute>
+                     <ra:nativeObjectClass>__ACCOUNT__</ra:nativeObjectClass>
+                     <ra:kind>account</ra:kind>
+                     <ra:default>true</ra:default>
+                  </xsd:appinfo>
+               </xsd:annotation>
+               <xsd:sequence>
+                  <xsd:element minOccurs="0" name="language" type="xsd:string">
+                     <xsd:annotation>
+                        <xsd:appinfo>
+                           <a:displayOrder>120</a:displayOrder>
+                           <ra:frameworkAttributeName>language</ra:frameworkAttributeName>
+                        </xsd:appinfo>
+                     </xsd:annotation>
+                  </xsd:element>
+                  <xsd:element maxOccurs="unbounded" minOccurs="0" name="resources" type="xsd:string">
+                     <xsd:annotation>
+                        <xsd:appinfo>
+                           <a:displayOrder>130</a:displayOrder>
+                           <ra:frameworkAttributeName>resources</ra:frameworkAttributeName>
+                        </xsd:appinfo>
+                     </xsd:annotation>
+                  </xsd:element>
+                  <xsd:element maxOccurs="unbounded" minOccurs="0" name="groups" type="xsd:string">
+                     <xsd:annotation>
+                        <xsd:appinfo>
+                           <a:displayOrder>140</a:displayOrder>
+                           <ra:frameworkAttributeName>groups</ra:frameworkAttributeName>
+                        </xsd:appinfo>
+                     </xsd:annotation>
+                  </xsd:element>
+                  <xsd:element minOccurs="0" name="lname" type="xsd:string">
+                     <xsd:annotation>
+                        <xsd:appinfo>
+                           <a:displayOrder>150</a:displayOrder>
+                           <ra:frameworkAttributeName>lname</ra:frameworkAttributeName>
+                        </xsd:appinfo>
+                     </xsd:annotation>
+                  </xsd:element>
+                  <xsd:element minOccurs="0" name="phone" type="xsd:string">
+                     <xsd:annotation>
+                        <xsd:appinfo>
+                           <a:displayOrder>160</a:displayOrder>
+                           <ra:frameworkAttributeName>phone</ra:frameworkAttributeName>
+                        </xsd:appinfo>
+                     </xsd:annotation>
+                  </xsd:element>
+                  <xsd:element minOccurs="0" name="email" type="xsd:string">
+                     <xsd:annotation>
+                        <xsd:appinfo>
+                           <a:displayOrder>170</a:displayOrder>
+                           <ra:frameworkAttributeName>email</ra:frameworkAttributeName>
+                        </xsd:appinfo>
+                     </xsd:annotation>
+                  </xsd:element>
+                  <xsd:element minOccurs="0" name="homepageid" type="xsd:int">
+                     <xsd:annotation>
+                        <xsd:appinfo>
+                           <a:displayOrder>180</a:displayOrder>
+                           <ra:frameworkAttributeName>homepageid</ra:frameworkAttributeName>
+                        </xsd:appinfo>
+                     </xsd:annotation>
+                  </xsd:element>
+                  <xsd:element minOccurs="0" name="fname" type="xsd:string">
+                     <xsd:annotation>
+                        <xsd:appinfo>
+                           <a:displayOrder>190</a:displayOrder>
+                           <ra:frameworkAttributeName>fname</ra:frameworkAttributeName>
+                        </xsd:appinfo>
+                     </xsd:annotation>
+                  </xsd:element>
+                  <xsd:element minOccurs="0" name="organization" type="xsd:string">
+                     <xsd:annotation>
+                        <xsd:appinfo>
+                           <a:displayOrder>200</a:displayOrder>
+                           <ra:frameworkAttributeName>organization</ra:frameworkAttributeName>
+                        </xsd:appinfo>
+                     </xsd:annotation>
+                  </xsd:element>
+                  <xsd:element minOccurs="0" name="position" type="xsd:string">
+                     <xsd:annotation>
+                        <xsd:appinfo>
+                           <a:displayOrder>210</a:displayOrder>
+                           <ra:frameworkAttributeName>position</ra:frameworkAttributeName>
+                        </xsd:appinfo>
+                     </xsd:annotation>
+                  </xsd:element>
+                  <xsd:element ref="icfs:name">
+                     <xsd:annotation>
+                        <xsd:appinfo>
+                           <a:displayName>ConnId Name</a:displayName>
+                           <a:displayOrder>110</a:displayOrder>
+                           <ra:frameworkAttributeName>__NAME__</ra:frameworkAttributeName>
+                        </xsd:appinfo>
+                     </xsd:annotation>
+                  </xsd:element>
+                  <xsd:element minOccurs="0" name="timezone" type="xsd:string">
+                     <xsd:annotation>
+                        <xsd:appinfo>
+                           <a:displayOrder>220</a:displayOrder>
+                           <ra:frameworkAttributeName>timezone</ra:frameworkAttributeName>
+                        </xsd:appinfo>
+                     </xsd:annotation>
+                  </xsd:element>
+                  <xsd:element minOccurs="0" ref="icfs:uid">
+                     <xsd:annotation>
+                        <xsd:appinfo>
+                           <a:displayName>ConnId UID</a:displayName>
+                           <a:displayOrder>100</a:displayOrder>
+                           <a:access>read</a:access>
+                        </xsd:appinfo>
+                     </xsd:annotation>
+                  </xsd:element>
+               </xsd:sequence>
+            </xsd:complexType>
+            <xsd:complexType name="CustomResourceObjectClass">
+               <xsd:annotation>
+                  <xsd:appinfo>
+                     <ra:resourceObject/>
+                     <ra:identifier>icfs:uid</ra:identifier>
+                     <ra:secondaryIdentifier>icfs:name</ra:secondaryIdentifier>
+                     <ra:displayNameAttribute>icfs:name</ra:displayNameAttribute>
+                     <ra:namingAttribute>icfs:name</ra:namingAttribute>
+                     <ra:nativeObjectClass>Resource</ra:nativeObjectClass>
+                  </xsd:appinfo>
+               </xsd:annotation>
+               <xsd:sequence>
+                  <xsd:element ref="icfs:name">
+                     <xsd:annotation>
+                        <xsd:appinfo>
+                           <a:displayName>ConnId Name</a:displayName>
+                           <a:displayOrder>110</a:displayOrder>
+                           <ra:frameworkAttributeName>__NAME__</ra:frameworkAttributeName>
+                        </xsd:appinfo>
+                     </xsd:annotation>
+                  </xsd:element>
+                  <xsd:element maxOccurs="unbounded" minOccurs="0" name="resourcemembers" type="xsd:string">
+                     <xsd:annotation>
+                        <xsd:appinfo>
+                           <a:displayOrder>120</a:displayOrder>
+                           <ra:frameworkAttributeName>resourcemembers</ra:frameworkAttributeName>
+                        </xsd:appinfo>
+                     </xsd:annotation>
+                  </xsd:element>
+                  <xsd:element minOccurs="0" ref="icfs:uid">
+                     <xsd:annotation>
+                        <xsd:appinfo>
+                           <a:displayName>ConnId UID</a:displayName>
+                           <a:displayOrder>100</a:displayOrder>
+                           <a:access>read</a:access>
+                        </xsd:appinfo>
+                     </xsd:annotation>
+                  </xsd:element>
+               </xsd:sequence>
+            </xsd:complexType>
+         </xsd:schema>
+        </definition>
+    </schema>
+    <schemaHandling>
+        <objectType id="2">
+            <kind>account</kind>
+            <intent>default</intent>
+            <displayName>konto</displayName>
+            <default>true</default>
+            <objectClass>ri:AccountObjectClass</objectClass>
+            <attribute id="3">
+                <c:ref>icfs:name</c:ref>
+                <tolerant>true</tolerant>
+                <exclusiveStrong>false</exclusiveStrong>
+                <outbound>
+                    <authoritative>true</authoritative>
+                    <exclusive>false</exclusive>
+                    <strength>normal</strength>
+                    <source>
+                        <c:path>name</c:path>
+                    </source>
+                </outbound>
+            </attribute>
+            <attribute id="4">
+                <c:ref>ri:email</c:ref>
+                <tolerant>true</tolerant>
+                <exclusiveStrong>false</exclusiveStrong>
+                <outbound>
+                    <authoritative>true</authoritative>
+                    <exclusive>false</exclusive>
+                    <strength>normal</strength>
+                    <source>
+                        <c:path>emailAddress</c:path>
+                    </source>
+                </outbound>
+            </attribute>
+            <attribute id="5">
+                <c:ref>ri:fname</c:ref>
+                <tolerant>true</tolerant>
+                <exclusiveStrong>false</exclusiveStrong>
+                <outbound>
+                    <authoritative>true</authoritative>
+                    <exclusive>false</exclusive>
+                    <strength>normal</strength>
+                    <source>
+                        <c:path>givenName</c:path>
+                    </source>
+                </outbound>
+            </attribute>
+            <attribute id="6">
+                <c:ref>ri:homepageid</c:ref>
+                <tolerant>true</tolerant>
+                <exclusiveStrong>false</exclusiveStrong>
+                <outbound>
+                    <authoritative>true</authoritative>
+                    <exclusive>false</exclusive>
+                    <strength>normal</strength>
+                    <expression>
+                        <value>2</value>
+                    </expression>
+                </outbound>
+            </attribute>
+            <attribute id="7">
+                <c:ref>ri:language</c:ref>
+                <tolerant>true</tolerant>
+                <exclusiveStrong>false</exclusiveStrong>
+                <outbound>
+                    <authoritative>true</authoritative>
+                    <exclusive>false</exclusive>
+                    <strength>normal</strength>
+                    <expression>
+                        <value>pl</value>
+                    </expression>
+                </outbound>
+            </attribute>
+            <attribute id="8">
+                <c:ref>ri:lname</c:ref>
+                <tolerant>true</tolerant>
+                <exclusiveStrong>false</exclusiveStrong>
+                <outbound>
+                    <authoritative>true</authoritative>
+                    <exclusive>false</exclusive>
+                    <strength>normal</strength>
+                    <source>
+                        <c:path>familyName</c:path>
+                    </source>
+                </outbound>
+            </attribute>
+            <attribute id="9">
+                <c:ref>ri:organization</c:ref>
+                <tolerant>true</tolerant>
+                <exclusiveStrong>false</exclusiveStrong>
+                <outbound>
+                    <authoritative>true</authoritative>
+                    <exclusive>false</exclusive>
+                    <strength>normal</strength>
+                    <source>
+                        <c:path>organization</c:path>
+                    </source>
+                </outbound>
+            </attribute>
+            <attribute id="10">
+                <c:ref>ri:phone</c:ref>
+                <tolerant>false</tolerant>
+                <exclusiveStrong>false</exclusiveStrong>
+                <outbound>
+                    <authoritative>true</authoritative>
+                    <exclusive>false</exclusive>
+                    <strength>strong</strength>
+                    <source>
+                        <c:path>telephoneNumber</c:path>
+                    </source>
+                    <expression>
+                        <asIs xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="c:AsIsExpressionEvaluatorType"/>
+                    </expression>
+                </outbound>
+            </attribute>
+            <attribute id="11">
+                <c:ref>ri:position</c:ref>
+                <tolerant>true</tolerant>
+                <exclusiveStrong>false</exclusiveStrong>
+                <outbound>
+                    <authoritative>true</authoritative>
+                    <exclusive>false</exclusive>
+                    <strength>normal</strength>
+                    <source>
+                        <c:path>title</c:path>
+                    </source>
+                </outbound>
+            </attribute>
+            <attribute id="13">
+                <c:ref>ri:timezone</c:ref>
+                <tolerant>true</tolerant>
+                <exclusiveStrong>false</exclusiveStrong>
+                <outbound>
+                    <authoritative>true</authoritative>
+                    <exclusive>false</exclusive>
+                    <strength>normal</strength>
+                    <expression>
+                        <value>Europe/Warsaw</value>
+                    </expression>
+                </outbound>
+            </attribute>
+            <association id="46">
+                <c:ref>ri:Rgroups</c:ref>
+                <displayName>User groups</displayName>
+                <tolerant>false</tolerant>
+                <exclusiveStrong>false</exclusiveStrong>
+                <kind>entitlement</kind>
+                <intent>grupy</intent>
+                <direction>subjectToObject</direction>
+                <associationAttribute>ri:groups</associationAttribute>
+                <valueAttribute>icfs:name</valueAttribute>
+                <explicitReferentialIntegrity>false</explicitReferentialIntegrity>
+            </association>
+            <association id="47">
+                <c:ref>ri:Rresources</c:ref>
+                <displayName>Resources</displayName>
+                <tolerant>false</tolerant>
+                <exclusiveStrong>false</exclusiveStrong>
+                <kind>entitlement</kind>
+                <intent>resources</intent>
+                <direction>subjectToObject</direction>
+                <associationAttribute>ri:resources</associationAttribute>
+                <valueAttribute>icfs:name</valueAttribute>
+                <explicitReferentialIntegrity>false</explicitReferentialIntegrity>
+            </association>
+            <activation>
+                <existence>
+                    <outbound id="24">
+                        <authoritative>true</authoritative>
+                        <exclusive>false</exclusive>
+                        <strength>normal</strength>
+                        <source>
+                            <c:path>activation/administrativeStatus</c:path>
+                        </source>
+                    </outbound>
+                </existence>
+                <administrativeStatus>
+                    <outbound id="25">
+                        <authoritative>true</authoritative>
+                        <exclusive>false</exclusive>
+                        <strength>normal</strength>
+                    </outbound>
+                </administrativeStatus>
+            </activation>
+            <credentials>
+                <password xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="c:ResourcePasswordDefinitionType">
+                    <outbound>
+                        <authoritative>false</authoritative>
+                        <exclusive>false</exclusive>
+                        <strength>normal</strength>
+                        <exceptChannel>http://midpoint.evolveum.com/xml/ns/public/model/channels-3#webService</exceptChannel>
+                        <exceptChannel>http://midpoint.evolveum.com/xml/ns/public/provisioning/channels-3#liveSync</exceptChannel>
+                        <exceptChannel>http://midpoint.evolveum.com/xml/ns/public/provisioning/channels-3#reconciliation</exceptChannel>
+                        <exceptChannel>http://midpoint.evolveum.com/xml/ns/public/provisioning/channels-3#recompute</exceptChannel>
+                    </outbound>
+                    <passwordPolicyRef oid="00000000-0000-0000-0000-000000000003" type="c:ValuePolicyType"/>
+                </password>
+            </credentials>
+        </objectType>
+        <objectType id="29">
+            <kind>entitlement</kind>
+            <intent>grupy</intent>
+            <displayName>Grupy</displayName>
+            <default>false</default>
+            <objectClass>ri:CustomGroupObjectClass</objectClass>
+            <attribute id="50">
+                <c:ref>icfs:name</c:ref>
+                <tolerant>true</tolerant>
+                <exclusiveStrong>false</exclusiveStrong>
+                <inbound id="51">
+                    <authoritative>true</authoritative>
+                    <exclusive>false</exclusive>
+                    <strength>normal</strength>
+                    <expression>
+                        <script xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="c:ScriptExpressionEvaluatorType">
+                            <code>
+        return "Reservation system, user group : " + input
+    </code>
+                        </script>
+                    </expression>
+                    <target>
+                        <c:path>name</c:path>
+                    </target>
+                </inbound>
+            </attribute>
+        </objectType>
+        <objectType id="40">
+            <kind>entitlement</kind>
+            <intent>resources</intent>
+            <displayName>Resources</displayName>
+            <default>true</default>
+            <objectClass>ri:CustomResourceObjectClass</objectClass>
+            <attribute id="52">
+                <c:ref>icfs:name</c:ref>
+                <tolerant>true</tolerant>
+                <exclusiveStrong>false</exclusiveStrong>
+                <inbound id="53">
+                    <authoritative>true</authoritative>
+                    <exclusive>false</exclusive>
+                    <strength>normal</strength>
+                    <expression>
+                        <script xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="c:ScriptExpressionEvaluatorType">
+                            <code>
+        return "Reservation system, resource : " + input
+    </code>
+                        </script>
+                    </expression>
+                    <target>
+                        <c:path>name</c:path>
+                    </target>
+                </inbound>
+            </attribute>
+        </objectType>
+    </schemaHandling>
+    <capabilities>
+        <cachingMetadata>
+            <retrievalTimestamp>2018-06-27T16:57:00.294+02:00</retrievalTimestamp>
+            <serialNumber>4a7c1bb99ff58f99-1d33f99d62e8b714</serialNumber>
+        </cachingMetadata>
+        <native xmlns:cap="http://midpoint.evolveum.com/xml/ns/public/resource/capabilities-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="c:CapabilityCollectionType">
+            <cap:schema/>
+            <cap:liveSync/>
+            <cap:testConnection/>
+            <cap:create/>
+            <cap:read/>
+            <cap:update/>
+            <cap:delete/>
+            <cap:script>
+                <cap:host>
+                    <cap:type>connector</cap:type>
+                </cap:host>
+            </cap:script>
+            <cap:addRemoveAttributeValues/>
+            <cap:activation>
+                <cap:status/>
+                <cap:lockoutStatus/>
+            </cap:activation>
+            <cap:credentials>
+                <cap:password>
+                    <cap:returnedByDefault>false</cap:returnedByDefault>
+                </cap:password>
+            </cap:credentials>
+        </native>
+        <configured xmlns:cap="http://midpoint.evolveum.com/xml/ns/public/resource/capabilities-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="c:CapabilityCollectionType">
+            <cap:liveSync>
+                <cap:enabled>true</cap:enabled>
+            </cap:liveSync>
+            <cap:testConnection>
+                <cap:enabled>true</cap:enabled>
+            </cap:testConnection>
+            <cap:create>
+                <cap:enabled>true</cap:enabled>
+            </cap:create>
+            <cap:read>
+                <cap:enabled>true</cap:enabled>
+            </cap:read>
+            <cap:update>
+                <cap:enabled>true</cap:enabled>
+            </cap:update>
+            <cap:delete>
+                <cap:enabled>true</cap:enabled>
+            </cap:delete>
+            <cap:script>
+                <cap:enabled>true</cap:enabled>
+                <cap:host>
+                    <cap:type>connector</cap:type>
+                </cap:host>
+            </cap:script>
+            <cap:addRemoveAttributeValues>
+                <cap:enabled>true</cap:enabled>
+            </cap:addRemoveAttributeValues>
+            <cap:activation>
+                <cap:enabled>true</cap:enabled>
+                <cap:status>
+                    <cap:enabled>true</cap:enabled>
+                    <cap:returnedByDefault>true</cap:returnedByDefault>
+                    <cap:ignoreAttribute>true</cap:ignoreAttribute>
+                </cap:status>
+                <cap:validFrom>
+                    <cap:enabled>false</cap:enabled>
+                    <cap:returnedByDefault>false</cap:returnedByDefault>
+                </cap:validFrom>
+                <cap:validTo>
+                    <cap:enabled>false</cap:enabled>
+                    <cap:returnedByDefault>false</cap:returnedByDefault>
+                </cap:validTo>
+                <cap:lockoutStatus>
+                    <cap:enabled>true</cap:enabled>
+                    <cap:returnedByDefault>true</cap:returnedByDefault>
+                    <cap:ignoreAttribute>true</cap:ignoreAttribute>
+                </cap:lockoutStatus>
+            </cap:activation>
+            <cap:credentials>
+                <cap:enabled>true</cap:enabled>
+                <cap:password>
+                    <cap:enabled>true</cap:enabled>
+                    <cap:returnedByDefault>false</cap:returnedByDefault>
+                </cap:password>
+            </cap:credentials>
+        </configured>
+    </capabilities>
+    <synchronization>
+        <objectSynchronization>
+            <name>synchro</name>
+            <objectClass>AccountObjectClass</objectClass>
+            <intent>default</intent>
+            <focusType>c:UserType</focusType>
+            <enabled>true</enabled>
+            <correlation>
+                <q:equal>
+                    <q:path>c:name</q:path>
+                    <expression xmlns="">
+                        <path>declare namespace icfs='http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3'; $account/attributes/icfs:name</path>
+                    </expression>
+                </q:equal>
+            </correlation>
+            <reconcile>false</reconcile>
+            <reaction>
+                <situation>unlinked</situation>
+                <action>
+                    <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#link</handlerUri>
+                </action>
+            </reaction>
+            <reaction>
+                <situation>linked</situation>
+                <synchronize>true</synchronize>
+            </reaction>
+            <reaction>
+                <situation>deleted</situation>
+                <action>
+                    <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#unlink</handlerUri>
+                </action>
+            </reaction>
+            <reaction>
+                <situation>unmatched</situation>
+                <reconcile>false</reconcile>
+                <action>
+                    <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#deleteShadow</handlerUri>
+                </action>
+            </reaction>
+        </objectSynchronization>
+        <objectSynchronization>
+            <name>Resources</name>
+            <objectClass>CustomResourceObjectClass</objectClass>
+            <kind>entitlement</kind>
+            <intent>resources</intent>
+            <focusType>c:RoleType</focusType>
+            <enabled>true</enabled>
+            <correlation>
+                <q:equal>
+                    <q:matching>polyStringNorm</q:matching>
+                    <q:path>c:name</q:path>
+                    <expression xmlns="">
+                        <variable>
+                            <name>nazwa</name>
+                            <path>$shadow/attributes/icfs:name</path>
+                        </variable>
+                        <script>
+                            <language>http://midpoint.evolveum.com/xml/ns/public/expression/language#Groovy</language>
+                            <code>
+            return "Reservation system, resource : " + nazwa
+        </code>
+                        </script>
+                    </expression>
+                </q:equal>
+            </correlation>
+            <objectTemplateRef oid="f8dc955f-f299-4e03-96cf-b049dd995274" relation="org:default" type="c:ObjectTemplateType">
+                <targetName>Import zasobów - rezerwacja</targetName>
+            </objectTemplateRef>
+            <reconcile>false</reconcile>
+            <reaction>
+                <situation>deleted</situation>
+                <action>
+                    <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#deleteFocus</handlerUri>
+                </action>
+            </reaction>
+            <reaction>
+                <situation>unmatched</situation>
+                <action>
+                    <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#addFocus</handlerUri>
+                </action>
+            </reaction>
+            <reaction>
+                <situation>unlinked</situation>
+                <reconcile>false</reconcile>
+                <action>
+                    <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#link</handlerUri>
+                </action>
+            </reaction>
+            <reaction>
+                <situation>linked</situation>
+                <synchronize>true</synchronize>
+                <reconcile>false</reconcile>
+            </reaction>
+        </objectSynchronization>
+        <objectSynchronization>
+            <name>Grupy</name>
+            <objectClass>CustomGroupObjectClass</objectClass>
+            <kind>entitlement</kind>
+            <intent>grupy</intent>
+            <focusType>c:RoleType</focusType>
+            <enabled>true</enabled>
+            <correlation>
+                <q:equal>
+                    <q:matching>polyStringNorm</q:matching>
+                    <q:path>c:name</q:path>
+                    <expression xmlns="">
+                        <variable>
+                            <name>nazwa</name>
+                            <path>$account/attributes/icfs:name</path>
+                        </variable>
+                        <script>
+                            <language>http://midpoint.evolveum.com/xml/ns/public/expression/language#Groovy</language>
+                            <code>
+            return "Reservation system, user group : " + nazwa
+        </code>
+                        </script>
+                    </expression>
+                </q:equal>
+            </correlation>
+            <objectTemplateRef oid="5b9dbcb1-a4a5-4d70-83a5-4dccad15b3b9" relation="org:default" type="c:ObjectTemplateType">
+                <targetName>Import grup - rezerwacja</targetName>
+            </objectTemplateRef>
+            <reconcile>false</reconcile>
+            <reaction>
+                <situation>deleted</situation>
+                <action>
+                    <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#deleteFocus</handlerUri>
+                </action>
+            </reaction>
+            <reaction>
+                <situation>linked</situation>
+                <synchronize>true</synchronize>
+            </reaction>
+            <reaction>
+                <situation>unlinked</situation>
+                <action>
+                    <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#link</handlerUri>
+                </action>
+            </reaction>
+            <reaction>
+                <situation>unmatched</situation>
+                <reconcile>false</reconcile>
+                <action>
+                    <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#addFocus</handlerUri>
+                </action>
+            </reaction>
+        </objectSynchronization>
+    </synchronization>
+</resource>

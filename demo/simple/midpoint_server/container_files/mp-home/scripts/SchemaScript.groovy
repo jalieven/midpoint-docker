@@ -22,7 +22,6 @@ builder.schema({
         attributes {
             firstname()
             lastname()
-            username()
             rijksregisternummer()
             OperationalAttributeInfos.ENABLE
             OperationalAttributeInfos.LOCK_OUT

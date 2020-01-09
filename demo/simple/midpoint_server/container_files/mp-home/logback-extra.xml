@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <logger name="org.identityconnectors" level="TRACE" />
-    <logger name="TestScript" level="TRACE" />
-    <logger name="SearchScript" level="TRACE" />
+    <logger name="com.evolveum.midpoint.common.LoggingConfigurationManager" level="TRACE" />
 </configuration>
