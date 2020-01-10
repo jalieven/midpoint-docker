@@ -302,26 +302,91 @@
                 <!--
                     FIXME: But it also enters the UpdateScript with:
                         #### Entering Update REMOVE_ATTRIBUTE_VALUES Script for ObjectClass: __ACCOUNT__ and attributes [Attribute: {Name=entitlements, Value=[20000-Burger-01, 20001-Milieumedewerker-01]}] ####
+                -->
 
 
                 <association>
                     <c:ref>ri:accEntitlements</c:ref>
                     <displayName>Entitlements</displayName>
-                    <tolerant>false</tolerant>
-                    <exclusiveStrong>false</exclusiveStrong>
                     <kind>entitlement</kind>
                     <intent>privileges</intent>
                     <direction>subjectToObject</direction>
                     <associationAttribute>ri:entitlements</associationAttribute>
                     <valueAttribute>icfs:name</valueAttribute>
-                    <explicitReferentialIntegrity>false</explicitReferentialIntegrity>   <- iterate over booleans to see behaviour change
+                    <!--
+                        <tolerant>false</tolerant>
+                        <exclusiveStrong>false</exclusiveStrong>
+                        <explicitReferentialIntegrity>false</explicitReferentialIntegrity>
+                    -->
+
+
+                    <!--<inbound>
+                        <strength>strong</strength>
+                        <expression>
+                            <assignmentTargetSearch>
+                                <targetType>RoleType</targetType>
+                                <filter>
+                                    <q:equal>
+                                        <q:path>name</q:path>
+                                        <expression>
+                                            <script>
+                                                <code>
+                                                    //log.info('entitlement = {}', entitlement?.asPrismObject()?.debugDump())
+                                                    return basic.getAttributeValue(entitlement, 'cn')
+                                                </code>
+                                            </script>
+                                        </expression>
+                                        <expression>
+                                            <path>$shadow/attributes/sAMAccountName</path>
+                                        </expression>
+                                    </q:equal>
+                                </filter>
+                                &lt;!&ndash; This is to ensure that the appropriate role is created when encountered by this mapping.
+                                     Normally, such roles whould be created by some kind of synchronization (either live sync
+                                     or reconciliation) on LDAP group objects, but it is possible that this mapping is evaluated
+                                     at a moment when group sync was not yet run for a newly-created group. &ndash;&gt;
+                                <createOnDemand>true</createOnDemand>
+                                <populateObject>
+                                    <populateItem>
+                                        <expression>
+                                            <script>
+                                                <code>
+                                                    basic.getAttributeValue(entitlement, 'cn')
+                                                </code>
+                                            </script>
+                                        </expression>
+                                        <target>
+                                            <path>name</path>
+                                        </target>
+                                    </populateItem>
+                                </populateObject>
+                                &lt;!&ndash; This marks assignments created by this mapping &ndash;&gt;
+                                <assignmentProperties>
+                                    <subtype>db-assignment</subtype>
+                                </assignmentProperties>
+                            </assignmentTargetSearch>
+                        </expression>
+                        <target>
+                            <path>assignment</path>
+                            &lt;!&ndash; This is to ensure that only assignments created by this mappings will be removed by it. &ndash;&gt;
+                            <set>
+                                <condition>
+                                    <script>
+                                        <code>
+                                            assignment?.subtype.contains('ldap-group')
+                                        </code>
+                                    </script>
+                                </condition>
+                            </set>
+                        </target>
+                    </inbound>
+                    -->
                 </association>
-                -->
 
                 <activation>
                     <administrativeStatus>
                         <inbound>
-                            <strength>weak</strength>
+                            <strength>strong</strength>
                         </inbound>
                     </administrativeStatus>
                 </activation>
@@ -371,6 +436,13 @@
                         </target>
                     </inbound>
                 </attribute>
+                <activation>
+                    <administrativeStatus>
+                        <inbound>
+                            <strength>strong</strength>
+                        </inbound>
+                    </administrativeStatus>
+                </activation>
             </objectType>
 
         </schemaHandling>
@@ -501,7 +573,7 @@
                         </expression>
                     </q:equal>
                 </correlation>
-                <!-- FIXME Do we really need this?
+                <!-- FIXME When we want to fan-out roles according to the privileges we do it with assignments...
                 <objectTemplateRef oid="5b9dbcb1-a4a5-4d70-83a5-4dccad15b3b9" relation="org:default" type="c:ObjectTemplateType">
                     <targetName>Entitlement Object Template</targetName>
                 </objectTemplateRef>
@@ -551,10 +623,11 @@
         <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/synchronization/task/import/handler-3</handlerUri>
         <objectRef oid="dafe0482-faef-47b7-ae08-66b150929bb7" type="c:ResourceType">
         </objectRef>
-        <recurrence>single</recurrence>
+        <recurrence>recurring</recurrence>
         <binding>loose</binding>
         <schedule>
-            <misfireAction>executeImmediately</misfireAction>
+            <interval>5</interval>
+            <misfireAction>reschedule</misfireAction>
         </schedule>
         <threadStopAction>restart</threadStopAction>
     </task>
@@ -571,10 +644,11 @@
         <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/synchronization/task/import/handler-3</handlerUri>
         <objectRef oid="dafe0482-faef-47b7-ae08-66b150929bb7" type="c:ResourceType">
         </objectRef>
-        <recurrence>single</recurrence>
-        <binding>loose</binding>
+        <recurrence>recurring</recurrence>
+        <binding>tight</binding>
         <schedule>
-            <misfireAction>executeImmediately</misfireAction>
+            <interval>5</interval>
+            <misfireAction>reschedule</misfireAction>
         </schedule>
         <threadStopAction>restart</threadStopAction>
     </task>

@@ -6,7 +6,7 @@
       xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3"
       xmlns:t="http://prism.evolveum.com/xml/ns/public/types-3"
       oid="373218e8-334d-47cd-86e5-156a7b38a69e" version="1">
-    <name>Privileges WebIDM Role</name>
+    <name>Entitlements WebIDM Role</name>
     <inducement id="1">
         <construction>
             <resourceRef oid="d0811790-6420-11e4-86b2-3c9755567874" relation="org:default" type="c:ResourceType">
