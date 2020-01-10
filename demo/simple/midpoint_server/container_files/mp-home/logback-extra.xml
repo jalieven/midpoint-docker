@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+    This file only really works at startup. These loggers really get disabled after a while
+    and midPoint configures the loggers according to what is inside its repository.
+    See com.evolveum.midpoint.common.LoggingConfigurationManager to see if we can
+    break inside this lifecycle. There existed a way in the past to circumvent this
+    mechanisme (see https://wiki.evolveum.com/display/midPoint/Initial+Logging+Setup+HOWTO)
+    but this configuration was removed in the past. So really if you want logging
+    in the ScriptedSQL Connector's Groovy scripts you have to configure it from the
+    admin tool:
+        System (left menu) > Logging > Loggers (section) > + > package (form field) "SearchScript" > Save (button)
+-->
 <configuration>
     <logger name="com.evolveum.midpoint.common.LoggingConfigurationManager" level="TRACE" />
     <logger name="com.evolveum.midpoint.model.impl.util" level="TRACE" />
+    <logger name="TestScript" level="TRACE" />
+    <logger name="SearchScript" level="TRACE" />
 </configuration>

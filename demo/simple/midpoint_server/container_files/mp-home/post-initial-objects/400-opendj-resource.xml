@@ -307,10 +307,6 @@
 
     </schemaHandling>
     <capabilities>
-        <cachingMetadata>
-            <retrievalTimestamp>2019-03-07T21:46:39.904Z</retrievalTimestamp>
-            <serialNumber>d5d2b0113448065b-fd82f7ab9a00b7ae</serialNumber>
-        </cachingMetadata>
         <native xmlns:cap="http://midpoint.evolveum.com/xml/ns/public/resource/capabilities-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="c:CapabilityCollectionType">
             <cap:schema/>
             <cap:liveSync/>

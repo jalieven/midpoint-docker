@@ -363,6 +363,14 @@
                         </target>
                     </inbound>
                 </attribute>
+                <attribute>
+                    <ref>ri:accountId</ref>
+                    <inbound>
+                        <target>
+                            <path>$focus/extension/accountId</path>
+                        </target>
+                    </inbound>
+                </attribute>
             </objectType>
 
         </schemaHandling>
