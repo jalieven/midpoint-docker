@@ -12,17 +12,6 @@
             </xsd:appinfo>
         </xsd:annotation>
         <xsd:sequence>
-            <!-- FIXME: I really do not like that accountIds is stored in user since this goes against midPoints philosophy -->
-            <xsd:element name="accountIds" type="xsd:string" minOccurs="0" maxOccurs="unbounded">
-                <xsd:annotation>
-                    <xsd:appinfo>
-                        <a:indexed>true</a:indexed>
-                        <a:displayName>Account IDs</a:displayName>
-                        <a:displayOrder>105</a:displayOrder>
-                        <a:help>Beschrijving van Account ID van de Account</a:help>
-                    </xsd:appinfo>
-                </xsd:annotation>
-            </xsd:element>
             <xsd:element name="rijksregisternummer" type="xsd:string" minOccurs="1" maxOccurs="1">
                 <xsd:annotation>
                     <xsd:appinfo>

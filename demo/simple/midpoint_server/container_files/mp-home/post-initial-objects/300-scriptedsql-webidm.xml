@@ -29,13 +29,18 @@
         xmlns:mext="http://midpoint.evolveum.com/xml/ns/public/model/extension-3"
         xmlns:didmu="http://didm.be/xml/ns/user">
 
+    <!-- A Resource describes a Store with Identity data that is imported to midPoint or exported to the Resource -->
     <resource oid="dafe0482-faef-47b7-ae08-66b150929bb7">
 
         <name>Scripted SQL</name>
 
         <description>Scripted SQL resource that is using single identifier (accountId) for accounts</description>
 
-        <!-- Reference to the ICF DatabaseTable connector. OID is "virtual" for now. -->
+        <!--
+            Reference to the ICF connector Type. Here we use the DIY SQL Connector so that we can customize
+            the inbound and outbound schema. The standard DatabaseTableConnector only supports Accounts.
+            Since we have a need to import Entitlements as well the DatabaseTableConnector is insufficient.
+        -->
         <connectorRef type="ConnectorType">
             <filter>
                 <q:equal>
@@ -45,8 +50,10 @@
             </filter>
         </connectorRef>
 
-        <!-- Configuration section contains configuration of the connector,
-                 such as hostnames and passwords -->
+        <!--
+            Configuration section contains configuration of the connector, such as hostname, passwords
+            and the references to the custom Groovy scripts for importing/exporting ObjectClasses.
+        -->
         <c:connectorConfiguration>
 
             <!-- Configuration specific for the ScriptedSQL connector -->
@@ -71,6 +78,16 @@
 
         </c:connectorConfiguration>
 
+        <!--
+            This is the schema of all objects that this Resource provides. The attributes defined
+            in this schema will be mapped to midPoint objects in the schemaHandling-section of this file.
+            In this case we have Accounts and Entitlements that are associated with each other.
+            It also contains annotations on how the types/attributes are related to the
+            types/attributes defined in the Resource.
+            CAUTION: This schema is different from the extension schema located in the
+            $MIDPOINT_HOME/schema folder. The extension schema extends midPoint objects
+            in order to provide importing custom data and customizes UI elements (form fields and tooltips).
+         -->
         <schema>
             <definition>
                 <xsd:schema xmlns:a="http://prism.evolveum.com/xml/ns/public/annotation-3"
@@ -82,6 +99,12 @@
                     <xsd:import namespace="http://prism.evolveum.com/xml/ns/public/annotation-3"/>
                     <xsd:import namespace="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3"/>
                     <xsd:import namespace="http://midpoint.evolveum.com/xml/ns/public/resource/annotation-3"/>
+
+                    <!--
+                        ###############################
+                            ACCOUNT OBJECT CLASS
+                        ###############################
+                    -->
                     <xsd:complexType name="AccountObjectClass">
                         <xsd:annotation>
                             <xsd:appinfo>
@@ -156,6 +179,15 @@
                             </xsd:element>
                         </xsd:sequence>
                     </xsd:complexType>
+                    <!--
+                        #################################
+                            ENTITLEMENT OBJECT CLASS
+                        #################################
+                    -->
+                    <!--
+                        🚨🚨🚨🚨 CAUTION: custom Object classes should always start with the prefix 'Custom' and
+                        🚨🚨🚨🚨 suffix 'ObjectClass' see com.evolveum.midpoint.provisioning.ucf.impl.connid.ConnIdNameMapper
+                    -->
                     <xsd:complexType name="CustomEntitlementObjectClass">
                         <xsd:annotation>
                             <xsd:appinfo>
@@ -208,8 +240,23 @@
             </definition>
         </schema>
 
+        <!--
+            This part of the resource configuration defines which attributes of the different objects are mapped
+            to the midPoint schema. Here are inbound and/or outbound elements defined per attribute.
+            An inbound mapping is a mapping that transforms data from a projection (e.g. an account) on the resource side
+            to a focal object (e.g. a user) on the midPoint side.
+            An outbound mapping define how the data is synchronized from the focal object (user) to accounts or,
+            in other words, when the data flows out of midPoint.
+            The ref-part of the attribute definition points to an attribute defined in the <schema>-part of this file.
+            The target-part points to a midPoint focal object attribute.
+        -->
         <schemaHandling>
 
+            <!--
+                ###############################
+                    ACCOUNT OBJECT CLASS
+                ###############################
+            -->
             <objectType>
                 <displayName>Default Account</displayName>
                 <kind>account</kind>
@@ -267,7 +314,7 @@
                     <direction>subjectToObject</direction>
                     <associationAttribute>ri:entitlements</associationAttribute>
                     <valueAttribute>icfs:name</valueAttribute>
-                    <explicitReferentialIntegrity>false</explicitReferentialIntegrity>   <- iterate to see behaviour change
+                    <explicitReferentialIntegrity>false</explicitReferentialIntegrity>   <- iterate over booleans to see behaviour change
                 </association>
                 -->
 
@@ -294,7 +341,7 @@
 
             <!--
             #################################
-                OBJECT CLASS ENTITLEMENT
+                ENTITLEMENT OBJECT CLASS
             #################################
             -->
             <objectType>
@@ -319,6 +366,7 @@
             </objectType>
 
         </schemaHandling>
+
         <capabilities>
             <configured>
                 <cap:activation>
@@ -330,7 +378,42 @@
                 </cap:activation>
             </configured>
         </capabilities>
+
+        <!--
+            This section defines what midPoint should do if a change event happens for the different
+            objects. In short this is the sync policy configuration.
+                - name and description: used for debugging purposes
+                - objectClass: defines a resource object class for which this definition applies.
+                    Only objects of this object class will be processed by this definition.
+                - kind and intent: defines what kind and intent will be assigned to the object
+                    if it already does not have one. This is also used to determine the correct object
+                    synchronization policy, e.g. if more than one policy for a specific object class is used.
+                - focusType: defines a focal type that corresponds to this resource object.
+                    It is used together with correlation and confirmation expressions to determine
+                    the situation and also influences the following reaction.
+                - enabled: flag specifies whether to use this policy or not.
+                    It can be used to temporarily turn off a specific part of a configuration.
+                - condition: is an expression which has to evaluate to true for the policy to be used.
+                    It can be used for a very fine-grain selection of applicable policies.
+                - correlation and confirmation expressions: are used to locate appropriate focal object
+                    and to determine object situation (see Correlation and Confirmation Expressions).
+                - objectTemplateRef: is a reference to a specific object template to be used in this case
+                    (e.g. when new user is created as a reaction to an event). This is a hook into the whole
+                    assignment/inducement configuration of an object.
+                    see https://wiki.evolveum.com/display/midPoint/Assignment+vs+Inducement
+                - reconcile flag: indicates whether an explicit reconciliation is requested as a reaction to this event.
+                - opportunistic flag: indicates whether midPoint should try to link and synchronize objects
+                    whenever possible (e.g. even during operations on other objects, see Consistency mechanism).
+                    This is on by default.
+                - reaction sections: defines how midPoint should react to individual synchronization situations.
+                    see https://wiki.evolveum.com/display/midPoint/Synchronization+Situations
+        -->
         <synchronization>
+            <!--
+                ###############################
+                    ACCOUNT OBJECT CLASS
+                ###############################
+            -->
             <objectSynchronization>
                 <objectClass>ri:AccountObjectClass</objectClass>
                 <kind>account</kind>
@@ -383,6 +466,11 @@
                 </reaction>
             </objectSynchronization>
 
+            <!--
+                #################################
+                    ENTITLEMENT OBJECT CLASS
+                #################################
+            -->
             <objectSynchronization>
                 <objectClass>ri:CustomEntitlementObjectClass</objectClass>
                 <kind>entitlement</kind>
@@ -407,7 +495,7 @@
                 </correlation>
                 <!-- FIXME Do we really need this?
                 <objectTemplateRef oid="5b9dbcb1-a4a5-4d70-83a5-4dccad15b3b9" relation="org:default" type="c:ObjectTemplateType">
-                    <targetName>Import grup - rezerwacja</targetName>
+                    <targetName>Entitlement Object Template</targetName>
                 </objectTemplateRef>
                 -->
                 <reconcile>false</reconcile>
@@ -438,6 +526,11 @@
         </synchronization>
     </resource>
 
+    <!--
+        Task definitions are a way to trigger a synchronization (immediately of scheduled) with a resource.
+        It typically points to a resource (objectRef) and selects an ObjectClass (extension) to sync to
+        together with technical configuration on when it should fire.
+    -->
     <task oid="ef99c20d-215d-4c76-91ba-24380f342c59">
         <name>Initial accounts import from resource</name>
         <extension xsi:type="c:ExtensionType">

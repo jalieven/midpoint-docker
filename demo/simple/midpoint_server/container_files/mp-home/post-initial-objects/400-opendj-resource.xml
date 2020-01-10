@@ -77,7 +77,6 @@
                          <xsd:element maxOccurs="unbounded" minOccurs="0" name="givenName" type="xsd:string" />
                          <xsd:element maxOccurs="unbounded" minOccurs="0" name="uid" type="xsd:string" />
                          <xsd:element maxOccurs="unbounded" minOccurs="0" name="rijksregisternummer" type="xsd:string" />
-                         <xsd:element maxOccurs="unbounded" minOccurs="0" name="accountIds" type="xsd:string" />
                      </xsd:sequence>
                  </xsd:complexType>
 
@@ -206,6 +205,7 @@
                     </source>
                 </outbound>
             </attribute>
+            <!--
             <attribute id="9">
                 <c:ref>ri:accountIds</c:ref>
                 <displayName>Account IDs</displayName>
@@ -215,7 +215,7 @@
                     </source>
                 </outbound>
             </attribute>
-            <!--
+
             <association>
                 <ref>ri:accountIds</ref>
                 <displayName>LDAP Group Membership</displayName>
@@ -225,7 +225,7 @@
                 <associationAttribute>ri:uniqueMember</associationAttribute>
                 <valueAttribute>ri:dn</valueAttribute>
             </association>
-            -->
+
 
             <association>
                 <ref>ri:accountIds</ref>
@@ -235,6 +235,7 @@
                 <associationAttribute>ri:accountId</associationAttribute>
                 <valueAttribute>icfs:name</valueAttribute>
             </association>
+            -->
             <activation>
                 <administrativeStatus>
                     <outbound id="8"/>
