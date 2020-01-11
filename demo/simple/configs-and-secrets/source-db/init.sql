@@ -35,6 +35,7 @@ INSERT INTO public.source_accounts(
 	accountId, username, firstname, lastname, rijksregisternummer, disabled)
 	VALUES ('ee6a51b5-7ef6-40eb-ac1b-54172a3ed520', 'tvgulck', 'Tom', 'Van Gulck', '78072240377', false);
 
+-- Enable this when testing multiple accounts in a resource
 -- INSERT INTO public.source_accounts(
 -- 	accountId, username, firstname, lastname, rijksregisternummer, disabled)
 -- 	VALUES ('a26ef559-fbbd-4a3d-8122-99a70184ba36', 'jalie', 'Jan', 'Lievens', '81071040575', false);

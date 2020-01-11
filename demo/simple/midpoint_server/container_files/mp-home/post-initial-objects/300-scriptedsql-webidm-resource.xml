@@ -330,7 +330,6 @@
                                     <q:equal>
                                         <q:path>name</q:path>
                                         <expression>
-<!--                                            <trace>true</trace>-->
                                             <script>
                                                 <code>
                                                     return input
@@ -339,26 +338,6 @@
                                         </expression>
                                     </q:equal>
                                 </filter>
-                                <!-- This is to ensure that the appropriate role is created when encountered by this mapping.
-                                     Normally, such roles would be created by some kind of synchronization (either live sync
-                                     or reconciliation) on Entitlements objects, but it is possible that this mapping is evaluated
-                                     at a moment when entitlement sync was not yet run for a newly-created entitlement. -->
-                                <!--<createOnDemand>true</createOnDemand>
-                                <populateObject>
-                                    <populateItem>
-                                        <expression>
-&lt;!&ndash;                                            <trace>true</trace>&ndash;&gt;
-                                            <script>
-                                                <code>
-                                                    return input
-                                                </code>
-                                            </script>
-                                        </expression>
-                                        <target>
-                                            <path>name</path>
-                                        </target>
-                                    </populateItem>
-                                </populateObject>-->
                                 <!-- This marks assignments created by this mapping -->
                                 <assignmentProperties>
                                     <subtype>user-assignment</subtype>
@@ -380,95 +359,6 @@
                         </target>
                     </inbound>
                 </attribute>
-
-                <!-- Adding this performs the following sql query: SELECT * FROM source_entitlements WHERE entitlementid = :entitlementid -->
-                <!--
-                    FIXME: But it also enters the UpdateScript with:
-                        #### Entering Update REMOVE_ATTRIBUTE_VALUES Script for ObjectClass: __ACCOUNT__ and attributes [Attribute: {Name=entitlements, Value=[20000-Burger-01, 20001-Milieumedewerker-01]}] ####
-                -->
-
-
-                <!--<association>
-                    <c:ref>ri:accEntitlements</c:ref>
-                    <displayName>Entitlements</displayName>
-                    <kind>entitlement</kind>
-                    <intent>privileges</intent>
-                    <direction>subjectToObject</direction>
-                    <associationAttribute>ri:entitlements</associationAttribute>
-                    <valueAttribute>icfs:name</valueAttribute>
-                    &lt;!&ndash;
-                        <tolerant>false</tolerant>
-                        <exclusiveStrong>false</exclusiveStrong>
-                        <explicitReferentialIntegrity>false</explicitReferentialIntegrity>
-                    &ndash;&gt;
-
-
-                    <inbound>
-                        <strength>strong</strength>
-                        <authoritative>true</authoritative>
-                        <expression>
-                            <assignmentTargetSearch>
-                                <targetType>c:RoleType</targetType>
-                                <filter>
-                                    <q:equal>
-                                        <q:path>name</q:path>
-                                        <expression>
-                                            <trace>true</trace>
-                                            <script>
-                                                &lt;!&ndash;<relativityMode>absolute</relativityMode>&ndash;&gt;
-                                                <code>
-                                                    import com.evolveum.prism.xml.ns._public.types_3.PolyStringType
-                                                    resolvedEntitlement = midpoint.resolveEntitlement(input);
-                                                    log.info("### entitlementName: " + resolvedEntitlement?.getName())
-                                                    return resolvedEntitlement?.getName()
-                                                   // return input.getObjectDelta()
-                                                </code>
-                                            </script>
-&lt;!&ndash;                                            <path>$entitlement</path>&ndash;&gt;
-                                        </expression>
-                                    </q:equal>
-                                </filter>
-                                &lt;!&ndash; This is to ensure that the appropriate role is created when encountered by this mapping.
-                                     Normally, such roles would be created by some kind of synchronization (either live sync
-                                     or reconciliation) on Entitlements objects, but it is possible that this mapping is evaluated
-                                     at a moment when entitlement sync was not yet run for a newly-created entitlement. &ndash;&gt;
-                                <createOnDemand>true</createOnDemand>
-                                <populateObject>
-                                    <populateItem>
-                                        <expression>
-                                            <trace>true</trace>
-                                            <script>
-                                                <code>
-                                                    return input
-                                                </code>
-                                            </script>
-                                        </expression>
-                                        <target>
-                                            <path>name</path>
-                                        </target>
-                                    </populateItem>
-                                </populateObject>
-                                &lt;!&ndash; This marks assignments created by this mapping &ndash;&gt;
-                                <assignmentProperties>
-                                    <subtype>user-assignment</subtype>
-                                </assignmentProperties>
-                            </assignmentTargetSearch>
-                        </expression>
-                        <target>
-                            <path>assignment</path>
-                            &lt;!&ndash; This is to ensure that only assignments created by this mappings will be removed by it. &ndash;&gt;
-                            <set>
-                                <condition>
-                                    <script>
-                                        <code>
-                                            assignment?.subtype.contains('user-assignment')
-                                        </code>
-                                    </script>
-                                </condition>
-                            </set>
-                        </target>
-                    </inbound>
-                </association>-->
 
                 <activation>
                     <administrativeStatus>
