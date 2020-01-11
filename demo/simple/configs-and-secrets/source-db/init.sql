@@ -31,6 +31,10 @@ INSERT INTO public.source_accounts(
 	accountId, username, firstname, lastname, rijksregisternummer, disabled)
 	VALUES ('3fd83cd4-d1bb-4d7f-9a1a-12a02ed85a95', 'jalie', 'Jan', 'Lievens', '81071040575', false);
 
+INSERT INTO public.source_accounts(
+	accountId, username, firstname, lastname, rijksregisternummer, disabled)
+	VALUES ('ee6a51b5-7ef6-40eb-ac1b-54172a3ed520', 'tvgulck', 'Tom', 'Van Gulck', '78072240377', false);
+
 -- INSERT INTO public.source_accounts(
 -- 	accountId, username, firstname, lastname, rijksregisternummer, disabled)
 -- 	VALUES ('a26ef559-fbbd-4a3d-8122-99a70184ba36', 'jalie', 'Jan', 'Lievens', '81071040575', false);

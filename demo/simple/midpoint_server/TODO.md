@@ -45,7 +45,29 @@
     funding for development of this feature and funding for maintenance as 
     well (i.e. platform subscription is needed).
     
+    On doing this with multiple intents and sync them to the correct schema:
+        
+        http://lists.evolveum.com/pipermail/midpoint/2017-February/003316.html
+        (dit is enkel als we voor elke account kunnen nagaan in welk web-idm-context/intent die hoort)
+        
+        Nu momenteel in OpenAM web idm implementatie (waar zit die intent distinctie? attribute name? en blijft die fixed?):
+        
+            Map<String, String> accountAttributes = getAccountAttributes(account.getAttributes());
+                  provisioningService.createAccount(new ValidCreateAccount(
+                      account.getAccountId(),
+                      accountAttributes.get("Voornaam"),
+                      accountAttributes.get("Naam"),
+                      accountAttributes.get("RRN"),
+                      account.isEnabled(),
+                      account.isLocked(),
+                      getRealm()));
+        
     MAAR: https://wiki.evolveum.com/display/midPoint/Multiaccounts+HOWTO
+            => does not work as advertised
+            => en heeft UI limitations
+    
+    MSS: https://wiki.evolveum.com/display/midPoint/Persona+Configuration
+            => ook met zijn limitaties maar vereist pre-manipulatie van de resource
 
 - Uitzoeken hoe je een posix user insert (projection aan een user)
 

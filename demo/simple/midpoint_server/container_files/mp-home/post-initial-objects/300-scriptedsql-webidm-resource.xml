@@ -261,12 +261,32 @@
                 <displayName>Default Account</displayName>
                 <kind>account</kind>
                 <default>true</default>
-                <intent>default</intent>
+                <intent>webidm</intent>
                 <objectClass>ri:AccountObjectClass</objectClass>
+
+                <!--
+                    This configuration means we can have multiple accounts on the same resource.
+                    See: https://wiki.evolveum.com/display/midPoint/Multiaccounts+HOWTO
+                    and https://jira.evolveum.com/browse/MID-3542
+                    and http://lists.evolveum.com/pipermail/midpoint/2016-November/002918.html
+
+                    ALAS: this is not working...
+
+                <multiplicity>
+                    <maxOccurs>unbounded</maxOccurs>
+                    <tag>
+                        <expression>
+                            <trace>true</trace>
+                            <path>$projection/attributes/uid</path>
+                        </expression>
+                    </tag>
+                </multiplicity>
+                -->
 
                 <attribute>
                     <ref>icfs:name</ref>
                     <inbound>
+                        <strength>weak</strength>
                         <target>
                             <path>$user/name</path>
                         </target>
@@ -298,6 +318,69 @@
                     </inbound>
                 </attribute>
 
+                <attribute>
+                    <ref>ri:entitlements</ref>
+                    <inbound>
+                        <strength>strong</strength>
+                        <authoritative>true</authoritative>
+                        <expression>
+                            <assignmentTargetSearch>
+                                <targetType>c:RoleType</targetType>
+                                <filter>
+                                    <q:equal>
+                                        <q:path>name</q:path>
+                                        <expression>
+<!--                                            <trace>true</trace>-->
+                                            <script>
+                                                <code>
+                                                    return input
+                                                </code>
+                                            </script>
+                                        </expression>
+                                    </q:equal>
+                                </filter>
+                                <!-- This is to ensure that the appropriate role is created when encountered by this mapping.
+                                     Normally, such roles would be created by some kind of synchronization (either live sync
+                                     or reconciliation) on Entitlements objects, but it is possible that this mapping is evaluated
+                                     at a moment when entitlement sync was not yet run for a newly-created entitlement. -->
+                                <!--<createOnDemand>true</createOnDemand>
+                                <populateObject>
+                                    <populateItem>
+                                        <expression>
+&lt;!&ndash;                                            <trace>true</trace>&ndash;&gt;
+                                            <script>
+                                                <code>
+                                                    return input
+                                                </code>
+                                            </script>
+                                        </expression>
+                                        <target>
+                                            <path>name</path>
+                                        </target>
+                                    </populateItem>
+                                </populateObject>-->
+                                <!-- This marks assignments created by this mapping -->
+                                <assignmentProperties>
+                                    <subtype>user-assignment</subtype>
+                                </assignmentProperties>
+                            </assignmentTargetSearch>
+                        </expression>
+                        <target>
+                            <path>assignment</path>
+                            <!-- This is to ensure that only assignments created by this mappings will be removed by it. -->
+                            <set>
+                                <condition>
+                                    <script>
+                                        <code>
+                                            assignment?.subtype.contains('user-assignment')
+                                        </code>
+                                    </script>
+                                </condition>
+                            </set>
+                        </target>
+                    </inbound>
+                </attribute>
+
                 <!-- Adding this performs the following sql query: SELECT * FROM source_entitlements WHERE entitlementid = :entitlementid -->
                 <!--
                     FIXME: But it also enters the UpdateScript with:
@@ -305,7 +388,7 @@
                 -->
 
 
-                <association>
+                <!--<association>
                     <c:ref>ri:accEntitlements</c:ref>
                     <displayName>Entitlements</displayName>
                     <kind>entitlement</kind>
@@ -313,45 +396,50 @@
                     <direction>subjectToObject</direction>
                     <associationAttribute>ri:entitlements</associationAttribute>
                     <valueAttribute>icfs:name</valueAttribute>
-                    <!--
+                    &lt;!&ndash;
                         <tolerant>false</tolerant>
                         <exclusiveStrong>false</exclusiveStrong>
                         <explicitReferentialIntegrity>false</explicitReferentialIntegrity>
-                    -->
+                    &ndash;&gt;
 
 
-                    <!--<inbound>
+                    <inbound>
                         <strength>strong</strength>
+                        <authoritative>true</authoritative>
                         <expression>
                             <assignmentTargetSearch>
-                                <targetType>RoleType</targetType>
+                                <targetType>c:RoleType</targetType>
                                 <filter>
                                     <q:equal>
                                         <q:path>name</q:path>
                                         <expression>
+                                            <trace>true</trace>
                                             <script>
+                                                &lt;!&ndash;<relativityMode>absolute</relativityMode>&ndash;&gt;
                                                 <code>
-                                                    //log.info('entitlement = {}', entitlement?.asPrismObject()?.debugDump())
-                                                    return basic.getAttributeValue(entitlement, 'cn')
+                                                    import com.evolveum.prism.xml.ns._public.types_3.PolyStringType
+                                                    resolvedEntitlement = midpoint.resolveEntitlement(input);
+                                                    log.info("### entitlementName: " + resolvedEntitlement?.getName())
+                                                    return resolvedEntitlement?.getName()
+                                                   // return input.getObjectDelta()
                                                 </code>
                                             </script>
-                                        </expression>
-                                        <expression>
-                                            <path>$shadow/attributes/sAMAccountName</path>
+&lt;!&ndash;                                            <path>$entitlement</path>&ndash;&gt;
                                         </expression>
                                     </q:equal>
                                 </filter>
                                 &lt;!&ndash; This is to ensure that the appropriate role is created when encountered by this mapping.
-                                     Normally, such roles whould be created by some kind of synchronization (either live sync
-                                     or reconciliation) on LDAP group objects, but it is possible that this mapping is evaluated
-                                     at a moment when group sync was not yet run for a newly-created group. &ndash;&gt;
+                                     Normally, such roles would be created by some kind of synchronization (either live sync
+                                     or reconciliation) on Entitlements objects, but it is possible that this mapping is evaluated
+                                     at a moment when entitlement sync was not yet run for a newly-created entitlement. &ndash;&gt;
                                 <createOnDemand>true</createOnDemand>
                                 <populateObject>
                                     <populateItem>
                                         <expression>
+                                            <trace>true</trace>
                                             <script>
                                                 <code>
-                                                    basic.getAttributeValue(entitlement, 'cn')
+                                                    return input
                                                 </code>
                                             </script>
                                         </expression>
@@ -362,7 +450,7 @@
                                 </populateObject>
                                 &lt;!&ndash; This marks assignments created by this mapping &ndash;&gt;
                                 <assignmentProperties>
-                                    <subtype>db-assignment</subtype>
+                                    <subtype>user-assignment</subtype>
                                 </assignmentProperties>
                             </assignmentTargetSearch>
                         </expression>
@@ -373,15 +461,14 @@
                                 <condition>
                                     <script>
                                         <code>
-                                            assignment?.subtype.contains('ldap-group')
+                                            assignment?.subtype.contains('user-assignment')
                                         </code>
                                     </script>
                                 </condition>
                             </set>
                         </target>
                     </inbound>
-                    -->
-                </association>
+                </association>-->
 
                 <activation>
                     <administrativeStatus>
@@ -505,7 +592,7 @@
             <objectSynchronization>
                 <objectClass>ri:AccountObjectClass</objectClass>
                 <kind>account</kind>
-                <intent>default</intent>
+                <intent>webidm</intent>
                 <focusType>c:UserType</focusType>
                 <enabled>true</enabled>
                 <objectTemplateRef oid="10000000-0000-0000-0000-000000000223" relation="org:default" type="c:ObjectTemplateType">
@@ -523,7 +610,7 @@
                     <q:equal>
                         <q:path>c:name</q:path>
                         <expression>
-                            <path>$c:account/c:attributes/ri:username</path>
+                            <path>$c:account/c:attributes/icfs:name</path>
                         </expression>
                     </q:equal>
                 </correlation>
@@ -624,8 +711,10 @@
         <name>Initial accounts import from resource</name>
         <extension xsi:type="c:ExtensionType">
             <mext:kind>account</mext:kind>
-            <mext:intent>default</mext:intent>
+            <mext:intent>webidm</mext:intent>
         </extension>
+        <!-- FIXME maybe this task should wait until all entitlements are synced -->
+        <!--  <dependentTaskRef></dependentTaskRef> -->
         <taskIdentifier>1539330292502-0-1</taskIdentifier>
         <ownerRef oid="00000000-0000-0000-0000-000000000002"/>
         <executionStatus>runnable</executionStatus>
@@ -635,7 +724,7 @@
         <recurrence>recurring</recurrence>
         <binding>loose</binding>
         <schedule>
-            <interval>5</interval>
+            <interval>20</interval>
             <misfireAction>reschedule</misfireAction>
         </schedule>
         <threadStopAction>restart</threadStopAction>
@@ -656,7 +745,7 @@
         <recurrence>recurring</recurrence>
         <binding>tight</binding>
         <schedule>
-            <interval>5</interval>
+            <interval>20</interval>
             <misfireAction>reschedule</misfireAction>
         </schedule>
         <threadStopAction>restart</threadStopAction>

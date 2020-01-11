@@ -27,7 +27,7 @@
     <extension xmlns:mext="http://midpoint.evolveum.com/xml/ns/public/model/extension-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="c:ExtensionType">
         <mext:objectclass>ri:AccountObjectClass</mext:objectclass>
         <mext:kind>account</mext:kind>
-        <mext:intent>default</mext:intent>
+        <mext:intent>webidm</mext:intent>
     </extension>
     <taskIdentifier>1539330292502-0-1</taskIdentifier>
 	<ownerRef oid="00000000-0000-0000-0000-000000000002"/>

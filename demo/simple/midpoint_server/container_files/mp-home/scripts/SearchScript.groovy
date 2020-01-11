@@ -100,7 +100,7 @@ void handleAccount(Sql sql) {
             id row.rijksregisternummer
             attribute '__UID__', row.accountid
             attribute '__ENABLE__', !row.disabled
-            attribute '__NAME__', row.username
+            attribute '__NAME__', row.rijksregisternummer
             attribute 'username', row.username
             attribute 'firstname', row.firstname
             attribute 'lastname', row.lastname

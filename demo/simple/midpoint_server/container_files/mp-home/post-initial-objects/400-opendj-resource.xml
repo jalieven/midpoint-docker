@@ -106,7 +106,7 @@
         <objectType id="1">
             <kind>account</kind>
             <displayName>IDM Account</displayName>
-            <intent>default</intent>
+            <intent>webidm</intent>
             <default>true</default>
             <objectClass>ri:IdmAccount</objectClass>
             <attribute id="2">
@@ -254,7 +254,7 @@
 
         <objectType>
             <kind>entitlement</kind>
-            <intent>default</intent>
+            <intent>privileges</intent>
             <default>true</default>
             <objectClass>ri:IdmEntitlement</objectClass>
             <attribute id="2">
