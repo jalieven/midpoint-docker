@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objectTemplate xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
+                xmlns:q="http://prism.evolveum.com/xml/ns/public/query-3"
+                xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
+                xmlns:t="http://prism.evolveum.com/xml/ns/public/types-3"
+                xmlns:org="http://midpoint.evolveum.com/xml/ns/public/common/org-3"
+                xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3"
+                xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3"
+                oid="f6c9679e-477c-49cc-9be6-4dd92d121947"
+                version="4">
+    <name>Entitlement Object Template</name>
+    <mapping>
+        <name>Privileges assignment</name>
+        <source>
+            <name>privileges</name>
+            <path>$focus/extension/privileges</path>
+        </source>
+<!--        <trace>true</trace>-->
+        <expression>
+<!--            <trace>true</trace>-->
+            <assignmentTargetSearch xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                    xsi:type="c:SearchObjectRefExpressionEvaluatorType">
+                <targetType>c:RoleType</targetType>
+                <createOnDemand>true</createOnDemand>
+                <filter>
+                    <q:equal>
+                        <q:path>c:name</q:path>
+                        <expression>
+                            <script>
+                                <relativityMode>absolute</relativityMode>
+                                <code>
+                                    return privileges
+                                </code>
+                            </script>
+                        </expression>
+                    </q:equal>
+                </filter>
+                <populateObject>
+                    <populateItem>
+                        <expression>
+                            <script>
+                                <code>
+                                    return privileges
+                                </code>
+                            </script>
+                        </expression>
+                        <target>
+                            <path>name</path>
+                        </target>
+                    </populateItem>
+                </populateObject>
+            </assignmentTargetSearch>
+        </expression>
+        <target>
+            <c:path>assignment</c:path>
+        </target>
+    </mapping>
+</objectTemplate>

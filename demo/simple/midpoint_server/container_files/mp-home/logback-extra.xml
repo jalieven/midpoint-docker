@@ -13,6 +13,12 @@
 <configuration>
     <logger name="com.evolveum.midpoint.common.LoggingConfigurationManager" level="TRACE" />
     <logger name="com.evolveum.midpoint.model.impl.util" level="TRACE" />
+    <!--
+        The following logger is handy when you want to know what is available as parameter in a configured expression.
+        See: https://wiki.evolveum.com/display/midPoint/Expression+Trace
+    -->
+    <logger name="com.evolveum.midpoint.model.common.expression" level="TRACE" />
+    <!-- The following logger is handy when debugging the Groovy scripted SQL connector scripts -->
     <logger name="TestScript" level="TRACE" />
     <logger name="SearchScript" level="TRACE" />
 </configuration>
