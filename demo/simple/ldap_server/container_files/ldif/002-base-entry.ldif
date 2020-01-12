@@ -3,11 +3,6 @@ objectClass: top
 objectClass: organizationalUnit
 ou: people
 
-dn: ou=entitlements,dc=didm,dc=be
-objectClass: top
-objectClass: organizationalUnit
-ou: groups
-
 dn: ou=groups,dc=didm,dc=be
 objectClass: top
 objectClass: organizationalUnit
