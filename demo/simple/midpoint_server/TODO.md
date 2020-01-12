@@ -75,4 +75,6 @@
 
 - En systeemgebruikers die niet inbound van webIdm komen
 
-- 
+- Dit al gezien?
+       
+       https://wiki.evolveum.com/display/midPoint/Self+Registration+Configuration

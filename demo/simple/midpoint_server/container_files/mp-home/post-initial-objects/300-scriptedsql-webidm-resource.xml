@@ -439,6 +439,7 @@
                         <cap:attribute>ri:disabled</cap:attribute>
                         <cap:enableValue>false</cap:enableValue>
                         <cap:disableValue>true</cap:disableValue>
+                        <cap:disableValue />
                     </cap:status>
                 </cap:activation>
             </configured>
