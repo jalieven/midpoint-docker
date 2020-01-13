@@ -20,15 +20,80 @@
         xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
         xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
         xmlns:q="http://prism.evolveum.com/xml/ns/public/query-3"
-        xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3"
         xmlns:icfc="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/connector-schema-3"
         xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3"
         xmlns:cap="http://midpoint.evolveum.com/xml/ns/public/resource/capabilities-3"
         xmlns:org="http://midpoint.evolveum.com/xml/ns/public/common/org-3"
         xmlns:t="http://prism.evolveum.com/xml/ns/public/types-3"
+        xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3"
         xmlns:mext="http://midpoint.evolveum.com/xml/ns/public/model/extension-3"
         xmlns:didmu="http://didm.be/xml/ns/user">
 
+    <!-- Create group in the OpenDJ, assign this group to the user when role with these meta-roles are assigned. -->
 
+    <role oid="6dce0c5b-3668-4ee3-811b-818481855eb4" version="1">
+        <name>VIP</name>
+        <description>VIP Profile (i.e. mapping from privilege to technical roles)</description>
+        <inducement id="1">
+            <construction>
+                <resourceRef oid="d0811790-6420-11e4-86b2-3c9755567874" type="c:ResourceType"><!-- OpenDJ Resource --></resourceRef>
+                <kind>entitlement</kind>
+                <intent>group</intent>
+                <attribute>
+                    <ref>icfs:name</ref>
+                    <outbound>
+                        <source>
+                            <path>$focus/name</path>
+                        </source>
+
+                        <expression>
+<!--                            <trace>true</trace>-->
+                            <script xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="c:ScriptExpressionEvaluatorType">
+                                <code>
+                                    'uid=JiraUser,ou=groups,dc=didm,dc=be'
+                                </code>
+                            </script>
+                        </expression>
+
+                        <condition>
+<!--                            <trace>true</trace>-->
+                            <script>
+                                <relativityMode>absolute</relativityMode>
+                                <code>
+                                    log.info("CONDITION???????????")
+                                    return false
+                                </code>
+                            </script>
+                        </condition>
+                    </outbound>
+                </attribute>
+            </construction>
+        </inducement>
+
+        <inducement id="2">
+            <construction>
+                <resourceRef oid="d0811790-6420-11e4-86b2-3c9755567874" type="c:ResourceType"></resourceRef>
+                <kind>account</kind>
+                <intent>webidm</intent>
+                <association>
+                    <c:ref>ri:group</c:ref>
+                    <outbound>
+                        <strength>strong</strength>
+                        <expression>
+                            <associationFromLink>
+                                <projectionDiscriminator>
+                                    <kind>entitlement</kind>
+                                    <intent>group</intent>
+                                </projectionDiscriminator>
+                            </associationFromLink>
+                        </expression>
+                    </outbound>
+                </association>
+            </construction>
+            <order>2</order>
+            <focusType>UserType</focusType>
+        </inducement>
+
+    </role>
 
 </c:objects>

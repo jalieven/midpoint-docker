@@ -615,7 +615,7 @@
         <recurrence>recurring</recurrence>
         <binding>tight</binding>
         <schedule>
-            <interval>30</interval>
+            <interval>10</interval>
             <misfireAction>reschedule</misfireAction>
         </schedule>
         <threadStopAction>restart</threadStopAction>
@@ -637,7 +637,7 @@
         <recurrence>recurring</recurrence>
         <binding>tight</binding>
         <schedule>
-            <interval>30</interval>
+            <interval>10</interval>
             <misfireAction>reschedule</misfireAction>
         </schedule>
         <threadStopAction>restart</threadStopAction>

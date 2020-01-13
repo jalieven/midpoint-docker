@@ -444,7 +444,7 @@
                 <situation>deleted</situation>
                 <synchronize>true</synchronize>
                 <action>
-                    <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#unlink</handlerUri>
+                    <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#deleteFocus</handlerUri>
                 </action>
             </reaction>
             <reaction>
@@ -456,6 +456,9 @@
             </reaction>
             <reaction>
                 <situation>unmatched</situation>
+                <action>
+                    <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#addFocus</handlerUri>
+                </action>
             </reaction>
         </objectSynchronization>
         -->

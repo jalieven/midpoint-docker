@@ -19,6 +19,7 @@
 
 - Ook interessant om uit te zoeken:
     Indien een gebruiker een technische role induced krijgt of je een attribuut aan die gebruiker kan toekennen 
+    mogelijkse oplossing: focusMappings in inducement?
 
 - When entitlements are created it has privileges (meta-roles),
     those meta-roles could be pre-populated and could have inducements to technical roles
