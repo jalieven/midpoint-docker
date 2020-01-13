@@ -11,13 +11,20 @@
 -   Map everything (orgs, roles, contactinfo) into LDAP structure
 
 
+- Split up the Account in multiple intents according to CUG (Closed User Groups)
+
+        schema handling configuration must define intents for them and synchronization configuration must define conditions which would then identify the intent and the correlation rule.
+        
+        AR|EA|GID|LB|OV
+
+- Ook interessant om uit te zoeken:
+    Indien een gebruiker een technische role induced krijgt of je een attribuut aan die gebruiker kan toekennen 
 
 - When entitlements are created it has privileges (meta-roles),
     those meta-roles could be pre-populated and could have inducements to technical roles
     which is a mapping that can be done in the GUI?
     
 - Multiple accounts in one resource: can we correlate this to one user in midpoint?
-
 
     Voorheen:
     
@@ -78,3 +85,6 @@
 - Dit al gezien?
        
        https://wiki.evolveum.com/display/midPoint/Self+Registration+Configuration
+       
+- Er is nog da probleemke met single run en non association tussen account en entitlements
+    -> met tolerant setting op account.entitlements attribuut spelen  

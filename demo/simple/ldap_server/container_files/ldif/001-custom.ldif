@@ -6,6 +6,7 @@ attributeTypes: ( rijksregisternummer-oid NAME 'rijksregisternummer' DESC 'Rijks
 attributeTypes: ( accountid-oid NAME 'accountId' DESC 'IDM Account ID' SYNTAX 1.3.6.1.4.1.1466.115.121.1.15 X-ORIGIN 'user defined' SINGLE-VALUE )
 attributeTypes: ( accountenabled-oid NAME 'accountEnabled' DESC 'IDM Account Enabled' SYNTAX 1.3.6.1.4.1.1466.115.121.1.7 X-ORIGIN 'user defined' SINGLE-VALUE )
 attributeTypes: ( accountlocked-oid NAME 'accountLocked' DESC 'IDM Account Locked' SYNTAX 1.3.6.1.4.1.1466.115.121.1.7 X-ORIGIN 'user defined' SINGLE-VALUE )
+attributeTypes: ( dummy-oid NAME 'dummy' DESC 'IDM dummy attribute' SYNTAX 1.3.6.1.4.1.1466.115.121.1.7 X-ORIGIN 'user defined' SINGLE-VALUE )
 
 # Custom ObjectClasses
 dn: cn=schema
@@ -17,4 +18,4 @@ objectclasses: ( idmaccount-oid NAME 'IdmAccount' SUP inetOrgPerson STRUCTURAL M
 dn: cn=schema
 changetype: modify
 add: objectclasses
-objectclasses: ( idmentitlement-oid NAME 'IdmEntitlement' SUP inetOrgPerson STRUCTURAL MUST ( accountId ) X-ORIGIN 'user defined' )
+objectclasses: ( idmgroup-oid NAME 'IdmGroup' SUP groupOfUniqueNames STRUCTURAL MAY ( dummy ) X-ORIGIN 'user defined' )

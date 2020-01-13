@@ -64,7 +64,7 @@
                              <ra:secondaryIdentifier xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">icfs:name</ra:secondaryIdentifier>
                              <ra:displayNameAttribute xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">icfs:name</ra:displayNameAttribute>
                              <ra:namingAttribute xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">icfs:name</ra:namingAttribute>
-                             <!-- <ra:nativeObjectClass>account</ra:nativeObjectClass> -->
+                             <ra:nativeObjectClass>IdmAccount</ra:nativeObjectClass>
                              <ra:account/>
                              <ra:default/>
                          </xsd:appinfo>
@@ -80,25 +80,36 @@
                      </xsd:sequence>
                  </xsd:complexType>
 
-                <xsd:complexType name="IdmEntitlement">
+                <!--
+                    There seems to be a bug (or a hidden config missing) with naming of the group object class
+                    When I use the LDAP standard groupOfUniqueNames in the schemaHandling group objectType it tries to access
+                    the lowercased object class somehow. So we define a custom object class here and define it in LDAP
+                    to inherit the groupOfUniqueNames.
+                -->
+                <xsd:complexType name="IdmGroup">
                     <xsd:annotation>
                         <xsd:appinfo>
                             <ra:resourceObject/>
-                            <ra:identifier xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">icfs:uid</ra:identifier>
-                            <ra:secondaryIdentifier xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">icfs:name</ra:secondaryIdentifier>
-                            <ra:displayNameAttribute xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">icfs:name</ra:displayNameAttribute>
-                            <ra:namingAttribute xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">icfs:name</ra:namingAttribute>
-                            <!-- <ra:nativeObjectClass>account</ra:nativeObjectClass> -->
-                            <ra:account/>
-                            <ra:default/>
+                            <ra:identifier>icfs:uid</ra:identifier>
+                            <ra:displayNameAttribute>icfs:name</ra:displayNameAttribute>
+                            <ra:namingAttribute>icfs:name</ra:namingAttribute>
+                            <ra:nativeObjectClass>IdmGroup</ra:nativeObjectClass>
                         </xsd:appinfo>
                     </xsd:annotation>
                     <xsd:sequence>
+                        <xsd:element maxOccurs="unbounded" minOccurs="0" name="seeAlso" type="xsd:string" />
+                        <xsd:element maxOccurs="unbounded" minOccurs="0" name="owner" type="xsd:string" />
+                        <xsd:element maxOccurs="unbounded" minOccurs="0" name="o" type="xsd:string" />
+                        <xsd:element maxOccurs="unbounded" minOccurs="0" name="description" type="xsd:string" />
+                        <xsd:element maxOccurs="unbounded" minOccurs="0" name="uniqueMember" type="xsd:string" />
+                        <xsd:element maxOccurs="unbounded" name="cn" type="xsd:string" />
                         <xsd:element ref="icfs:name" />
                         <xsd:element minOccurs="0" ref="icfs:uid" />
-                        <xsd:element minOccurs="1" maxOccurs="1" name="accountId" type="xsd:string" />
+                        <xsd:element maxOccurs="unbounded" minOccurs="0" name="businessCategory" type="xsd:string" />
+                        <xsd:element maxOccurs="unbounded" minOccurs="0" name="ou" type="xsd:string" />
                     </xsd:sequence>
                 </xsd:complexType>
+
             </xsd:schema>
         </definition>
     </schema>
@@ -205,37 +216,17 @@
                     </source>
                 </outbound>
             </attribute>
-            <!--
-            <attribute id="9">
-                <c:ref>ri:accountIds</c:ref>
-                <displayName>Account IDs</displayName>
-                <outbound>
-                    <source>
-                        <c:path>$user/extension/didmu:accountIds</c:path>
-                    </source>
-                </outbound>
-            </attribute>
 
             <association>
-                <ref>ri:accountIds</ref>
-                <displayName>LDAP Group Membership</displayName>
+                <ref>ri:group</ref>
+                <displayName>Technical Role</displayName>
                 <kind>entitlement</kind>
-                <intent>ldapGroup</intent>
+                <intent>group</intent>
                 <direction>objectToSubject</direction>
                 <associationAttribute>ri:uniqueMember</associationAttribute>
-                <valueAttribute>ri:dn</valueAttribute>
-            </association>
-
-
-            <association>
-                <ref>ri:accountIds</ref>
-                <kind>entitlement</kind>
-                <intent>default</intent>
-                <direction>objectToSubject</direction>
-                <associationAttribute>ri:accountId</associationAttribute>
                 <valueAttribute>icfs:name</valueAttribute>
             </association>
-            -->
+
             <activation>
                 <administrativeStatus>
                     <outbound id="8"/>
@@ -252,6 +243,60 @@
             </credentials>
         </objectType>
 
+        <!--
+            ##############################
+                GROUP OBJECT CLASS
+            ##############################
+        -->
+        <objectType>
+            <kind>entitlement</kind>
+            <intent>group</intent>
+            <displayName>Technical Role</displayName>
+            <objectClass>ri:IdmGroup</objectClass>
+            <attribute>
+                <ref>icfs:name</ref>
+                <matchingRule xmlns:mr="http://prism.evolveum.com/xml/ns/public/matching-rule-3">mr:stringIgnoreCase</matchingRule>
+                <outbound>
+                    <source>
+                        <path>$focus/name</path>
+                    </source>
+                    <expression>
+                        <script>
+                            <code>
+                                import javax.naming.ldap.Rdn
+                                import javax.naming.ldap.LdapName
+
+                                dn = new LdapName('ou=groups,dc=didm,dc=be')
+                                dn.add(new Rdn('cn', name.toString()))
+                                return dn.toString()
+                            </code>
+                        </script>
+                    </expression>
+                </outbound>
+            </attribute>
+            <attribute>
+                <ref>ri:cn</ref>
+                <matchingRule>mr:stringIgnoreCase</matchingRule>
+                <outbound>
+                    <!-- This MUST be weak in case of OpenDJ. If DN (name) is changed then the uid will be changed
+                         as a side-effect as it is a naming attribute. -->
+                    <strength>weak</strength>
+                    <source>
+                        <path>$focus/name</path>
+                    </source>
+                </outbound>
+            </attribute>
+            <attribute>
+                <ref>ri:description</ref>
+                <outbound>
+                    <source>
+                        <path>description</path>
+                    </source>
+                </outbound>
+            </attribute>
+        </objectType>
+
+        <!--
         <objectType>
             <kind>entitlement</kind>
             <intent>privileges</intent>
@@ -304,6 +349,7 @@
                 </outbound>
             </attribute>
         </objectType>
+        -->
 
     </schemaHandling>
     <capabilities>
@@ -327,7 +373,7 @@
                     <cap:returnedByDefault>false</cap:returnedByDefault>
                 </cap:password>
             </cap:credentials>
-            <cap:auxiliaryObjectClasses/>
+<!--            <cap:auxiliaryObjectClasses/>-->
             <cap:pagedSearch/>
             <cap:read>
                 <cap:returnDefaultAttributesOption>true</cap:returnDefaultAttributesOption>
@@ -344,9 +390,9 @@
                     <q:path>c:name</q:path>
                     <expression>
                         <path>
-								declare namespace ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3";
-								$account/attributes/ri:uid
-							</path>
+                            declare namespace ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3";
+                            $account/attributes/ri:uid
+                        </path>
                     </expression>
                 </q:equal>
             </correlation>
@@ -374,14 +420,14 @@
                 <action/>
             </reaction>
         </objectSynchronization>
-        <!-- FIXME we need to tell midPoint to sync the Meta-Roles (i.e. entitlements)
+
         <objectSynchronization>
-            <name>IDM Entitlement Sync</name>
+            <name>Induced Roles Sync</name>
             <focusType>c:RoleType</focusType>
             <enabled>true</enabled>
             <kind>entitlement</kind>
-            <intent>default</intent>
-            <objectClass>ri:IdmEntitlement</objectClass>
+            <intent>group</intent>
+            <objectClass>ri:IdmGroup</objectClass>
             <correlation>
                 <q:equal>
                     <q:path>c:name</q:path>
