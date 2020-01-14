@@ -234,6 +234,78 @@
                                     </xsd:appinfo>
                                 </xsd:annotation>
                             </xsd:element>
+                            <xsd:element minOccurs="0" name="organisatiecode" type="xsd:string">
+                                <xsd:annotation>
+                                    <xsd:appinfo>
+                                        <a:displayOrder>200</a:displayOrder>
+                                        <ra:frameworkAttributeName>organisatiecode</ra:frameworkAttributeName>
+                                    </xsd:appinfo>
+                                </xsd:annotation>
+                            </xsd:element>
+                            <xsd:element minOccurs="0" name="departement" type="xsd:string">
+                                <xsd:annotation>
+                                    <xsd:appinfo>
+                                        <a:displayOrder>210</a:displayOrder>
+                                        <ra:frameworkAttributeName>departement</ra:frameworkAttributeName>
+                                    </xsd:appinfo>
+                                </xsd:annotation>
+                            </xsd:element>
+                            <xsd:element minOccurs="0" name="dienst" type="xsd:string">
+                                <xsd:annotation>
+                                    <xsd:appinfo>
+                                        <a:displayOrder>220</a:displayOrder>
+                                        <ra:frameworkAttributeName>dienst</ra:frameworkAttributeName>
+                                    </xsd:appinfo>
+                                </xsd:annotation>
+                            </xsd:element>
+                            <xsd:element minOccurs="0" name="functie" type="xsd:string">
+                                <xsd:annotation>
+                                    <xsd:appinfo>
+                                        <a:displayOrder>230</a:displayOrder>
+                                        <ra:frameworkAttributeName>functie</ra:frameworkAttributeName>
+                                    </xsd:appinfo>
+                                </xsd:annotation>
+                            </xsd:element>
+                            <xsd:element minOccurs="0" name="personeelsnummer" type="xsd:string">
+                                <xsd:annotation>
+                                    <xsd:appinfo>
+                                        <a:displayOrder>240</a:displayOrder>
+                                        <ra:frameworkAttributeName>personeelsnummer</ra:frameworkAttributeName>
+                                    </xsd:appinfo>
+                                </xsd:annotation>
+                            </xsd:element>
+                            <xsd:element minOccurs="0" name="email" type="xsd:string">
+                                <xsd:annotation>
+                                    <xsd:appinfo>
+                                        <a:displayOrder>270</a:displayOrder>
+                                        <ra:frameworkAttributeName>email</ra:frameworkAttributeName>
+                                    </xsd:appinfo>
+                                </xsd:annotation>
+                            </xsd:element>
+                            <xsd:element minOccurs="0" name="fax" type="xsd:string">
+                                <xsd:annotation>
+                                    <xsd:appinfo>
+                                        <a:displayOrder>260</a:displayOrder>
+                                        <ra:frameworkAttributeName>fax</ra:frameworkAttributeName>
+                                    </xsd:appinfo>
+                                </xsd:annotation>
+                            </xsd:element>
+                            <xsd:element minOccurs="0" name="gsm" type="xsd:string">
+                                <xsd:annotation>
+                                    <xsd:appinfo>
+                                        <a:displayOrder>270</a:displayOrder>
+                                        <ra:frameworkAttributeName>gsm</ra:frameworkAttributeName>
+                                    </xsd:appinfo>
+                                </xsd:annotation>
+                            </xsd:element>
+                            <xsd:element minOccurs="0" name="telefoonnr" type="xsd:string">
+                                <xsd:annotation>
+                                    <xsd:appinfo>
+                                        <a:displayOrder>280</a:displayOrder>
+                                        <ra:frameworkAttributeName>telefoonnr</ra:frameworkAttributeName>
+                                    </xsd:appinfo>
+                                </xsd:annotation>
+                            </xsd:element>
                         </xsd:sequence>
                     </xsd:complexType>
                 </xsd:schema>

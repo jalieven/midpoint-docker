@@ -125,8 +125,16 @@ void handleEntitlement(Sql sql) {
             attribute '__NAME__', row.entitlementid
             attribute '__ENABLE__', !row.disabled
             attribute 'accountId', row.accountid
-            //attribute 'organisatiecode', row.organisatiecode
             attribute 'privileges', row.privileges.split(";")
+            attribute 'organisatiecode', row.organisatiecode
+            attribute 'departement', row.departement
+            attribute 'dienst', row.dienst
+            attribute 'functie', row.functie
+            attribute 'email', row.email
+            attribute 'personeelsnummer', row.personeelsnummer
+            attribute 'fax', row.fax
+            attribute 'gsm', row.gsm
+            attribute 'telefoonnr', row.telefoonnr
         })
     }
 
