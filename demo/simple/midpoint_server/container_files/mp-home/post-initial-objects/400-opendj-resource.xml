@@ -84,10 +84,10 @@
                          <xsd:annotation>
                              <xsd:appinfo>
                                  <ra:resourceObject/>
-                                 <ra:identifier xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">icfs:uid</ra:identifier>
-                                 <ra:secondaryIdentifier xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">icfs:name</ra:secondaryIdentifier>
-                                 <ra:displayNameAttribute xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">icfs:name</ra:displayNameAttribute>
-                                 <ra:namingAttribute xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3">icfs:name</ra:namingAttribute>
+                                 <ra:identifier>icfs:uid</ra:identifier>
+                                 <ra:secondaryIdentifier>icfs:name</ra:secondaryIdentifier>
+                                 <ra:displayNameAttribute>icfs:name</ra:displayNameAttribute>
+                                 <ra:namingAttribute>icfs:name</ra:namingAttribute>
                                  <ra:nativeObjectClass>IdmAccount</ra:nativeObjectClass>
                                  <ra:account/>
                                  <ra:default/>
@@ -99,8 +99,9 @@
                              <xsd:element maxOccurs="unbounded" name="cn" type="xsd:string" />
                              <xsd:element maxOccurs="unbounded" name="sn" type="xsd:string" />
                              <xsd:element maxOccurs="unbounded" minOccurs="0" name="givenName" type="xsd:string" />
-                             <xsd:element maxOccurs="unbounded" minOccurs="0" name="uid" type="xsd:string" />
-                             <xsd:element maxOccurs="unbounded" minOccurs="0" name="rijksregisternummer" type="xsd:string" />
+                             <xsd:element maxOccurs="1" minOccurs="0" name="uid" type="xsd:string" />
+                             <xsd:element maxOccurs="1" minOccurs="1" name="rijksregisternummer" type="xsd:string" />
+                             <xsd:element maxOccurs="1" minOccurs="0" name="enabled" type="xsd:boolean" />
                          </xsd:sequence>
                      </xsd:complexType>
 
@@ -255,12 +256,6 @@
                        -->
                     <tolerant>false</tolerant>
                 </association>
-
-                <activation>
-                    <administrativeStatus>
-                        <outbound id="8"/>
-                    </administrativeStatus>
-                </activation>
                 <credentials>
                     <password xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="c:ResourcePasswordDefinitionType">
                         <outbound>
@@ -297,52 +292,12 @@
                                     import javax.naming.ldap.Rdn
                                     import javax.naming.ldap.LdapName
 
-                                    log.info('FOCUS ' + focus)
-                                    log.info('NAME ' + name)
-                                    log.info('MIDPOINT ' + midpoint)
                                     dn = new LdapName('ou=groups,dc=didm,dc=be')
-
                                     dn.add(new Rdn('cn', name.toString()))
                                     return dn.toString()
                                 </code>
                             </script>
                         </expression>
-
-                        <!-- FIXME This works but is a mega dirty hack: somehow midpoint falls back to dn
-                        <expression>
-                            <trace>true</trace>
-                            <script xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="c:ScriptExpressionEvaluatorType">
-                                <relativityMode>absolute</relativityMode>
-                                <code>
-                                    import javax.naming.ldap.Rdn
-                                    import javax.naming.ldap.LdapName
-
-                                    log.info('FOCUS ' + focus)
-                                    log.info('NAME ' + name)
-                                    log.info('MIDPOINT ' + midpoint)
-                                    dn = new LdapName('ou=groups,dc=didm,dc=be')
-
-                                    dn.add(new Rdn('cn', name.toString()))
-                                    return dn.toString()
-                                </code>
-                            </script>
-                        </expression>
-
-                        <condition>
-                            <trace>true</trace>
-                            <script>
-                                <relativityMode>absolute</relativityMode>
-                                <code>
-                                    log.info("NAME CONDITION " + name)
-                                    if (name == 'JiraUser') {
-                                        return true
-                                    } else {
-                                        return false
-                                    }
-                                </code>
-                            </script>
-                        </condition>
-                        -->
                     </outbound>
                 </attribute>
                 <attribute>
@@ -361,47 +316,31 @@
                     <ref>ri:description</ref>
                     <outbound>
                         <source>
-                            <path>description</path>
+                            <path>$focus/description</path>
                         </source>
                     </outbound>
                 </attribute>
             </objectType>
 
         </schemaHandling>
+
         <capabilities>
-            <native xmlns:cap="http://midpoint.evolveum.com/xml/ns/public/resource/capabilities-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="c:CapabilityCollectionType">
-                <cap:schema/>
-                <cap:liveSync/>
-                <cap:testConnection/>
-                <cap:create/>
-                <cap:update>
-                    <cap:delta>true</cap:delta>
-                </cap:update>
-                <cap:delete/>
-                <cap:script>
-                    <cap:host>
-                        <cap:type>connector</cap:type>
-                    </cap:host>
-                </cap:script>
-                <cap:addRemoveAttributeValues/>
-                <cap:credentials>
-                    <cap:password>
-                        <cap:returnedByDefault>false</cap:returnedByDefault>
-                    </cap:password>
-                </cap:credentials>
-    <!--            <cap:auxiliaryObjectClasses/>-->
-                <cap:pagedSearch/>
-                <cap:read>
-                    <cap:returnDefaultAttributesOption>true</cap:returnDefaultAttributesOption>
-                </cap:read>
-            </native>
+            <configured>
+                <cap:liveSync>
+                    <cap:enabled>true</cap:enabled>
+                </cap:liveSync>
+            </configured>
         </capabilities>
+
         <synchronization>
 
             <objectSynchronization>
                 <name>IDM Account Sync</name>
                 <focusType>c:UserType</focusType>
                 <enabled>true</enabled>
+                <kind>account</kind>
+                <intent>ldap</intent>
+                <objectClass>ri:IdmAccount</objectClass>
                 <correlation>
                     <q:equal>
                         <q:path>c:name</q:path>
@@ -486,26 +425,27 @@
         synced through the defined role inducements in file 100-profiles-webidm?
         This is what they mean between liveSync (sync through inducement creation) vs provisioning sync (this task)
 
-    <task oid="0fc66475-f293-4976-a47d-d6330997544a">
-        <name>Role sync to LDAP resource</name>
-        <extension xsi:type="c:ExtensionType">
-            <mext:objectclass>ri:IdmGroup</mext:objectclass>
-            <mext:kind>entitlement</mext:kind>
-            <mext:intent>groups</mext:intent>
-        </extension>
-        <taskIdentifier>3678330292502-0-1</taskIdentifier>
-        <ownerRef oid="00000000-0000-0000-0000-000000000002"/>
-        <executionStatus>runnable</executionStatus>
-        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/synchronization/task/import/handler-3</handlerUri>
-        <objectRef oid="d0811790-6420-11e4-86b2-3c9755567874" type="c:ResourceType">
-        </objectRef>
-        <recurrence>recurring</recurrence>
-        <binding>tight</binding>
-        <schedule>
-            <interval>10</interval>
-            <misfireAction>reschedule</misfireAction>
-        </schedule>
-        <threadStopAction>restart</threadStopAction>
-    </task>
+        <task oid="0fc66475-f293-4976-a47d-d6330997544a">
+            <name>Role sync to LDAP resource</name>
+            <extension xsi:type="c:ExtensionType">
+                <mext:objectclass>ri:IdmGroup</mext:objectclass>
+                <mext:kind>entitlement</mext:kind>
+                <mext:intent>groups</mext:intent>
+            </extension>
+            <taskIdentifier>3678330292502-0-1</taskIdentifier>
+            <ownerRef oid="00000000-0000-0000-0000-000000000002"/>
+            <executionStatus>runnable</executionStatus>
+            <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/synchronization/task/import/handler-3</handlerUri>
+            <objectRef oid="d0811790-6420-11e4-86b2-3c9755567874" type="c:ResourceType">
+            </objectRef>
+            <recurrence>recurring</recurrence>
+            <binding>tight</binding>
+            <schedule>
+                <interval>10</interval>
+                <misfireAction>reschedule</misfireAction>
+            </schedule>
+            <threadStopAction>restart</threadStopAction>
+        </task>
     -->
+
 </c:objects>

@@ -29,7 +29,7 @@
         xmlns:mext="http://midpoint.evolveum.com/xml/ns/public/model/extension-3"
         xmlns:didmu="http://didm.be/xml/ns/user">
 
-    <!-- Create group in the OpenDJ, assign this group to the user when role with these meta-roles are assigned. -->
+    <!-- Mapping between Privileges and technical Roles that need to be synced in LDAP -->
 
     <role oid="6dce0c5b-3668-4ee3-811b-818481855eb4">
         <name>VIP</name>
@@ -64,7 +64,7 @@
 
         <!--
             This section makes sure the user account is synced into OpenDJ when this Role is assigned
-            to the user. It also contains configuration on what type of groups it should be associated with.
+            to the user. It also contains configuration on the groups it should be associated with.
         -->
         <inducement id="1">
            <construction>
@@ -74,7 +74,7 @@
                <association>
                    <c:ref>ri:group</c:ref>
                    <outbound>
-                       <strength>weak</strength>
+                       <strength>strong</strength>
                        <expression>
                            <associationFromLink>
                                <projectionDiscriminator>
@@ -91,15 +91,33 @@
         </inducement>
 
        <inducement id="2">
+           <!--
+                FIXME: WHY DOES THIS RESULT IN THE CREATION OF THE GROUP privilege 20001-Milieumedewerker-01 in LDAP
+                FIXME: IT CLEARLY STATES INTENT: group and 20001-Milieumedewerker-01 is OF INTENT: privileges
+           -->
            <construction>
                <resourceRef oid="d0811790-6420-11e4-86b2-3c9755567874" type="c:ResourceType" />
                <kind>entitlement</kind>
                <intent>group</intent>
+               <attribute>
+                   <c:ref>ri:description</c:ref>
+                   <outbound>
+                       <strength>strong</strength>
+                       <expression>
+                           <script xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="c:ScriptExpressionEvaluatorType">
+                               <code>
+                                   return "JiraUser"
+                               </code>
+                           </script>
+                       </expression>
+                   </outbound>
+               </attribute>
            </construction>
+           <order>2</order>
            <focusType>c:RoleType</focusType>
        </inducement>
 
-   </role>
+    </role>
 
     <role oid="8cfa8272-ef4d-4139-8777-3432fa373932">
         <name>ConfluenceUser</name>
@@ -114,7 +132,7 @@
                 <association>
                     <c:ref>ri:group</c:ref>
                     <outbound>
-                        <strength>weak</strength>
+                        <strength>strong</strength>
                         <expression>
                             <associationFromLink>
                                 <projectionDiscriminator>
@@ -136,6 +154,7 @@
                 <kind>entitlement</kind>
                 <intent>group</intent>
             </construction>
+            <order>2</order>
             <focusType>c:RoleType</focusType>
         </inducement>
 
@@ -154,7 +173,7 @@
                <association>
                    <c:ref>ri:group</c:ref>
                    <outbound>
-                       <strength>weak</strength>
+                       <strength>strong</strength>
                        <expression>
                            <associationFromLink>
                                <projectionDiscriminator>
@@ -176,6 +195,7 @@
                <kind>entitlement</kind>
                <intent>group</intent>
            </construction>
+           <order>2</order>
            <focusType>c:RoleType</focusType>
        </inducement>
 
