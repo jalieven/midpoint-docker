@@ -34,9 +34,16 @@
     <role oid="6dce0c5b-3668-4ee3-811b-818481855eb4" version="1">
         <name>VIP</name>
         <description>VIP Profile (i.e. mapping from privilege to technical roles)</description>
-        <inducement id="1">
+        <inducement>
             <construction>
-                <resourceRef oid="d0811790-6420-11e4-86b2-3c9755567874" type="c:ResourceType"><!-- OpenDJ Resource --></resourceRef>
+                <resourceRef oid="d0811790-6420-11e4-86b2-3c9755567874" type="c:ResourceType">
+                </resourceRef>
+                <kind>entitlement</kind>
+                <intent>group</intent>
+            </construction>
+
+            <!--<construction>
+                <resourceRef oid="d0811790-6420-11e4-86b2-3c9755567874" type="c:ResourceType" />
                 <kind>entitlement</kind>
                 <intent>group</intent>
                 <attribute>
@@ -47,32 +54,32 @@
                         </source>
 
                         <expression>
-<!--                            <trace>true</trace>-->
+                            <trace>true</trace>
                             <script xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="c:ScriptExpressionEvaluatorType">
                                 <code>
-                                    'uid=JiraUser,ou=groups,dc=didm,dc=be'
+                                    return 'cn=JiraUser,ou=groups,dc=didm,dc=be'
                                 </code>
                             </script>
                         </expression>
 
                         <condition>
-<!--                            <trace>true</trace>-->
+                            <trace>true</trace>
                             <script>
                                 <relativityMode>absolute</relativityMode>
                                 <code>
                                     log.info("CONDITION???????????")
-                                    return false
+                                    return true
                                 </code>
                             </script>
                         </condition>
                     </outbound>
                 </attribute>
-            </construction>
+            </construction>-->
         </inducement>
 
-        <inducement id="2">
+        <inducement>
             <construction>
-                <resourceRef oid="d0811790-6420-11e4-86b2-3c9755567874" type="c:ResourceType"></resourceRef>
+                <resourceRef oid="d0811790-6420-11e4-86b2-3c9755567874" type="c:ResourceType" />
                 <kind>account</kind>
                 <intent>webidm</intent>
                 <association>

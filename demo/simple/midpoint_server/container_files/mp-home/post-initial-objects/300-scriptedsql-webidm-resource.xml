@@ -670,7 +670,7 @@
         together with technical configuration on when it should fire.
     -->
     <task oid="ef99c20d-215d-4c76-91ba-24380f342c59">
-        <name>Initial accounts import from resource</name>
+        <name>Accounts import from Scripted SQL resource</name>
         <extension xsi:type="c:ExtensionType">
             <mext:kind>account</mext:kind>
             <mext:intent>webidm</mext:intent>
@@ -687,14 +687,14 @@
         <recurrence>recurring</recurrence>
         <binding>tight</binding>
         <schedule>
-            <interval>10</interval>
+            <interval>30</interval>
             <misfireAction>reschedule</misfireAction>
         </schedule>
         <threadStopAction>restart</threadStopAction>
     </task>
 
     <task oid="da99c20d-215d-4c76-91ba-24380f342c60">
-        <name>Initial entitlements import from resource</name>
+        <name>Entitlements import from Scripted SQL resource</name>
         <extension xsi:type="c:ExtensionType">
             <mext:kind>entitlement</mext:kind>
             <mext:intent>privileges</mext:intent>
@@ -709,7 +709,7 @@
         <recurrence>recurring</recurrence>
         <binding>tight</binding>
         <schedule>
-            <interval>10</interval>
+            <interval>30</interval>
             <misfireAction>reschedule</misfireAction>
         </schedule>
         <threadStopAction>restart</threadStopAction>

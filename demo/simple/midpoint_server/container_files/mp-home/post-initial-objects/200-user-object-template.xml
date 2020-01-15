@@ -36,8 +36,9 @@
         </condition>
     </mapping>
 
-    <mapping id="3">
-        <name>basic webidm role</name>
+    <!-- if the following mapping is disabled only those user come in ldap that have a technical role induced  -->
+    <!--<mapping id="3">
+        <name>webidm role</name>
         <strength>strong</strength>
         <expression>
             <assignmentTargetSearch xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="c:AssignmentTargetSearchExpressionEvaluatorType">
@@ -48,7 +49,7 @@
         <target>
             <c:path>assignment</c:path>
         </target>
-    </mapping>
+    </mapping>-->
 
 </objectTemplate>
 

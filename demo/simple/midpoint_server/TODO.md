@@ -88,4 +88,20 @@
        https://wiki.evolveum.com/display/midPoint/Self+Registration+Configuration
        
 - Er is nog da probleemke met single run en non association tussen account en entitlements
-    -> met tolerant setting op account.entitlements attribuut spelen  
+    -> met tolerant setting op account.entitlements attribuut spelen
+    
+- Bij herhangen entitlement in db krijgen we lingering uniqueMember attributen in LDAP
+    Echter de use-case is niet echt real-world denk ik aangezien er enkel entitlements deleted/created worden en nooit herhangen
+    Maar desalwelteplus die non real-world use-case lingering uniqueMembers sounds a lot like this thread:
+    
+    Sounds a lot like this: http://lists.evolveum.com/pipermail/midpoint/2018-September/004954.html
+    or this: http://lists.evolveum.com/pipermail/midpoint/2016-November/002807.html
+    
+- Probleem met de juiste technische rol namen in LDAP te krijgen en (ander probleem) deletes in orde te krijgen:
+    Is het een idee om ook voor de technische rollen assignmentTargetSearch te gebruiken
+    (en ze dus effectief in midPoint te definiëren en ze dan pas te syncen naar LDAP zonder inducements)
+    vooral om die zottigheid met 
+       
+       What the fuck is roleMembershipRef onder role-config? zie attachments http://lists.evolveum.com/pipermail/midpoint/2016-November/002849.html
+       
+       Weg naar oplossing: com.evolveum.midpoint.provisioning op debug zetten
