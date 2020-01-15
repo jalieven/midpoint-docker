@@ -30,29 +30,29 @@ log.info("Entering "+action+" Script");
 def sql = new Sql(connection);
 
 assert uid != null
-
-switch ( objectClass ) {
-    case "__ACCOUNT__":
-    sql.execute("DELETE FROM Users where id= ?",[uid as Integer])
-    count = sql.updateCount;
-    //sql.commit();
-    break
-
-    case "Groups":
-    sql.execute("DELETE FROM Groups where id= ?",[uid as Integer])
-    count = sql.updateCount;
-    //sql.commit();
-    break
-
-    case "Organization":
-    sql.execute("DELETE FROM Organizations where id= ?",[uid as Integer])
-    count = sql.updateCount;
-    //sql.commit();
-    break
-
-    default:
-    uid;
-}
+//
+//switch ( objectClass ) {
+//    case "__ACCOUNT__":
+//    sql.execute("DELETE FROM Users where id= ?",[uid as Integer])
+//    count = sql.updateCount;
+//    //sql.commit();
+//    break
+//
+//    case "Groups":
+//    sql.execute("DELETE FROM Groups where id= ?",[uid as Integer])
+//    count = sql.updateCount;
+//    //sql.commit();
+//    break
+//
+//    case "Organization":
+//    sql.execute("DELETE FROM Organizations where id= ?",[uid as Integer])
+//    count = sql.updateCount;
+//    //sql.commit();
+//    break
+//
+//    default:
+//    uid;
+//}
 
 if (count != 1) {
     throw new UnknownUidException("Couldn't found and delete object $objectClass with uid $uid")

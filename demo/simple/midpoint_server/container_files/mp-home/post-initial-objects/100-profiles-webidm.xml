@@ -29,32 +29,16 @@
         xmlns:mext="http://midpoint.evolveum.com/xml/ns/public/model/extension-3"
         xmlns:didmu="http://didm.be/xml/ns/user">
 
-    <!-- Mapping between Privileges and technical Roles that need to be synced in LDAP -->
+    <!-- Mapping between Privileges and technical Roles (the latter needs to be synced in LDAP as group) -->
 
     <role oid="6dce0c5b-3668-4ee3-811b-818481855eb4">
         <name>VIP</name>
         <description>VIP Profile (i.e. mapping from privilege to technical roles)</description>
 
         <assignment>
-            <!-- JiraUser -->
             <targetRef oid="20bb2e95-a622-4833-b0c8-5e95407e08e8" type="RoleType" />
         </assignment>
 
-        <assignment>
-            <!-- ConfluenceUser -->
-            <targetRef oid="8cfa8272-ef4d-4139-8777-3432fa373932" type="RoleType" />
-        </assignment>
-
-    </role>
-
-    <role oid="998d2cbb-3176-4ddd-867d-eb53b7c17491">
-        <name>IMJVPlichtige</name>
-        <description>IMJVPlichtige Profile (i.e. mapping from privilege to technical roles)</description>
-
-        <assignment>
-            <!-- IMJVUser -->
-            <targetRef oid="cfd920f3-b8b0-47b1-adef-aab5fc0c7847" type="RoleType" />
-        </assignment>
     </role>
 
     <role oid="20bb2e95-a622-4833-b0c8-5e95407e08e8">
@@ -90,10 +74,10 @@
            <focusType>c:UserType</focusType>
         </inducement>
 
-       <inducement id="2">
+       <inducement id="666">
            <!--
-                FIXME: WHY DOES THIS RESULT IN THE CREATION OF THE GROUP privilege 20001-Milieumedewerker-01 in LDAP
-                FIXME: IT CLEARLY STATES INTENT: group and 20001-Milieumedewerker-01 is OF INTENT: privileges
+                FIXME: WHY DOES THIS RESULT IN THE CREATION OF THE GROUP WITH INTENT: privilege 20001-Milieumedewerker-01 in LDAP
+                FIXME: IT CLEARLY STATES INTENT: group
            -->
            <construction>
                <resourceRef oid="d0811790-6420-11e4-86b2-3c9755567874" type="c:ResourceType" />
@@ -118,87 +102,5 @@
        </inducement>
 
     </role>
-
-    <role oid="8cfa8272-ef4d-4139-8777-3432fa373932">
-        <name>ConfluenceUser</name>
-        <description>Access to Confluence</description>
-        <requestable>true</requestable>
-
-        <inducement id="1">
-            <construction>
-                <resourceRef oid="d0811790-6420-11e4-86b2-3c9755567874" type="c:ResourceType" />
-                <kind>account</kind>
-                <intent>ldap</intent>
-                <association>
-                    <c:ref>ri:group</c:ref>
-                    <outbound>
-                        <strength>strong</strength>
-                        <expression>
-                            <associationFromLink>
-                                <projectionDiscriminator>
-                                    <kind>entitlement</kind>
-                                    <intent>group</intent>
-                                </projectionDiscriminator>
-                            </associationFromLink>
-                        </expression>
-                    </outbound>
-                </association>
-            </construction>
-            <order>3</order>
-            <focusType>c:UserType</focusType>
-        </inducement>
-
-        <inducement id="2">
-            <construction>
-                <resourceRef oid="d0811790-6420-11e4-86b2-3c9755567874" type="c:ResourceType" />
-                <kind>entitlement</kind>
-                <intent>group</intent>
-            </construction>
-            <order>2</order>
-            <focusType>c:RoleType</focusType>
-        </inducement>
-
-    </role>
-
-   <role oid="cfd920f3-b8b0-47b1-adef-aab5fc0c7847">
-       <name>IMJVUser</name>
-       <description>Access to IMJV loket</description>
-       <requestable>true</requestable>
-
-       <inducement id="1">
-           <construction>
-               <resourceRef oid="d0811790-6420-11e4-86b2-3c9755567874" type="c:ResourceType" />
-               <kind>account</kind>
-               <intent>ldap</intent>
-               <association>
-                   <c:ref>ri:group</c:ref>
-                   <outbound>
-                       <strength>strong</strength>
-                       <expression>
-                           <associationFromLink>
-                               <projectionDiscriminator>
-                                   <kind>entitlement</kind>
-                                   <intent>group</intent>
-                               </projectionDiscriminator>
-                           </associationFromLink>
-                       </expression>
-                   </outbound>
-               </association>
-           </construction>
-           <order>3</order>
-           <focusType>c:UserType</focusType>
-       </inducement>
-
-       <inducement id="2">
-           <construction>
-               <resourceRef oid="d0811790-6420-11e4-86b2-3c9755567874" type="c:ResourceType" />
-               <kind>entitlement</kind>
-               <intent>group</intent>
-           </construction>
-           <order>2</order>
-           <focusType>c:RoleType</focusType>
-       </inducement>
-
-   </role>
 
 </c:objects>

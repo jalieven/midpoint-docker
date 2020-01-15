@@ -387,9 +387,19 @@
                 <correlation>
                     <q:equal>
                         <q:path>c:name</q:path>
-                        <valueExpression>
+                        <!--
+                        <expression>
                             <path>$shadow/attributes/icfs:name</path>
-                        </valueExpression>
+                        </expression>
+                        -->
+                        <expression>
+                            <trace>true</trace>
+                            <script xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="c:ScriptExpressionEvaluatorType">
+                                <code>
+                                    return "I dont care"
+                                </code>
+                            </script>
+                        </expression>
                     </q:equal>
                 </correlation>
                 <reaction>
