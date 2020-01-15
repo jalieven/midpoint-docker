@@ -36,7 +36,15 @@
         </condition>
     </mapping>
 
-    <!-- if the following mapping is disabled only those user come in ldap that have a technical role induced  -->
+    <!--
+        This is a way of liveSyncing all the accounts (regardless if they have a technical role assigned to them).
+        This role has no projections so does not appear in any resource but midPoints repo.
+        It works as follows:
+            - every user object gets a fixed WebIDM role assigned to it
+            - when that happens it gets synced to the OpenDJ resource
+            - since midPoint only knows how to sync IdmAccounts (the file 400-opendj-resource.xml)
+                and IdmGroup objectClasses it will only sync the users
+    -->
     <!--<mapping id="3">
         <name>webidm role</name>
         <strength>strong</strength>

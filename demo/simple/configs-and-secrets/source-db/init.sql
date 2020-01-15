@@ -44,9 +44,9 @@ INSERT INTO public.source_accounts(
 -- 	accountId, username, firstname, lastname, rijksregisternummer, disabled)
 -- 	VALUES ('289b2860-510e-4ce7-8b01-0213936dd01a', 'jbouck', 'Joost', 'Bouckenooghe', '81062140279', false);
 
--- INSERT INTO public.source_entitlements(
--- 	entitlementid, accountid, email, organisatiecode, departement, dienst, functie, personeelsnummer, fax, gsm, telefoonnr, privileges, disabled)
--- 	VALUES ('20000-Burger-01', '3fd83cd4-d1bb-4d7f-9a1a-12a02ed85a95', 'jan.lievens@biggerfish.be', '20000', 'HR', 'Thuis', 'CEO', NULL, NULL, '0494846697', '053839066', 'IMJVPlichtige', false);
+INSERT INTO public.source_entitlements(
+	entitlementid, accountid, email, organisatiecode, departement, dienst, functie, personeelsnummer, fax, gsm, telefoonnr, privileges, disabled)
+	VALUES ('20000-Burger-01', '3fd83cd4-d1bb-4d7f-9a1a-12a02ed85a95', 'jan.lievens@biggerfish.be', '20000', 'HR', 'Thuis', 'CEO', NULL, NULL, '0494846697', '053839066', 'IMJVPlichtige', false);
 
 INSERT INTO public.source_entitlements(
 	entitlementid, accountid, email, organisatiecode, departement, dienst, functie, personeelsnummer, fax, gsm, telefoonnr, privileges, disabled)

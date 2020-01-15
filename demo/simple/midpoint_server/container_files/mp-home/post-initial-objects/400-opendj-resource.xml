@@ -141,7 +141,7 @@
             <objectType id="1">
                 <kind>account</kind>
                 <displayName>IDM Account</displayName>
-                <intent>webidm</intent>
+                <intent>ldap</intent>
                 <default>true</default>
                 <objectClass>ri:IdmAccount</objectClass>
                 <attribute id="2">
@@ -478,6 +478,7 @@
             </objectSynchronization>
 
         </synchronization>
+
     </resource>
 
     <!--
