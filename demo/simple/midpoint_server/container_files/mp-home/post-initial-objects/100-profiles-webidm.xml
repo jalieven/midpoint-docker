@@ -88,9 +88,10 @@
                    <outbound>
                        <strength>strong</strength>
                        <expression>
+                           <trace>true</trace>
                            <script xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="c:ScriptExpressionEvaluatorType">
                                <code>
-                                   return "JiraUser"
+                                   return "Some description"
                                </code>
                            </script>
                        </expression>

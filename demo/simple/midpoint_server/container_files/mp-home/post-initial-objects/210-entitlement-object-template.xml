@@ -21,7 +21,6 @@
             <assignmentTargetSearch xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                                     xsi:type="c:SearchObjectRefExpressionEvaluatorType">
                 <targetType>c:RoleType</targetType>
-                <createOnDemand>true</createOnDemand>
                 <filter>
                     <q:equal>
                         <q:path>c:name</q:path>
