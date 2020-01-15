@@ -7,3 +7,8 @@ dn: ou=groups,dc=didm,dc=be
 objectClass: top
 objectClass: organizationalUnit
 ou: groups
+
+dn: ou=unixgroups,dc=didm,dc=be
+objectclass: top
+objectclass: organizationalUnit
+ou: unixgroups

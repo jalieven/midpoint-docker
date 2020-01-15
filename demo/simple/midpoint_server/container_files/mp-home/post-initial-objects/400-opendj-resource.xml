@@ -286,7 +286,7 @@
                         </source>
 
                         <expression>
-                            <trace>true</trace>
+<!--                            <trace>true</trace>-->
                             <script>
                                 <code>
                                     import javax.naming.ldap.Rdn
@@ -329,6 +329,13 @@
                 <cap:liveSync>
                     <cap:enabled>true</cap:enabled>
                 </cap:liveSync>
+                <cap:activation>
+                    <cap:status>
+                        <cap:attribute>ri:ds-pwp-account-disabled</cap:attribute>
+                        <cap:enableValue/>
+                        <cap:disableValue>true</cap:disableValue>
+                    </cap:status>
+                </cap:activation>
             </configured>
         </capabilities>
 
@@ -393,7 +400,7 @@
                         </expression>
                         -->
                         <expression>
-                            <trace>true</trace>
+<!--                            <trace>true</trace>-->
                             <script xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="c:ScriptExpressionEvaluatorType">
                                 <code>
                                     return "I dont care"
