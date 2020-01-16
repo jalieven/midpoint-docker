@@ -1,5 +1,5 @@
-FROM osixia/openldap:1.2.3
+FROM openidentityplatform/opendj:4.4.3
 
 MAINTAINER info@evolveum.com
 
-ADD container_files/ldif /container/service/slapd/assets/config/bootstrap/ldif/custom
+ADD container_files/ldif /opt/opendj/bootstrap/schema
