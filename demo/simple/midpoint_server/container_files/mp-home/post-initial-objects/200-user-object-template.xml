@@ -30,7 +30,7 @@
         <expression>
             <assignmentTargetSearch xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="c:AssignmentTargetSearchExpressionEvaluatorType">
                 <targetType>c:RoleType</targetType>
-                <oid>12345678-d34d-b33f-f00d-987987987989</oid>
+                <oid>10000000-0000-0000-0000-000000000601</oid>
             </assignmentTargetSearch>
         </expression>
         <target>
