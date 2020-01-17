@@ -429,7 +429,7 @@
                     <situation>deleted</situation>
                     <synchronize>true</synchronize>
                     <action>
-                        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#deleteFocus</handlerUri>
+                        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#unlink</handlerUri>
                     </action>
                 </reaction>
                 <reaction>

@@ -24,6 +24,9 @@
     - Unassign van jirauser doet de ref niet verdwijnen
     - Daarna terug opbouwen naar een hierarchy
     - Terug RRN introduceren in opendj resource schema
+    
+    
+    💥💥💥💥💥💥 Het is nu tijd om te kijken wat het gedrag is van verwijderen van rollen in de posix-group branch 💥💥💥💥💥💥 
 
 - Split up the Account in multiple intents according to CUG (Closed User Groups)
 
