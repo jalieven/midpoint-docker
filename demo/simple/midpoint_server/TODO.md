@@ -27,6 +27,7 @@
     
     
     💥💥💥💥💥💥 Het is nu tijd om te kijken wat het gedrag is van verwijderen van rollen in de posix-group branch 💥💥💥💥💥💥 
+        => blijkbaar zijn we niet de enigste: http://lists.evolveum.com/pipermail/midpoint/2016-April/001720.html
 
 - Split up the Account in multiple intents according to CUG (Closed User Groups)
 
