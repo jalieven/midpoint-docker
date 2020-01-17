@@ -11,6 +11,20 @@
 -   Map everything (orgs, roles, contactinfo) into LDAP structure
 
 
+- Eerst uitzoeken waarom:
+    - JiraUser assignment -> meta niet de group in LDAP aanmaakt (maar wel als je dat via de GUI doet)
+        moet de assignment in de andere richting liggen mss meta -> JiraUser??? => NEEN de gui doet iets speciaals dat wij niet doen
+            doet roleMembershipRef iets extra naast assigment van JirUser -> meta role???   NOPE!
+            doet activation iets extra ?  NOPE!
+        
+        Hmm: Blijkt dat wanneer je de link in de GUI maakt de JiraUser group direct in LDAP komt. Maar als je hem in XML doet dan niet maar wel nadat je de JiraUser reconciled.
+            => mss toch eens die recurring task om op openDJ resource de rollen te syncen aanzetten zodat die direct worden aangemaakt (shadow) => NOPE! die task doet niet uit JiraUser wordt niet initieel in LDAP gepompt
+            
+            
+    - Unassign van jirauser doet de ref niet verdwijnen
+    - Daarna terug opbouwen naar een hierarchy
+    - Terug RRN introduceren in opendj resource schema
+
 - Split up the Account in multiple intents according to CUG (Closed User Groups)
 
         schema handling configuration must define intents for them and synchronization configuration must define conditions which would then identify the intent and the correlation rule.

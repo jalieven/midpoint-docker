@@ -633,10 +633,13 @@
                         </expression>
                     </q:equal>
                 </correlation>
+
+                <!-- 🚀 disable/enable this when going back/forth to hierarchy -->
                 <objectTemplateRef oid="f6c9679e-477c-49cc-9be6-4dd92d121947" relation="org:default" type="c:ObjectTemplateType">
                     <targetName>Entitlement Object Template</targetName>
                     <description>This object template will create seperate roles for each privilege.</description>
                 </objectTemplateRef>
+
                 <reconcile>true</reconcile>
                 <reaction>
                     <situation>deleted</situation>

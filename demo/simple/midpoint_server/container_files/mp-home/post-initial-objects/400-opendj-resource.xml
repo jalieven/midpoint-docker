@@ -27,9 +27,7 @@
         xmlns:org="http://midpoint.evolveum.com/xml/ns/public/common/org-3"
         xmlns:t="http://prism.evolveum.com/xml/ns/public/types-3"
         xmlns:mr="http://prism.evolveum.com/xml/ns/public/matching-rule-3"
-        xmlns:mext="http://midpoint.evolveum.com/xml/ns/public/model/extension-3"
-        xmlns:didmu="http://didm.be/xml/ns/user"
-        xmlns:didme="http://didm.be/xml/ns/entitlement">
+        xmlns:mext="http://midpoint.evolveum.com/xml/ns/public/model/extension-3">
 
     <resource oid="d0811790-6420-11e4-86b2-3c9755567874">
 
@@ -67,7 +65,7 @@
                 <generateObjectClass>ri:organizationalUnit</generateObjectClass>
             </generationConstraints>
 
-            <definition>
+            <!--<definition>
                 <xsd:schema elementFormDefault="qualified"
                          targetNamespace="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3"
                          xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3"
@@ -105,12 +103,12 @@
                          </xsd:sequence>
                      </xsd:complexType>
 
-                    <!--
+                    &lt;!&ndash;
                         There seems to be a bug (or a hidden config missing) with naming of the group object class
                         When I use the LDAP standard groupOfUniqueNames in the schemaHandling group objectType it tries to access
                         the lowercased object class somehow. So we define a custom object class here and define it in LDAP
                         to inherit the groupOfUniqueNames.
-                    -->
+                    &ndash;&gt;
                     <xsd:complexType name="IdmGroup">
                         <xsd:annotation>
                             <xsd:appinfo>
@@ -136,27 +134,21 @@
                     </xsd:complexType>
 
                 </xsd:schema>
-            </definition>
+            </definition>-->
+
         </schema>
         <schemaHandling>
-            <objectType id="1">
+            <objectType>
                 <kind>account</kind>
                 <displayName>IDM Account</displayName>
                 <intent>ldap</intent>
                 <default>true</default>
-                <objectClass>ri:IdmAccount</objectClass>
-                <attribute id="2">
-                    <c:ref>icfs:name</c:ref>
+                <objectClass>ri:inetOrgPerson</objectClass>
+                <attribute>
+                    <c:ref>ri:dn</c:ref>
                     <displayName>Distinguished Name</displayName>
-                    <limitations>
-                        <minOccurs>0</minOccurs>
-                        <access>
-                            <read>true</read>
-                            <add>true</add>
-                            <modify>true</modify>
-                        </access>
-                    </limitations>
-                    <matchingRule xmlns:mr="http://prism.evolveum.com/xml/ns/public/matching-rule-3">mr:stringIgnoreCase</matchingRule>
+                    <volatilityTrigger>true</volatilityTrigger> <!-- 🚨🚨🚨 Change of DN may cause change of naming attribute -->
+                    <matchingRule>mr:stringIgnoreCase</matchingRule>
                     <outbound>
                         <source>
                             <c:path>$user/name</c:path>
@@ -164,25 +156,18 @@
                         <expression>
                             <script xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="c:ScriptExpressionEvaluatorType">
                                 <code>
-                                    'uid=' + name + iterationToken + ',ou=people,dc=didm,dc=be'
+                                    import javax.naming.ldap.Rdn
+                                    import javax.naming.ldap.LdapName
+
+                                    dn = new LdapName('ou=people,dc=didm,dc=be')
+                                    dn.add(new Rdn('uid',name.toString()))
+                                    return dn.toString()
                                 </code>
                             </script>
                         </expression>
                     </outbound>
                 </attribute>
-                <attribute id="3">
-                    <c:ref>icfs:uid</c:ref>
-                    <displayName>Entry UUID</displayName>
-                    <limitations>
-                        <access>
-                            <read>true</read>
-                            <add>false</add>
-                            <modify>true</modify>
-                        </access>
-                    </limitations>
-                    <matchingRule xmlns:mr="http://prism.evolveum.com/xml/ns/public/matching-rule-3">mr:stringIgnoreCase</matchingRule>
-                </attribute>
-                <attribute id="4">
+                <attribute>
                     <c:ref>ri:cn</c:ref>
                     <displayName>Common Name</displayName>
                     <limitations>
@@ -199,7 +184,7 @@
                         </source>
                     </outbound>
                 </attribute>
-                <attribute id="5">
+                <attribute>
                     <c:ref>ri:sn</c:ref>
                     <displayName>Surname</displayName>
                     <limitations>
@@ -211,7 +196,7 @@
                         </source>
                     </outbound>
                 </attribute>
-                <attribute id="6">
+                <attribute>
                     <c:ref>ri:givenName</c:ref>
                     <displayName>Given Name</displayName>
                     <outbound>
@@ -220,7 +205,7 @@
                         </source>
                     </outbound>
                 </attribute>
-                <attribute id="7">
+                <!--<attribute>
                     <c:ref>ri:rijksregisternummer</c:ref>
                     <displayName>Rijksregisternummer</displayName>
                     <outbound>
@@ -228,8 +213,8 @@
                             <c:path>$user/extension/didmu:rijksregisternummer</c:path>
                         </source>
                     </outbound>
-                </attribute>
-                <attribute id="8">
+                </attribute>-->
+                <attribute>
                     <c:ref>ri:uid</c:ref>
                     <displayName>Login Name</displayName>
                     <matchingRule xmlns:mr="http://prism.evolveum.com/xml/ns/public/matching-rule-3">mr:stringIgnoreCase</matchingRule>
@@ -249,11 +234,13 @@
                     <intent>group</intent>
                     <direction>objectToSubject</direction>
                     <associationAttribute>ri:uniqueMember</associationAttribute>
-                    <valueAttribute>icfs:name</valueAttribute>
+                    <valueAttribute>ri:dn</valueAttribute>
                     <!-- FIXME does this fix the non-delete f technical role on remove entitlement from account?
                         <shortcutAssociationAttribute>ri:memberOf</shortcutAssociationAttribute>
                         <shortcutValueAttribute>ri:dn</shortcutValueAttribute>
+                        <tolerant>false</tolerant>
                        -->
+                    <explicitReferentialIntegrity>true</explicitReferentialIntegrity>
                     <tolerant>false</tolerant>
                 </association>
                 <credentials>
@@ -276,17 +263,15 @@
                 <kind>entitlement</kind>
                 <intent>group</intent>
                 <displayName>Technical Role</displayName>
-                <objectClass>ri:IdmGroup</objectClass>
+                <objectClass>ri:groupOfUniqueNames</objectClass>
                 <attribute>
-                    <ref>icfs:name</ref>
-                    <matchingRule xmlns:mr="http://prism.evolveum.com/xml/ns/public/matching-rule-3">mr:stringIgnoreCase</matchingRule>
+                    <ref>ri:dn</ref>
+                    <matchingRule>mr:stringIgnoreCase</matchingRule>
                     <outbound>
                         <source>
                             <path>$focus/name</path>
                         </source>
-
                         <expression>
-<!--                            <trace>true</trace>-->
                             <script>
                                 <code>
                                     import javax.naming.ldap.Rdn
@@ -324,7 +309,7 @@
 
         </schemaHandling>
 
-        <capabilities>
+        <!--<capabilities>
             <configured>
                 <cap:liveSync>
                     <cap:enabled>true</cap:enabled>
@@ -337,17 +322,49 @@
                     </cap:status>
                 </cap:activation>
             </configured>
+        </capabilities>-->
+
+        <capabilities>
+            <cachingMetadata>
+                <retrievalTimestamp>2019-03-07T21:46:39.904Z</retrievalTimestamp>
+                <serialNumber>d5d2b0113448065b-fd82f7ab9a00b7ae</serialNumber>
+            </cachingMetadata>
+            <native xmlns:cap="http://midpoint.evolveum.com/xml/ns/public/resource/capabilities-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="c:CapabilityCollectionType">
+                <cap:schema/>
+                <cap:liveSync/>
+                <cap:testConnection/>
+                <cap:create/>
+                <cap:update>
+                    <cap:delta>true</cap:delta>
+                </cap:update>
+                <cap:delete/>
+                <cap:script>
+                    <cap:host>
+                        <cap:type>connector</cap:type>
+                    </cap:host>
+                </cap:script>
+                <cap:addRemoveAttributeValues/>
+                <cap:credentials>
+                    <cap:password>
+                        <cap:returnedByDefault>false</cap:returnedByDefault>
+                    </cap:password>
+                </cap:credentials>
+                <cap:auxiliaryObjectClasses/>
+                <cap:pagedSearch/>
+                <cap:read>
+                    <cap:returnDefaultAttributesOption>true</cap:returnDefaultAttributesOption>
+                </cap:read>
+            </native>
         </capabilities>
 
         <synchronization>
 
             <objectSynchronization>
                 <name>IDM Account Sync</name>
-                <focusType>c:UserType</focusType>
                 <enabled>true</enabled>
                 <kind>account</kind>
                 <intent>ldap</intent>
-                <objectClass>ri:IdmAccount</objectClass>
+                <objectClass>ri:inetOrgPerson</objectClass>
                 <correlation>
                     <q:equal>
                         <q:path>c:name</q:path>
@@ -380,32 +397,25 @@
                 <reaction>
                     <situation>unmatched</situation>
                     <synchronize>true</synchronize>
-                    <action/>
+                    <action>
+                        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#addFocus</handlerUri>
+                    </action>
                 </reaction>
             </objectSynchronization>
 
+            <!-- 🚨🚨🚨 It appears that this is never used
             <objectSynchronization>
                 <name>Induced Roles Sync</name>
                 <focusType>c:RoleType</focusType>
                 <enabled>true</enabled>
                 <kind>entitlement</kind>
                 <intent>group</intent>
-                <objectClass>ri:IdmGroup</objectClass>
+                <objectClass>ri:groupOfUniqueNames</objectClass>
                 <correlation>
                     <q:equal>
                         <q:path>c:name</q:path>
-                        <!--
                         <expression>
-                            <path>$shadow/attributes/icfs:name</path>
-                        </expression>
-                        -->
-                        <expression>
-<!--                            <trace>true</trace>-->
-                            <script xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="c:ScriptExpressionEvaluatorType">
-                                <code>
-                                    return "I dont care"
-                                </code>
-                            </script>
+                            <path>$shadow/attributes/ri:name</path>
                         </expression>
                     </q:equal>
                 </correlation>
@@ -415,54 +425,57 @@
                 </reaction>
                 <reaction>
                     <situation>deleted</situation>
+                    <synchronize>true</synchronize>
                     <action>
                         <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#deleteFocus</handlerUri>
                     </action>
                 </reaction>
                 <reaction>
                     <situation>unlinked</situation>
+                    <synchronize>true</synchronize>
                     <action>
                         <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#link</handlerUri>
                     </action>
                 </reaction>
                 <reaction>
                     <situation>unmatched</situation>
+                    <synchronize>true</synchronize>
                     <action>
                         <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#addFocus</handlerUri>
                     </action>
                 </reaction>
             </objectSynchronization>
+         -->
 
         </synchronization>
 
     </resource>
 
     <!--
-        FIXME: question: Do we have to explicitly define a task for syncing to work correctly or are groups
+        FIXME: question: Do we have to explicitly define a task for recomputing to work correctly or are groups
         synced through the defined role inducements in file 100-profiles-webidm?
         This is what they mean between liveSync (sync through inducement creation) vs provisioning sync (this task)
 
-        <task oid="0fc66475-f293-4976-a47d-d6330997544a">
-            <name>Role sync to LDAP resource</name>
-            <extension xsi:type="c:ExtensionType">
-                <mext:objectclass>ri:IdmGroup</mext:objectclass>
-                <mext:kind>entitlement</mext:kind>
-                <mext:intent>groups</mext:intent>
-            </extension>
-            <taskIdentifier>3678330292502-0-1</taskIdentifier>
-            <ownerRef oid="00000000-0000-0000-0000-000000000002"/>
-            <executionStatus>runnable</executionStatus>
-            <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/synchronization/task/import/handler-3</handlerUri>
-            <objectRef oid="d0811790-6420-11e4-86b2-3c9755567874" type="c:ResourceType">
-            </objectRef>
-            <recurrence>recurring</recurrence>
-            <binding>tight</binding>
-            <schedule>
-                <interval>10</interval>
-                <misfireAction>reschedule</misfireAction>
-            </schedule>
-            <threadStopAction>restart</threadStopAction>
-        </task>
-    -->
+    <task oid="0fc66475-f293-4976-a47d-d6330997544a">
+        <name>Reconcile LDAP accounts</name>
+        <extension xsi:type="c:ExtensionType">
+            <mext:kind>account</mext:kind>
+            <mext:intent>ldap</mext:intent>
+        </extension>
+        <taskIdentifier>1579257412095-0-1</taskIdentifier>
+        <ownerRef oid="00000000-0000-0000-0000-000000000002"/>
+        <executionStatus>runnable</executionStatus>
+        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/synchronization/task/reconciliation/handler-3</handlerUri>
+        <objectRef oid="d0811790-6420-11e4-86b2-3c9755567874" type="c:ResourceType">
+        </objectRef>
+        <recurrence>recurring</recurrence>
+        <binding>tight</binding>
+        <schedule>
+            <interval>10</interval>
+            <misfireAction>executeImmediately</misfireAction>
+        </schedule>
+        <threadStopAction>restart</threadStopAction>
+    </task>
+      -->
 
 </c:objects>

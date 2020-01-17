@@ -45,7 +45,7 @@
             - since midPoint only knows how to sync IdmAccounts (the file 400-opendj-resource.xml)
                 and IdmGroup objectClasses it will only sync the users
     -->
-    <!--<mapping id="3">
+    <mapping id="3">
         <name>webidm role</name>
         <strength>strong</strength>
         <expression>
@@ -57,7 +57,7 @@
         <target>
             <c:path>assignment</c:path>
         </target>
-    </mapping>-->
+    </mapping>
 
 </objectTemplate>
 
