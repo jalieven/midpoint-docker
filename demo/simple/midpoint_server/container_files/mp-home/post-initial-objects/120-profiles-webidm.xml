@@ -31,6 +31,7 @@
     <role oid="6dce0c5b-3668-4ee3-811b-818481855eb4">
         <name>VIP</name>
         <description>VIP Profile (i.e. mapping from privilege to technical roles)</description>
+        <roleType>privilege</roleType>
 
         <!-- 🚀 disable/enable this when going back/forth to hierarchy -->
         <assignment>
@@ -42,6 +43,7 @@
     <role oid="5cd1ec50-b0ba-4b2d-b92f-f39633b6297d">
         <name>Milieucoordinator</name>
         <description>Milieucoordinator Profile (i.e. mapping from privilege to technical roles)</description>
+        <roleType>privilege</roleType>
 
         <!-- 🚀 disable/enable this when going back/forth to hierarchy -->
         <assignment>
@@ -53,6 +55,7 @@
     <role oid="20bb2e95-a622-4833-b0c8-5e95407e08e8">
         <name>JiraUser</name>
         <description>Access to Jira</description>
+        <roleType>application</roleType>
 
         <!-- Meta Role that assigns user to group with name JiraUser -->
         <assignment>
@@ -65,6 +68,7 @@
     <role oid="77cc3051-e5e5-4103-b25e-49cc976e5192">
         <name>BesosUser</name>
         <description>Access to BESOS</description>
+        <roleType>application</roleType>
 
         <!-- Meta Role that assigns user to group with name BesosUser -->
         <assignment>

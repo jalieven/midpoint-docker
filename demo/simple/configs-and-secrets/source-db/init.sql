@@ -75,6 +75,8 @@ INSERT INTO public.source_entitlements(
 -- 	entitlementid, accountid, email, organisatiecode, departement, dienst, functie, personeelsnummer, fax, gsm, telefoonnr, privileges, disabled)
 -- 	VALUES ('20001-Milieumedewerker-03', '3fd83cd4-d1bb-4d7f-9a1a-12a02ed85a95', 'jan.lievens@gmail.com', '42301', 'Metingen', 'Telemetrie', 'Meet deskundige', NULL, NULL, '0494844342', '053849083', 'Milieucoordinator', false);
 
--- 0) What happens when an existing coupled entitlement is deleted?
+-- 4) What happens when an existing coupled entitlement is deleted?
 -- DELETE FROM public.source_entitlements
 -- 	WHERE entitlementid = '20001-Milieumedewerker-03';
+
+-- 5) What happens when we delete a user?

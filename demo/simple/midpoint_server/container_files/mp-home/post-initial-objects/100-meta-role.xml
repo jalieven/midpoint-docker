@@ -28,11 +28,16 @@
         xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3"
         xmlns:mext="http://midpoint.evolveum.com/xml/ns/public/model/extension-3">
 
-    <!-- Mapping between Privileges and technical Roles (the latter needs to be synced in LDAP as group) -->
+    <!--
+        Meta role used assignable on technical Roles. This way it gets created as group and
+        linked to the account (which resides 4 orders up the chain) cuz:
+            account -> entitlement -> privilege -> technical role -> meta-role
+    -->
 
     <role oid="d8565b3a-891c-4ae2-a035-b0233b4e016a">
         <name>Technical Meta Role</name>
         <description>Meta Role to assign to technical roles</description>
+        <roleType>meta</roleType>
 
         <inducement>
             <description>Technical Group Creation Inducement</description>

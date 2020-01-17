@@ -589,7 +589,7 @@
                 <reaction>
                     <situation>deleted</situation>
                     <action>
-                        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#unlinkAccount</handlerUri>
+                        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#deleteFocus</handlerUri>
                     </action>
                 </reaction>
                 <reaction>
@@ -642,14 +642,14 @@
 
                 <reconcile>true</reconcile>
                 <reaction>
+                    <situation>linked</situation>
+                    <synchronize>true</synchronize>
+                </reaction>
+                <reaction>
                     <situation>deleted</situation>
                     <action>
                         <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#deleteFocus</handlerUri>
                     </action>
-                </reaction>
-                <reaction>
-                    <situation>linked</situation>
-                    <synchronize>true</synchronize>
                 </reaction>
                 <reaction>
                     <situation>unlinked</situation>
@@ -684,7 +684,8 @@
         <taskIdentifier>1539330292502-0-1</taskIdentifier>
         <ownerRef oid="00000000-0000-0000-0000-000000000002"/>
         <executionStatus>runnable</executionStatus>
-        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/synchronization/task/import/handler-3</handlerUri>
+        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/synchronization/task/reconciliation/handler-3</handlerUri>
+<!--        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/synchronization/task/import/handler-3</handlerUri>-->
         <objectRef oid="dafe0482-faef-47b7-ae08-66b150929bb7" type="c:ResourceType">
         </objectRef>
 <!--        <recurrence>single</recurrence>-->
@@ -706,7 +707,8 @@
         <taskIdentifier>1539330292502-0-2</taskIdentifier>
         <ownerRef oid="00000000-0000-0000-0000-000000000002"/>
         <executionStatus>runnable</executionStatus>
-        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/synchronization/task/import/handler-3</handlerUri>
+        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/synchronization/task/reconciliation/handler-3</handlerUri>
+<!--        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/synchronization/task/import/handler-3</handlerUri>-->
         <objectRef oid="dafe0482-faef-47b7-ae08-66b150929bb7" type="c:ResourceType">
         </objectRef>
 <!--        <recurrence>single</recurrence>-->
