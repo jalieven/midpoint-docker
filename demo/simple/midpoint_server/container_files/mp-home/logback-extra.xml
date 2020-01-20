@@ -20,6 +20,8 @@
     <logger name="com.evolveum.midpoint.model.common.expression" level="TRACE" />
     <!-- Don't believe the docs class name: to see what is up with assignments enable the following class -->
     <logger name="com.evolveum.midpoint.model.impl.lens.projector.focus.AssignmentProcessor" level="TRACE" />
+    <!-- Handy logger to see what the connectors are doing  -->
+    <logger name="org.identityconnectors.framework.spi.operations" level="TRACE" />
     <!-- The following logger is handy when debugging the Groovy scripted SQL connector scripts -->
     <logger name="TestScript" level="TRACE" />
     <logger name="SearchScript" level="TRACE" />

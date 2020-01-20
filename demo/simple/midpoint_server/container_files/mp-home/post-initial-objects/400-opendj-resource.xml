@@ -237,10 +237,15 @@
                     <direction>objectToSubject</direction>
                     <associationAttribute>ri:uniqueMember</associationAttribute>
                     <valueAttribute>ri:dn</valueAttribute>
-                    <!-- FIXME does this fix the non-delete f technical role on remove entitlement from account?
-                        <shortcutAssociationAttribute>ri:memberOf</shortcutAssociationAttribute>
+                    <tolerant>false</tolerant>
+                    <!-- FIXME
+                        This does not appear to work since the following ldapsearch does not work when associating a user in a group:
+                        in ldap_server docker:
+                        cd opendj/bin
+                        ./ldapsearch --port 1389 --bindDN "cn=admin,dc=didm,dc=be" --bindPassword secret --baseDN dc=didm,dc=be "(&(objectClass=inetOrgPerson)(uid=user01)(isMemberOf=cn=ubuntu,ou=unixgroups,dc=didm,dc=be))"
+
+                        <shortcutAssociationAttribute>ri:isMemberOf</shortcutAssociationAttribute>
                         <shortcutValueAttribute>ri:dn</shortcutValueAttribute>
-                        <tolerant>false</tolerant>
                        -->
                     <explicitReferentialIntegrity>true</explicitReferentialIntegrity>
                     <tolerant>false</tolerant>
