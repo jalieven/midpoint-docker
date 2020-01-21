@@ -70,7 +70,7 @@
                 <attribute>
                     <c:ref>ri:dn</c:ref>
                     <displayName>Distinguished Name</displayName>
-                    <volatilityTrigger>true</volatilityTrigger> <!-- 🚨🚨🚨 Change of DN may cause change of naming attribute -->
+                    <volatilityTrigger>true</volatilityTrigger>
                     <matchingRule>mr:stringIgnoreCase</matchingRule>
                     <outbound>
                         <source>
@@ -160,19 +160,7 @@
                     <shortcutAssociationAttribute>ri:isMemberOf</shortcutAssociationAttribute>
                     <shortcutValueAttribute>ri:dn</shortcutValueAttribute>
                     <explicitReferentialIntegrity>true</explicitReferentialIntegrity>
-                </association>
-
-                <association>
-                    <ref>ri:unixGroup</ref>
-                    <displayName>UNIX Group Membership</displayName>
-                    <auxiliaryObjectClass>ri:posixAccount</auxiliaryObjectClass>
-                    <kind>entitlement</kind>
-                    <intent>unixGroup</intent>
-                    <direction>objectToSubject</direction>
-                    <associationAttribute>ri:memberUid</associationAttribute>
-                    <valueAttribute>ri:uid</valueAttribute>
-                    <!--                    <valueAttribute>ri:uidNumber</valueAttribute>-->
-                    <explicitReferentialIntegrity>true</explicitReferentialIntegrity>
+                    <tolerant>true</tolerant>
                 </association>
 
                 <protected>
@@ -207,15 +195,6 @@
                 <intent>ldapGroup</intent>
                 <displayName>LDAP Group</displayName>
                 <objectClass>ri:groupOfUniqueNames</objectClass>
-                <baseContext>
-                    <objectClass>ri:organizationalUnit</objectClass>
-                    <filter>
-                        <q:equal>
-                            <q:path>attributes/dn</q:path>
-                            <q:value>ou=groups,dc=didm,dc=be</q:value>
-                        </q:equal>
-                    </filter>
-                </baseContext>
                 <attribute>
                     <ref>ri:dn</ref>
                     <matchingRule>mr:stringIgnoreCase</matchingRule>
@@ -256,72 +235,6 @@
                         <strength>strong</strength>
                         <source>
                             <path>description</path>
-                        </source>
-                    </outbound>
-                </attribute>
-            </objectType>
-
-            <objectType>
-                <kind>entitlement</kind>
-                <intent>unixGroup</intent>
-                <displayName>UNIX Group</displayName>
-                <objectClass>ri:groupOfNames</objectClass>
-                <auxiliaryObjectClass>ri:posixGroup</auxiliaryObjectClass>
-                <baseContext>
-                    <objectClass>ri:organizationalUnit</objectClass>
-                    <filter>
-                        <q:equal>
-                            <q:path>attributes/dn</q:path>
-                            <q:value>ou=unixgroups,dc=didm,dc=be</q:value>
-                        </q:equal>
-                    </filter>
-                </baseContext>
-                <attribute>
-                    <ref>ri:dn</ref>
-                    <matchingRule>mr:stringIgnoreCase</matchingRule>
-                    <outbound>
-                        <source>
-                            <path>$focus/name</path>
-                        </source>
-                        <expression>
-                            <script>
-                                <code>
-                                    import javax.naming.ldap.Rdn
-                                    import javax.naming.ldap.LdapName
-
-                                    dn = new LdapName('ou=unixgroups,dc=didm,dc=be')
-                                    dn.add(new Rdn('cn', name.toString()))
-                                    return dn.toString()
-                                </code>
-                            </script>
-                        </expression>
-                    </outbound>
-                </attribute>
-                <attribute>
-                    <ref>ri:cn</ref>
-                    <matchingRule>mr:stringIgnoreCase</matchingRule>
-                    <outbound>
-                        <strength>weak</strength>
-                        <source>
-                            <path>$focus/name</path>
-                        </source>
-                    </outbound>
-                </attribute>
-                <attribute>
-                    <ref>ri:description</ref>
-                    <outbound>
-                        <strength>strong</strength>
-                        <source>
-                            <path>description</path>
-                        </source>
-                    </outbound>
-                </attribute>
-                <attribute>
-                    <ref>ri:gidNumber</ref>
-                    <outbound>
-                        <strength>strong</strength>
-                        <source>
-                            <path>extension/gidNumber</path>
                         </source>
                     </outbound>
                 </attribute>
