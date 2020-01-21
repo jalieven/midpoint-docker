@@ -61,6 +61,7 @@
                 <association>
                     <ref>ri:group</ref>
                     <outbound>
+                        <trace>true</trace>
                         <strength>strong</strength>
                         <expression>
                             <associationFromLink>

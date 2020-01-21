@@ -36,21 +36,21 @@ INSERT INTO public.source_accounts(
 -- 	accountId, username, firstname, lastname, rijksregisternummer, disabled)
 -- 	VALUES ('a26ef559-fbbd-4a3d-8122-99a70184ba36', 'jalie', 'Jan', 'Lievens', '81071040575', false);
 
-INSERT INTO public.source_accounts(
-	accountId, username, firstname, lastname, rijksregisternummer, disabled)
-	VALUES ('ee6a51b5-7ef6-40eb-ac1b-54172a3ed520', 'tvgulck', 'Tom', 'Van Gulck', '78072240377', false);
+-- INSERT INTO public.source_accounts(
+-- 	accountId, username, firstname, lastname, rijksregisternummer, disabled)
+-- 	VALUES ('ee6a51b5-7ef6-40eb-ac1b-54172a3ed520', 'tvgulck', 'Tom', 'Van Gulck', '78072240377', false);
 
 -- INSERT INTO public.source_accounts(
 -- 	accountId, username, firstname, lastname, rijksregisternummer, disabled)
 -- 	VALUES ('289b2860-510e-4ce7-8b01-0213936dd01a', 'jbouck', 'Joost', 'Bouckenooghe', '81062140279', false);
+--
+-- INSERT INTO public.source_entitlements(
+-- 	entitlementid, accountid, email, organisatiecode, departement, dienst, functie, personeelsnummer, fax, gsm, telefoonnr, privileges, disabled)
+-- 	VALUES ('20000-Burger-01', '3fd83cd4-d1bb-4d7f-9a1a-12a02ed85a95', 'jan.lievens@biggerfish.be', '20000', 'HR', 'Thuis', 'CEO', NULL, NULL, '0494846697', '053839066', 'IMJVPlichtige', false);
 
 INSERT INTO public.source_entitlements(
 	entitlementid, accountid, email, organisatiecode, departement, dienst, functie, personeelsnummer, fax, gsm, telefoonnr, privileges, disabled)
-	VALUES ('20000-Burger-01', '3fd83cd4-d1bb-4d7f-9a1a-12a02ed85a95', 'jan.lievens@biggerfish.be', '20000', 'HR', 'Thuis', 'CEO', NULL, NULL, '0494846697', '053839066', 'IMJVPlichtige;VIP', false);
-
--- INSERT INTO public.source_entitlements(
--- 	entitlementid, accountid, email, organisatiecode, departement, dienst, functie, personeelsnummer, fax, gsm, telefoonnr, privileges, disabled)
--- 	VALUES ('20001-Milieumedewerker-01', '3fd83cd4-d1bb-4d7f-9a1a-12a02ed85a95', 'jan.lievens@vlaanderen.be', '20001', 'Omgeving', 'DIDM', 'Developer', NULL, NULL, '0494846697', '053839066', 'Milieumedewerker;Developer;VIP', false);
+	VALUES ('20001-Milieumedewerker-01', '3fd83cd4-d1bb-4d7f-9a1a-12a02ed85a95', 'jan.lievens@vlaanderen.be', '20001', 'Omgeving', 'DIDM', 'Developer', NULL, NULL, '0494846697', '053839066', 'Milieumedewerker;Developer;VIP', false);
 
 -- INSERT INTO public.source_entitlements(
 -- 	entitlementid, accountid, email, organisatiecode, departement, dienst, functie, personeelsnummer, fax, gsm, telefoonnr, privileges, disabled)

@@ -22,6 +22,9 @@
     <logger name="com.evolveum.midpoint.model.impl.lens.projector.focus.AssignmentProcessor" level="TRACE" />
     <!-- Handy logger to see what the connectors are doing  -->
     <logger name="org.identityconnectors.framework.spi.operations" level="TRACE" />
+    <!-- DEBUG this for the not deleting of uniqueMember in LDAP -->
+    <logger name="com.evolveum.midpoint.provisioning" level="DEBUG" />
+    <logger name="org.identityconnectors.framework" level="TRACE" />
     <!-- The following logger is handy when debugging the Groovy scripted SQL connector scripts -->
     <logger name="TestScript" level="TRACE" />
     <logger name="SearchScript" level="TRACE" />
