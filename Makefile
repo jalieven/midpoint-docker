@@ -28,5 +28,13 @@ sync_sql_groovy_scripts:
 check_midpoint:
 	- docker exec -it $$(docker ps -a --filter name=simple_midpoint_server | awk '{print$$1}' | tail -n +2) ls -alt /opt/midpoint/var/post-initial-objects
 
+# Check the LDAP groups
+check_ldap_groups:
+	- docker exec -it $$(docker ps -a --filter name=simple_ldap | awk '{print$$1}' | tail -n +2) /opt/opendj/bin/ldapsearch --port 1389 --bindDN "cn=admin,dc=didm,dc=be" --bindPassword secret --baseDN dc=didm,dc=be "(&(objectClass=groupOfUniqueNames))"
+
+# Check the LDAP users
+check_ldap_users:
+	- docker exec -it $$(docker ps -a --filter name=simple_ldap | awk '{print$$1}' | tail -n +2) /opt/opendj/bin/ldapsearch --port 1389 --bindDN "cn=admin,dc=didm,dc=be" --bindPassword secret --baseDN dc=didm,dc=be "(&(objectClass=inetOrgPerson))"
+
 # Composite command to restart all over again
 restart: stop_all clean_all start_all logs_midpoint

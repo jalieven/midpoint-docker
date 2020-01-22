@@ -131,6 +131,11 @@
     Interesting sites to start debugging:
     
         * com.evolveum.midpoint.model.common.mapping.MappingImpl ("MAPPING  in for association") -> trace van de associationFromLink setting in inducement van onze Meta-role
+        
+                In de call stack interessante sites:
+                    - com.evolveum.midpoint.model.impl.lens.projector.focus.AssignmentProcessor#evaluateConstructions
+                    - 
+                
         * package org.identityconnectors.framework.spi.operations -> site waar alle acties naar de connectoren van vertrekken
         * package com.evolveum.midpoint.provisioning -> mss interessant om te zien wat er daar gebeurt wnn er een entitlement die er voorheen was niet meer zichtbaar is
         
