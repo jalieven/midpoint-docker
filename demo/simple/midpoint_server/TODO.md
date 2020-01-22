@@ -125,3 +125,12 @@
        What the fuck is roleMembershipRef onder role-config? zie attachments http://lists.evolveum.com/pipermail/midpoint/2016-November/002849.html
        
        Weg naar oplossing: com.evolveum.midpoint.provisioning op debug zetten
+       
+- On to the debugging round om probleem te onderzoeken waarom uniqueMembers niet worden uitgekuisd nadat Entitlements wegvallen:
+
+    Interesting sites to start debugging:
+    
+        * com.evolveum.midpoint.model.common.mapping.MappingImpl ("MAPPING  in for association") -> trace van de associationFromLink setting in inducement van onze Meta-role
+        * package org.identityconnectors.framework.spi.operations -> site waar alle acties naar de connectoren van vertrekken
+        * package com.evolveum.midpoint.provisioning -> mss interessant om te zien wat er daar gebeurt wnn er een entitlement die er voorheen was niet meer zichtbaar is
+        

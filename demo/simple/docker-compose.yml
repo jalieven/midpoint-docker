@@ -52,6 +52,7 @@ services:
      - postgres_resource
     ports:
       - 8080:8080
+      - 8000:8000
     environment:
      - REPO_DATABASE_TYPE=postgresql
      - REPO_HOST=midpoint_data
@@ -65,7 +66,7 @@ services:
      - MP_KEYSTORE_PASSWORD_FILE=/run/secrets/mp_keystore_password.txt
      - MP_MEM_MAX=2048m
      - MP_MEM_INIT=1024m
-     - MP_JAVA_OPTS
+     - MP_JAVA_OPTS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:8000
      - TIMEZONE=UTC
     networks:
      - net

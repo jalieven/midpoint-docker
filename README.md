@@ -88,5 +88,44 @@ docker exec -it <container_id_of_simple_midpoint_server> bash
 ls -alt /opt/midpoint/var/post-initial-objects
 ```
 
+## To Remote Debug MidPoint
+
+Pre-requisities:
+
+    1. Java (JDK) 11
+    2. Apache Maven 3
+
+Because there is some hacking going on in midPoint (maven plugin versions that work with java11 or something)
+```
+wget https://nexus.evolveum.com/nexus/repository/releases/org/apache/maven/plugins/maven-dependency-plugin/3.1.1e1/maven-dependency-plugin-3.1.1e1.pom
+wget https://nexus.evolveum.com/nexus/repository/releases/org/apache/maven/plugins/maven-dependency-plugin/3.1.1e1/maven-dependency-plugin-3.1.1e1.jar
+mvn install:install-file -Dfile=maven-dependency-plugin-3.1.1e1.jar -DpomFile=maven-dependency-plugin-3.1.1e1.pom
+```
+
+```
+git checkout git@github.com:Evolveum/midpoint.git
+cd midpoint
+```
+
+The remove the "import org.bouncycastle.util.Arrays" from the following files:
+    repo/repo-test-util/src/main/java/com/evolveum/midpoint/test/asserter/LinkFinder.java
+    repo/repo-test-util/src/main/java/com/evolveum/midpoint/test/asserter/ShadowAssociationAsserter.java
+    repo/repo-test-util/src/main/java/com/evolveum/midpoint/test/asserter/TriggerFinder.java
+
+Add the exclusion of itext in the jasperreports dependency (net.sf.jasperreports:jasperreports) build-system/pom.xml (since it references an obscure version):
+    <exclusion>
+        <groupId>com.lowagie</groupId>
+        <artifactId>itext</artifactId>
+    </exclusion>
+
+Then finally:
+```
+mvn install -DskipTests=true
+```
+
+In IntelliJ IDEA open the git@github.com:Evolveum/midpoint.git project
+And create a Remote debug configuration that points to localhost:8000
+Happy de-🐞ging!
+
 ## Documentation
 Please see [Dockerized midPoint](https://wiki.evolveum.com/display/midPoint/Dockerized+midPoint) wiki page.
