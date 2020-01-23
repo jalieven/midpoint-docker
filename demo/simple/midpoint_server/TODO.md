@@ -134,8 +134,48 @@
         
                 In de call stack interessante sites:
                     - com.evolveum.midpoint.model.impl.lens.projector.focus.AssignmentProcessor#evaluateConstructions
-                    - 
+                        Wnn we de entitlement deleten: waarom returned com.evolveum.midpoint.model.impl.lens.projector.focus.AssignmentProcessor#processAssignmentsProjectionsWithFocus early (door focusDelta.isDelete())?
+                        en komen we nooit verder in die method waar dan de Projections worden evaluated (onze fameuze associationFromLink in de meta-role)
+                        of is het processFocusDelete waar de magic happens?
+                        
+                            Vragen/bedenkingen die ik mij hierbij stel:
+                                * Ik krijg het gevoel dat de afhandeling van zo een delete en zijn weerslag in LDAP niet in deze life-cycle gebeurt (eerder in een reconcile task ofzo)
+                                    Indien dit niet het geval is dan valt de AssignmentProcessor steeds eruit en worden er geen assigments processed bij een delete van entitlement => dan is mP wel degelijk brol.
+                                    {UNEXPLORED}
+                                * Mss moeten we eens beginnen zonder entitlements en dan com/evolveum/midpoint/model/impl/lens/projector/focus/AssignmentProcessor.java:215 debuggen
+                                    
+                                    💪 Uitgevoerd en 
+                                    
+                                * Is het juist dat we een focus (entitlement) delete krijgen hier (niet eerste een unlink ofzo) {reactions}
+                               
+                                    💪 Het op unlink reaction zetten in een deleted situation doet ons over de focusDelta.isDelete() vliegen waardoor onderliggende code wordt uitgevoerd.
+                                        Echter zonder success (nu wordt zelfs de entitlement niet verwijderd in midPoint zelf.
+                                        Plots zie ik volgend interessant zinnetje in mP Confluence ivm die reaction config:
+                                            'Using the normal (non-action) methods is also generally a preferred way because such definition is applied to all changes resulting in a consistent policy'
+                                            Wat er hiermee juist wordt bedoelt is mij niet duidelijk: verwijderen van die expliciete config of ergens anders een config doen.
+                                            (https://wiki.evolveum.com/display/midPoint/Synchronization+Configuration#SynchronizationConfiguration-Reactions)
+                                            
+                                * Zeer interessante comment op com/evolveum/midpoint/model/impl/lens/projector/focus/AssignmentProcessor.java:215
+                                    => This is where most of the assignment-level action happens.
+                                    {DEFINITELY_TO_EXPLORE} 
+                                
+                        [ff dus wat beter te weten komen wat die method doet]
+                    - ook een tof hubke: com/evolveum/midpoint/model/impl/lens/projector/focus/AssignmentHolderProcessor.java:249
+                        {UNEXPLORED}
+                    - ook zeer wijze method om te onderzoeken (ook op andere usage sites):
+                        com.evolveum.midpoint.model.impl.lens.projector.focus.AssignmentTripleEvaluator#isMemberOfInvocationResultChanged
+                    - en ook AssignmentProcessor.processMembershipAndDelegatedRef
                 
         * package org.identityconnectors.framework.spi.operations -> site waar alle acties naar de connectoren van vertrekken
+            {UNEXPLORED}
         * package com.evolveum.midpoint.provisioning -> mss interessant om te zien wat er daar gebeurt wnn er een entitlement die er voorheen was niet meer zichtbaar is
+            {UNEXPLORED}
         
+        
+- Vragen voor DAASI:
+
+    - Vragen wat dat zinneke betekent: Using the normal (non-action) methods is also generally a preferred way because such definition is applied to all changes resulting in a consistent policy in Confluence (https://wiki.evolveum.com/display/midPoint/Synchronization+Configuration#SynchronizationConfiguration-Reactions)
+    - Ook daarbij wat meer uitleg vragen wat die zaken zoals unmatched/unlinked nu juist betekenen. Reactions uitleggen
+    - Waarom die scripting task recompute voor die technische rollen om ze in LDAP te krijgen?
+    - Die verschillende soorten tasks (reconcile/live/recompute/import), wat zijn de verschillen hier tussen en wanneer welke te runnen? Is het in onze use-case enkel nodig om een import task te runnen van tijd tot tijd?
+    - 

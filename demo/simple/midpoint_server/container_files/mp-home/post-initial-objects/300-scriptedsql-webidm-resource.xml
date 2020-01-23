@@ -688,8 +688,8 @@
 <!--        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/synchronization/task/import/handler-3</handlerUri>-->
         <objectRef oid="dafe0482-faef-47b7-ae08-66b150929bb7" type="c:ResourceType">
         </objectRef>
-<!--        <recurrence>single</recurrence>-->
-        <recurrence>recurring</recurrence>
+        <recurrence>single</recurrence>
+<!--        <recurrence>recurring</recurrence>-->
         <binding>tight</binding>
         <schedule>
             <interval>10</interval>
@@ -711,8 +711,8 @@
 <!--        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/synchronization/task/import/handler-3</handlerUri>-->
         <objectRef oid="dafe0482-faef-47b7-ae08-66b150929bb7" type="c:ResourceType">
         </objectRef>
-<!--        <recurrence>single</recurrence>-->
-        <recurrence>recurring</recurrence>
+        <recurrence>single</recurrence>
+<!--        <recurrence>recurring</recurrence>-->
         <binding>tight</binding>
         <schedule>
             <interval>10</interval>
