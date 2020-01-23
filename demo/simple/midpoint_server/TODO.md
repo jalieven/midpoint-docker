@@ -144,7 +144,9 @@
                                     {UNEXPLORED}
                                 * Mss moeten we eens beginnen zonder entitlements en dan com/evolveum/midpoint/model/impl/lens/projector/focus/AssignmentProcessor.java:215 debuggen
                                     
-                                    💪 Uitgevoerd en 
+                                    💪 Uitgevoerd en niets bijgeleerd. Het aanmaken van de uniqueMember wordt niet in dat pad afgehandeld.
+                                        Misschien is het interessanter om te vertrekken van de call naar de connector wnn die wordt aangemaakt om dan te kijken of er in die buurt ook een delete bestaat
+                                        om dan de usage sites daarvan te onderzoeken
                                     
                                 * Is het juist dat we een focus (entitlement) delete krijgen hier (niet eerste een unlink ofzo) {reactions}
                                
@@ -158,8 +160,7 @@
                                 * Zeer interessante comment op com/evolveum/midpoint/model/impl/lens/projector/focus/AssignmentProcessor.java:215
                                     => This is where most of the assignment-level action happens.
                                     {DEFINITELY_TO_EXPLORE} 
-                                
-                        [ff dus wat beter te weten komen wat die method doet]
+                               
                     - ook een tof hubke: com/evolveum/midpoint/model/impl/lens/projector/focus/AssignmentHolderProcessor.java:249
                         {UNEXPLORED}
                     - ook zeer wijze method om te onderzoeken (ook op andere usage sites):
@@ -169,8 +170,82 @@
         * package org.identityconnectors.framework.spi.operations -> site waar alle acties naar de connectoren van vertrekken
             {UNEXPLORED}
         * package com.evolveum.midpoint.provisioning -> mss interessant om te zien wat er daar gebeurt wnn er een entitlement die er voorheen was niet meer zichtbaar is
-            {UNEXPLORED}
+            
+            Tijdens provisioning (aanmaak uniqueMember) zie ik dit in de logs:
+                2020-01-23 08:58:22,737 [PROVISIONING] [midPointScheduler_Worker-2] DEBUG (com.evolveum.midpoint.provisioning.impl.ResourceObjectConverter): PROVISIONING MODIFY operation on resource:d0811790-6420-11e4-86b2-3c9755567874(OpenDJ)
+                 MODIFY object, object class Technical Role, identified by:
+                  {
+                    entryUUID: 88972d7b-6deb-4d94-b343-d039099d23c4
+                    dn: cn=jirauser,ou=groups,dc=didm,dc=be
+                  }
+                 changes:
+                  [
+                    PropertyModificationOperation:
+                      delta:
+                        attributes/uniqueMember
+                          ADD: uid=81071040575,ou=people,dc=didm,dc=be
+                      matchingRule: {http://prism.evolveum.com/xml/ns/public/matching-rule-3}stringIgnoreCase
+                  ]
+                  
+             Op plaats com/evolveum/midpoint/model/impl/lens/ChangeExecutor.java:936 zouden we moeten objectDelta's moeten krijgen met volgende gegevens als we entitlement verwijderen:
+                {
+                    - changeType: "MODIFY"
+                    - modifications: [
+                        / assignment, REMOVE (user-assigment)
+                        / roleMembershipRef, REMOVE (om 20001-Milieumedewerker-01 te unassignen)
+                    ]
+                 }
+                 en {
+                    - changeType: "MODIFY"
+                    - modifications: [
+                        association, REMOVE -> valuesToDelete (name, shadowRef, identifiers) => ref naar JiraUser
+                    ]
+                    Bij het toevoegen van de entitlement komt deze laatste objectDelta met ADD van sn,cn, givenName, uid op account
+                    
+                De focusDelta opbouwen in com/evolveum/midpoint/model/impl/lens/ChangeExecutor.java:155 is wel belangrijk precies
+
+             Bij delete van entitlement krijgen we volgende objectDelta's:
+             
+                {
+                    - verwijderen van assignment (user-assigment van in scripted sql resource)
+                    - replace roleMembershipRef (om 20001-Milieumedewerker-01 te unassignen)
+                 } en {
+                    - changeType: "MODIFY"
+                    - modifications: [
+                         - ADD van sn,cn, givenName, uid op account
+                         🚨🚨🚨🚨 MAAR HIER DUS NIET DIE VERWACHTE MODIFICATION ZOALS WE DIE ZIEN BIJ CREATIE ENTITLEMENT 🚨🚨🚨🚨 
+                           !!!! association, REMOVE -> valuesToDelete (name, shadowRef, identifiers) => ref naar JiraUser !!!!
+                    ]
+                 }
+                 
+              OK one step closer: In LensProjectionContext wordt er een secondaryDelta opgebouwd => usages vinden
+                    => op het moment van verwijderen is het de direct de ReconciliationProcessor die de secondaryDelta opvult
+                            ReconciliationProcessor.recordDelta -> ".reconcileProjectionAttribute => ".reconcileProjectionAttributes
+                                !!! iets verderop de call  naar reconcileProjectionAttributes wordt reconcileProjectionAssociations (?? {UNEXPLORED} ??) uitgevoerd
+            
+                Just a thought: waarom deze logger eens niet op trace zetten en vanalles bijleren bij aanmaken:
+                    {UNEXPLORED} com.evolveum.midpoint.model.impl.lens.projector.ReconciliationProcessor => TRACE     (DEES MOETEN WE ZEKER DOEN)
+                        zeer belovende javadoc van die class:
+                             * Processor that reconciles the computed account and the real account. There
+                             * will be some deltas already computed from the other processors. This
+                             * processor will compare the "projected" state of the account after application
+                             * of the deltas to the actual (real) account with the result of the mappings.
+                             * The differences will be expressed as additional "reconciliation" deltas.
         
+                Nog warmer: ReconciliationProcessor.decideIfTolerateAssociation (zal tolerant er toch iets mee te maken hebben?)
+                        Uit deze call komt de kennis dat areCValues mss wel moet opgevuld zijn?
+                        !!! De areCValues zijn empty omdat de tweede call in ReconciliationProcessor.reconcileProjectionAssociations een lege associationsContainer terug geeft !!!!
+                         
+                    PRELIMINARY CONCLUSION SO FAR: wanneer de association op tolerant = false staat dan gaat de
+                        ReconciliationProcessor.reconcileProjectionAssociations een association-delta toevoegen aan de objectDelta (diegene die we zien bij aanmaken en dus missen bij delete)
+                        Gegeven dus dat de tweede call in ReconciliationProcessor.reconcileProjectionAssociations geen lege associationsContainer terug geeft
+                        waardoor de areCValues worden opgevuld en er effectief die association-delta wordt toegevoegd.
+                        
+                    ANOTHER PRELIMINARY CONCLUSION: Waarom zit association niet in de items (private member) van com.evolveum.midpoint.prism.impl.PrismContainerValueImpl ???
+                        Wat is de connectie met de vorige conclusie? Op een shadow object (account) in findContainer daarop wordt het item "association" gezocht maar niet gevonden
+                        omdat de PrismContainerValueImpl een item mist zijnde "association" wat blijkbaar overeen komt met het feit dat de scripted-sql resource schemaHandling geen association gedefinieerd heeft.
+                        Komen die items in PrismContainerValueImpl overeen met schema extension? want een association bij configureren resulteert niet in "association" toevoeging in die items...
+                     
         
 - Vragen voor DAASI:
 
@@ -178,4 +253,4 @@
     - Ook daarbij wat meer uitleg vragen wat die zaken zoals unmatched/unlinked nu juist betekenen. Reactions uitleggen
     - Waarom die scripting task recompute voor die technische rollen om ze in LDAP te krijgen?
     - Die verschillende soorten tasks (reconcile/live/recompute/import), wat zijn de verschillen hier tussen en wanneer welke te runnen? Is het in onze use-case enkel nodig om een import task te runnen van tijd tot tijd?
-    - 
+    - Wanneer een entitlement bijkomt in DB dan hangt het af van of de entitlement import task eerst loopt en dan accounts pas om effectief in die run een ldap uniqueMember te genereren. Als de volgorde omgekeerd voordoet dan duurt het 2 runs van die tasks om alles in orde te krijgen.

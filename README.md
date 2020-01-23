@@ -104,6 +104,7 @@ mvn install:install-file -Dfile=maven-dependency-plugin-3.1.1e1.jar -DpomFile=ma
 
 ```
 git checkout git@github.com:Evolveum/midpoint.git
+git checkout tags/v4.0.1 -b my-4.0.1
 cd midpoint
 ```
 
@@ -117,6 +118,7 @@ Add the exclusion of itext in the jasperreports dependency (net.sf.jasperreports
         <groupId>com.lowagie</groupId>
         <artifactId>itext</artifactId>
     </exclusion>
+
 
 Then finally:
 ```

@@ -237,7 +237,7 @@
                     <direction>objectToSubject</direction>
                     <associationAttribute>ri:uniqueMember</associationAttribute>
                     <valueAttribute>ri:dn</valueAttribute>
-                    <tolerant>true</tolerant>
+                    <tolerant>false</tolerant>
                     <matchingRule>mr:stringIgnoreCase</matchingRule>
                     <!-- FIXME
                         This does not appear to work since the following ldapsearch does not work when associating a user in a group:

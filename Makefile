@@ -48,7 +48,6 @@ insert_entitlement:
 delete_entitlement:
 	- docker exec -it $$(docker ps -a --filter name=simple_postgres_resource_1 | awk '{print$$1}' | tail -n +2) /usr/bin/psql -h localhost -p 8432 -U pgres -d pgres -c "DELETE FROM source_entitlements WHERE entitlementid = '20001-Milieumedewerker-01'"
 
-
 # Composite command to restart all over again
 restart: stop_all clean_all start_all logs_midpoint
 

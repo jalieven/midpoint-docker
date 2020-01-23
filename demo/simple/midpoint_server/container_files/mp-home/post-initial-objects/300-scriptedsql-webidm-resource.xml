@@ -390,9 +390,11 @@
                     </inbound>
                 </attribute>
 
-                <attribute>
+                <association>
                     <ref>ri:entitlements</ref>
+                    <displayName>Entitlements</displayName>
                     <inbound>
+                        <exclusive>true</exclusive>
                         <strength>strong</strength>
                         <authoritative>true</authoritative>
                         <expression>
@@ -402,9 +404,11 @@
                                     <q:equal>
                                         <q:path>name</q:path>
                                         <expression>
+                                            <trace>true</trace>
                                             <script>
                                                 <code>
-                                                    return input
+                                                    log.info('####### ENTITLEMENT ####', entitlement?.getName())
+                                                    return entitlement?.getName()
                                                 </code>
                                             </script>
                                         </expression>
@@ -430,7 +434,14 @@
                             </set>
                         </target>
                     </inbound>
-                </attribute>
+                    <kind>entitlement</kind>
+                    <intent>privileges</intent>
+                    <direction>subjectToObject</direction>
+                    <associationAttribute>ri:entitlements</associationAttribute>
+                    <valueAttribute>icfs:name</valueAttribute>
+                    <explicitReferentialIntegrity>true</explicitReferentialIntegrity>
+<!--                    <tolerant>false</tolerant>-->
+                </association>
 
                 <activation>
                     <administrativeStatus>
