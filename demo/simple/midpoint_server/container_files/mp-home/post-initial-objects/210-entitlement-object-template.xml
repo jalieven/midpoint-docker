@@ -54,4 +54,35 @@
             <c:path>assignment</c:path>
         </target>
     </mapping>
+    <mapping>
+        <name>User assignment</name>
+        <source>
+            <name>accountId</name>
+            <path>$focus/extension/accountId</path>
+        </source>
+        <!--        <trace>true</trace>-->
+        <expression>
+            <!--            <trace>true</trace>-->
+            <assignmentTargetSearch xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                                    xsi:type="c:SearchObjectRefExpressionEvaluatorType">
+                <targetType>c:UserType</targetType>
+                <filter>
+                    <q:equal>
+                        <q:path>c:name</q:path>
+                        <expression>
+                            <script>
+                                <relativityMode>absolute</relativityMode>
+                                <code>
+                                    return privileges
+                                </code>
+                            </script>
+                        </expression>
+                    </q:equal>
+                </filter>
+            </assignmentTargetSearch>
+        </expression>
+        <target>
+            <c:path>assignment</c:path>
+        </target>
+    </mapping>
 </objectTemplate>

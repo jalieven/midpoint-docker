@@ -91,10 +91,10 @@ void handleAccount(Sql sql) {
     Closure closure = { row ->
         log.info("#### Account Row from DB: {0} ####", row)
         //def entitlementsQuery = "select g.name from groups g join user_groups ug on ug.group_id = g.group_id join users u on u.user_id = ug.user_id" + where;
-        String entitlementsQuery = "SELECT s_ent.entitlementid FROM source_entitlements s_ent WHERE s_ent.accountid = '" + row.accountid + "'"
-        List<GroovyRowResult> entitlementsResults = sql.rows(entitlementsQuery);
-        List entitlementIds = entitlementsResults.entitlementid as List;
-        log.info("#### Found Entitlements: {0} for Account: {1}", entitlementIds, row.accountid)
+        //String entitlementsQuery = "SELECT s_ent.entitlementid FROM source_entitlements s_ent WHERE s_ent.accountid = '" + row.accountid + "'"
+//        List<GroovyRowResult> entitlementsResults = sql.rows(entitlementsQuery);
+//        List entitlementIds = entitlementsResults.entitlementid as List;
+        //log.info("#### Found Entitlements: {0} for Account: {1}", entitlementIds, row.accountid)
         handler(ICFObjectBuilder.co {
             uid row.accountid as String
             id row.rijksregisternummer
@@ -105,7 +105,7 @@ void handleAccount(Sql sql) {
             attribute 'firstname', row.firstname
             attribute 'lastname', row.lastname
             attribute 'rijksregisternummer', row.rijksregisternummer
-            attribute 'entitlements', entitlementIds
+//            attribute 'entitlements', entitlementIds
         })
     }
 

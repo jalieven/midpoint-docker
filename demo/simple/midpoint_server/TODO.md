@@ -521,3 +521,4 @@
     - Waarom die scripting task recompute voor die technische rollen om ze in LDAP te krijgen?
     - Die verschillende soorten tasks (reconcile/live/recompute/import), wat zijn de verschillen hier tussen en wanneer welke te runnen? Is het in onze use-case enkel nodig om een import task te runnen van tijd tot tijd?
     - Wanneer een entitlement bijkomt in DB dan hangt het af van of de entitlement import task eerst loopt en dan accounts pas om effectief in die run een ldap uniqueMember te genereren. Als de volgorde omgekeerd voordoet dan duurt het 2 runs van die tasks om alles in orde te krijgen.
+    - Wat is het verschil tussen association en assignment? Als ik een association heb dan wil ik toch direct ook een assignment?

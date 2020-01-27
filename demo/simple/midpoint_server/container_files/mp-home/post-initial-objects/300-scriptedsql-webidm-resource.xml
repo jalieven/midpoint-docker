@@ -151,14 +151,14 @@
                                     </xsd:appinfo>
                                 </xsd:annotation>
                             </xsd:element>
-                            <xsd:element maxOccurs="unbounded" minOccurs="0" name="entitlements" type="xsd:string">
-                                <xsd:annotation>
-                                    <xsd:appinfo>
-                                        <a:displayOrder>140</a:displayOrder>
-                                        <ra:frameworkAttributeName>entitlements</ra:frameworkAttributeName>
-                                    </xsd:appinfo>
-                                </xsd:annotation>
-                            </xsd:element>
+<!--                            <xsd:element maxOccurs="unbounded" minOccurs="0" name="entitlements" type="xsd:string">-->
+<!--                                <xsd:annotation>-->
+<!--                                    <xsd:appinfo>-->
+<!--                                        <a:displayOrder>140</a:displayOrder>-->
+<!--                                        <ra:frameworkAttributeName>entitlements</ra:frameworkAttributeName>-->
+<!--                                    </xsd:appinfo>-->
+<!--                                </xsd:annotation>-->
+<!--                            </xsd:element>-->
                             <xsd:element ref="icfs:name">
                                 <xsd:annotation>
                                     <xsd:appinfo>
@@ -390,58 +390,58 @@
                     </inbound>
                 </attribute>
 
-                <association>
-                    <ref>ri:entitlements</ref>
-                    <displayName>Entitlements</displayName>
-                    <inbound>
-                        <exclusive>true</exclusive>
-                        <strength>strong</strength>
-                        <authoritative>true</authoritative>
-                        <expression>
-                            <assignmentTargetSearch>
-                                <targetType>c:RoleType</targetType>
-                                <filter>
-                                    <q:equal>
-                                        <q:path>name</q:path>
-                                        <expression>
-                                            <trace>true</trace>
-                                            <script>
-                                                <code>
-                                                    log.info('####### ENTITLEMENT ####', entitlement?.getName())
-                                                    return entitlement?.getName()
-                                                </code>
-                                            </script>
-                                        </expression>
-                                    </q:equal>
-                                </filter>
-                                <!-- This marks assignments created by this mapping -->
-                                <assignmentProperties>
-                                    <subtype>user-assignment</subtype>
-                                </assignmentProperties>
-                            </assignmentTargetSearch>
-                        </expression>
-                        <target>
-                            <path>assignment</path>
-                            <!-- This is to ensure that only assignments created by this mappings will be removed by it. -->
-                            <set>
-                                <condition>
-                                    <script>
-                                        <code>
-                                            assignment?.subtype.contains('user-assignment')
-                                        </code>
-                                    </script>
-                                </condition>
-                            </set>
-                        </target>
-                    </inbound>
-                    <kind>entitlement</kind>
-                    <intent>privileges</intent>
-                    <direction>subjectToObject</direction>
-                    <associationAttribute>ri:entitlements</associationAttribute>
-                    <valueAttribute>icfs:name</valueAttribute>
-                    <explicitReferentialIntegrity>true</explicitReferentialIntegrity>
-                    <!--                    <tolerant>false</tolerant>-->
-                </association>
+<!--                <association>-->
+<!--                    <ref>ri:entitlements</ref>-->
+<!--                    <displayName>Entitlements</displayName>-->
+<!--                    <inbound>-->
+<!--                        <exclusive>true</exclusive>-->
+<!--                        <strength>strong</strength>-->
+<!--                        <authoritative>true</authoritative>-->
+<!--                        <expression>-->
+<!--                            <assignmentTargetSearch>-->
+<!--                                <targetType>c:RoleType</targetType>-->
+<!--                                <filter>-->
+<!--                                    <q:equal>-->
+<!--                                        <q:path>name</q:path>-->
+<!--                                        <expression>-->
+<!--                                            <trace>true</trace>-->
+<!--                                            <script>-->
+<!--                                                <code>-->
+<!--                                                    log.info('####### ENTITLEMENT ####', entitlement?.getName())-->
+<!--                                                    return entitlement?.getName()-->
+<!--                                                </code>-->
+<!--                                            </script>-->
+<!--                                        </expression>-->
+<!--                                    </q:equal>-->
+<!--                                </filter>-->
+<!--                                &lt;!&ndash; This marks assignments created by this mapping &ndash;&gt;-->
+<!--                                <assignmentProperties>-->
+<!--                                    <subtype>user-assignment</subtype>-->
+<!--                                </assignmentProperties>-->
+<!--                            </assignmentTargetSearch>-->
+<!--                        </expression>-->
+<!--                        <target>-->
+<!--                            <path>assignment</path>-->
+<!--                            &lt;!&ndash; This is to ensure that only assignments created by this mappings will be removed by it. &ndash;&gt;-->
+<!--                            <set>-->
+<!--                                <condition>-->
+<!--                                    <script>-->
+<!--                                        <code>-->
+<!--                                            assignment?.subtype.contains('user-assignment')-->
+<!--                                        </code>-->
+<!--                                    </script>-->
+<!--                                </condition>-->
+<!--                            </set>-->
+<!--                        </target>-->
+<!--                    </inbound>-->
+<!--                    <kind>entitlement</kind>-->
+<!--                    <intent>privileges</intent>-->
+<!--                    <direction>subjectToObject</direction>-->
+<!--                    <associationAttribute>ri:entitlements</associationAttribute>-->
+<!--                    <valueAttribute>icfs:name</valueAttribute>-->
+<!--                    <explicitReferentialIntegrity>true</explicitReferentialIntegrity>-->
+<!--                    &lt;!&ndash;                    <tolerant>false</tolerant>&ndash;&gt;-->
+<!--                </association>-->
 
 <!--                <attribute>-->
 <!--                    <ref>ri:entitlements</ref>-->
@@ -549,6 +549,19 @@
                         </target>
                     </inbound>
                 </attribute>
+
+                <association>
+                    <ref>ri:account</ref>
+                    <displayName>Account Association</displayName>
+                    <kind>account</kind>
+                    <intent>webidm</intent>
+                    <direction>objectToSubject</direction>
+                    <associationAttribute>icfs:uid</associationAttribute>
+                    <valueAttribute>ri:accountId</valueAttribute>
+                    <explicitReferentialIntegrity>true</explicitReferentialIntegrity>
+<!--                    <tolerant>false</tolerant>-->
+                </association>
+
                 <attribute>
                     <ref>ri:privileges</ref>
                     <inbound>

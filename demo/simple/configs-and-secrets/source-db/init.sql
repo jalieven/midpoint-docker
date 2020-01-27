@@ -28,7 +28,7 @@ CREATE TABLE source_entitlements (
 alter table source_entitlements add constraint c_source_entitlements_fk_source_accounts foreign key (accountid) references source_accounts;
 
 INSERT INTO public.source_accounts(
-	accountId, username, firstname, lastname, rijksregisternummer, disabled)
+	accountid, username, firstname, lastname, rijksregisternummer, disabled)
 	VALUES ('3fd83cd4-d1bb-4d7f-9a1a-12a02ed85a95', 'jalie', 'Jan', 'Lievens', '81071040575', false);
 
 -- Enable this when testing multiple accounts in a resource
