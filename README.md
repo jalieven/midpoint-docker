@@ -129,5 +129,24 @@ In IntelliJ IDEA open the git@github.com:Evolveum/midpoint.git project
 And create a Remote debug configuration that points to localhost:8000
 Happy de-🐞ging!
 
+## If you want to "fix" something in the midPoint source and run the configuration with that code
+
+Build the midpoint project (latest) with your fix applied and place the midpoint-dist.tar.gz (which can be found here {midpoint-root}/dist/target/midpoint-4.1-SNAPSHOT-dist.tar.gz which you must rename to midpoint-dist.tar.gz) in the root of this project.
+
+For example:
+```
+cp ../midpoint/dist/target/midpoint-4.1-SNAPSHOT-dist.tar.gz ./midpoint-dist.tar.gz
+```
+
+When that is done build the docker image with following command (the n-switch is added to prevent downloading of the midpoint dist in favour of using our fixed version):
+```
+./build.sh -n
+```
+
+And simply start as usual:
+```
+make restart
+```
+
 ## Documentation
 Please see [Dockerized midPoint](https://wiki.evolveum.com/display/midPoint/Dockerized+midPoint) wiki page.

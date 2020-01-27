@@ -390,11 +390,9 @@
                     </inbound>
                 </attribute>
 
-                <association>
+                <attribute>
                     <ref>ri:entitlements</ref>
-                    <displayName>Entitlements</displayName>
                     <inbound>
-                        <exclusive>true</exclusive>
                         <strength>strong</strength>
                         <authoritative>true</authoritative>
                         <expression>
@@ -404,11 +402,10 @@
                                     <q:equal>
                                         <q:path>name</q:path>
                                         <expression>
-                                            <trace>true</trace>
                                             <script>
                                                 <code>
-                                                    log.info('####### ENTITLEMENT ####', entitlement?.getName())
-                                                    return entitlement?.getName()
+                                                    log.info('#### Encountered entitlement ##### {}', input)
+                                                    return input
                                                 </code>
                                             </script>
                                         </expression>
@@ -434,67 +431,18 @@
                             </set>
                         </target>
                     </inbound>
+                </attribute>
+
+                <association>
+                    <ref>ri:entitlements</ref>
+                    <displayName>Entitlement Membership</displayName>
                     <kind>entitlement</kind>
                     <intent>privileges</intent>
                     <direction>subjectToObject</direction>
                     <associationAttribute>ri:entitlements</associationAttribute>
                     <valueAttribute>icfs:name</valueAttribute>
                     <explicitReferentialIntegrity>true</explicitReferentialIntegrity>
-                    <!--                    <tolerant>false</tolerant>-->
                 </association>
-
-<!--                <attribute>-->
-<!--                    <ref>ri:entitlements</ref>-->
-<!--                    <inbound>-->
-<!--                        <strength>strong</strength>-->
-<!--                        <authoritative>true</authoritative>-->
-<!--                        <expression>-->
-<!--                            <assignmentTargetSearch>-->
-<!--                                <targetType>c:RoleType</targetType>-->
-<!--                                <filter>-->
-<!--                                    <q:equal>-->
-<!--                                        <q:path>name</q:path>-->
-<!--                                        <expression>-->
-<!--                                            <script>-->
-<!--                                                <code>-->
-<!--                                                    log.info('#### Encountered entitlement ##### {}', input)-->
-<!--                                                    return input-->
-<!--                                                </code>-->
-<!--                                            </script>-->
-<!--                                        </expression>-->
-<!--                                    </q:equal>-->
-<!--                                </filter>-->
-<!--                                &lt;!&ndash; This marks assignments created by this mapping &ndash;&gt;-->
-<!--                                <assignmentProperties>-->
-<!--                                    <subtype>user-assignment</subtype>-->
-<!--                                </assignmentProperties>-->
-<!--                            </assignmentTargetSearch>-->
-<!--                        </expression>-->
-<!--                        <target>-->
-<!--                            <path>assignment</path>-->
-<!--                            &lt;!&ndash; This is to ensure that only assignments created by this mappings will be removed by it. &ndash;&gt;-->
-<!--                            <set>-->
-<!--                                <condition>-->
-<!--                                    <script>-->
-<!--                                        <code>-->
-<!--                                            assignment?.subtype.contains('user-assignment')-->
-<!--                                        </code>-->
-<!--                                    </script>-->
-<!--                                </condition>-->
-<!--                            </set>-->
-<!--                        </target>-->
-<!--                    </inbound>-->
-<!--                </attribute>-->
-
-<!--                <association>-->
-<!--                    <ref>ri:entitlements</ref>-->
-<!--                    <displayName>Entitlement Membership</displayName>-->
-<!--                    <kind>entitlement</kind>-->
-<!--                    <intent>privileges</intent>-->
-<!--                    <direction>subjectToObject</direction>-->
-<!--                    <associationAttribute>ri:entitlements</associationAttribute>-->
-<!--                    <valueAttribute>icfs:name</valueAttribute>-->
-<!--                </association>-->
 
                 <activation>
                     <administrativeStatus>
@@ -748,8 +696,8 @@
         <taskIdentifier>1539330292502-0-1</taskIdentifier>
         <ownerRef oid="00000000-0000-0000-0000-000000000002"/>
         <executionStatus>runnable</executionStatus>
-        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/synchronization/task/reconciliation/handler-3</handlerUri>
-<!--        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/synchronization/task/import/handler-3</handlerUri>-->
+<!--        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/synchronization/task/reconciliation/handler-3</handlerUri>-->
+        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/synchronization/task/import/handler-3</handlerUri>
         <objectRef oid="dafe0482-faef-47b7-ae08-66b150929bb7" type="c:ResourceType">
         </objectRef>
         <recurrence>single</recurrence>
@@ -771,8 +719,8 @@
         <taskIdentifier>1539330292502-0-2</taskIdentifier>
         <ownerRef oid="00000000-0000-0000-0000-000000000002"/>
         <executionStatus>runnable</executionStatus>
-        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/synchronization/task/reconciliation/handler-3</handlerUri>
-<!--        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/synchronization/task/import/handler-3</handlerUri>-->
+<!--        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/synchronization/task/reconciliation/handler-3</handlerUri>-->
+        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/synchronization/task/import/handler-3</handlerUri>
         <objectRef oid="dafe0482-faef-47b7-ae08-66b150929bb7" type="c:ResourceType">
         </objectRef>
         <recurrence>single</recurrence>
