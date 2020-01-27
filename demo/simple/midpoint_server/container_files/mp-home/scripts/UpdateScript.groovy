@@ -18,4 +18,4 @@ log.info("#### Entering Update {0} Script for {1} and attributes {2} ####", oper
 def sql = new Sql(connection)
 
 //return new Uid(_some_unique_identifier)
-return null
+return uid
