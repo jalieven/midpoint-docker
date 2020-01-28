@@ -521,6 +521,7 @@
                     	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
                     	at java.base/java.lang.Thread.run(Thread.java:834)
 
+        Al het bovenstaand gezever is niet nodig gewoon in de opendj resource file de native capabilities verwijderen does the trick!
             
         
 - Vragen voor DAASI:
@@ -531,4 +532,5 @@
     - Die verschillende soorten tasks (reconcile/live/recompute/import), wat zijn de verschillen hier tussen en wanneer welke te runnen? Is het in onze use-case enkel nodig om een import task te runnen van tijd tot tijd?
     - Wanneer een entitlement bijkomt in DB dan hangt het af van of de entitlement import task eerst loopt en dan accounts pas om effectief in die run een ldap uniqueMember te genereren. Als de volgorde omgekeerd voordoet dan duurt het 2 runs van die tasks om alles in orde te krijgen.
     - Kunnen wij associationTargetSearch gebruiken bij inbound assigment? Hoe doe je dat?
+    - Soms zien we in de logs een "time moved back" exception: what is that all about? En dan werken sommige tasks niet meer naar behoren.
     
