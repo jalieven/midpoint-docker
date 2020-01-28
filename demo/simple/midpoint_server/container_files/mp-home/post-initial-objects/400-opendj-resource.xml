@@ -48,6 +48,11 @@
                 <gen67:operationalAttributes>ds-pwp-account-disabled</gen67:operationalAttributes>
                 <gen67:operationalAttributes>isMemberOf</gen67:operationalAttributes>
             </icfc:configurationProperties>
+            <icfc:resultsHandlerConfiguration>
+                <icfc:enableNormalizingResultsHandler>false</icfc:enableNormalizingResultsHandler>
+                <icfc:enableFilteredResultsHandler>false</icfc:enableFilteredResultsHandler>
+                <icfc:enableAttributesToGetSearchResultsHandler>false</icfc:enableAttributesToGetSearchResultsHandler>
+            </icfc:resultsHandlerConfiguration>
         </connectorConfiguration>
         <schema>
             <generationConstraints>
@@ -247,32 +252,6 @@
                 <retrievalTimestamp>2019-03-07T21:46:39.904Z</retrievalTimestamp>
                 <serialNumber>d5d2b0113448065b-fd82f7ab9a00b7ae</serialNumber>
             </cachingMetadata>
-            <native xmlns:cap="http://midpoint.evolveum.com/xml/ns/public/resource/capabilities-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="c:CapabilityCollectionType">
-                <cap:schema/>
-                <cap:liveSync/>
-                <cap:testConnection/>
-                <cap:create/>
-                <cap:update>
-                    <cap:delta>true</cap:delta>
-                </cap:update>
-                <cap:delete/>
-                <cap:script>
-                    <cap:host>
-                        <cap:type>connector</cap:type>
-                    </cap:host>
-                </cap:script>
-                <cap:addRemoveAttributeValues/>
-                <cap:credentials>
-                    <cap:password>
-                        <cap:returnedByDefault>false</cap:returnedByDefault>
-                    </cap:password>
-                </cap:credentials>
-                <cap:auxiliaryObjectClasses/>
-                <cap:pagedSearch/>
-                <cap:read>
-                    <cap:returnDefaultAttributesOption>true</cap:returnDefaultAttributesOption>
-                </cap:read>
-            </native>
         </capabilities>
 
         <consistency>
