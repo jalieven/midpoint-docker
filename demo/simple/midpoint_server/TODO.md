@@ -308,6 +308,15 @@
              But somehow I can't shake the feeling that the association should get fetched from the inbound source (i.e. PostgreSQL) at the right moment.
              Something like <searchStrategy>onResourceIfNeeded</searchStrategy>
              
+             
+             So now my conclusion is that the NPE in the admin points to the fact that together with name and identifiers there should also be a shadowRef saved in the shadow (PostgreSQL account) repo.
+             We see that only the name and identifiers are saved in the beginning (first import task). I suppose the shadowRef is at that point not resolvable (perhaps the entitlements are not imported yet so the shadow of an entitlement is not yet available).
+             Now we also see that if we perform a null safe check on the NPE site our use-case works (uniqueMember is cleared of the LDAP group when we remove entitlement from PostgreSQL) but we see that the
+             shadow of the entitlement is lingering in the repo (and indeed when we again add the entitlement again in PostgreSQL an exception is thrown saying that there are conflicting shadows in the import task run).
+             So my hunch is that the shadowRef should be saved on the association when possible. I see that during the reconciliation the shardowRef is correctly added beside the name and identifiers tags (but alas never saved to the repo).
+             I will persue this line of thinking. My best guess is to save this shadowRef in the association someplace in the ShadowManager.
+             
+             
                     2020-01-24 15:49:48,759 [] [http-nio-8080-exec-6] ERROR (com.evolveum.midpoint.gui.impl.factory.ShadowAssociationWrapperFactoryImpl): Couldn't create container for associations. 
                     java.lang.NullPointerException: null
                     	at com.evolveum.midpoint.gui.impl.factory.ShadowAssociationWrapperFactoryImpl.createWrapper(ShadowAssociationWrapperFactoryImpl.java:193)
