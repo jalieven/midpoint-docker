@@ -689,6 +689,7 @@
         <extension xsi:type="c:ExtensionType">
             <mext:kind>account</mext:kind>
             <mext:intent>webidm</mext:intent>
+            <mext:workerThreads>10</mext:workerThreads>
         </extension>
         <!-- We need the entitlements to sync first before accounts -->
         <dependent>1539330292502-0-2</dependent>
@@ -714,6 +715,7 @@
         <extension xsi:type="c:ExtensionType">
             <mext:kind>entitlement</mext:kind>
             <mext:intent>privileges</mext:intent>
+            <mext:workerThreads>10</mext:workerThreads>
         </extension>
         <taskIdentifier>1539330292502-0-2</taskIdentifier>
         <ownerRef oid="00000000-0000-0000-0000-000000000002"/>
