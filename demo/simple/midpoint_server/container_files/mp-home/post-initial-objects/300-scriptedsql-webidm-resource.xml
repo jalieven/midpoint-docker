@@ -646,7 +646,6 @@
                     </q:equal>
                 </correlation>
 
-                <!-- 🚀 disable/enable this when going back/forth to hierarchy -->
                 <objectTemplateRef oid="f6c9679e-477c-49cc-9be6-4dd92d121947" relation="org:default" type="c:ObjectTemplateType">
                     <targetName>Entitlement Object Template</targetName>
                     <description>This object template will create seperate roles for each privilege.</description>
@@ -700,11 +699,11 @@
         <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/synchronization/task/import/handler-3</handlerUri>
         <objectRef oid="dafe0482-faef-47b7-ae08-66b150929bb7" type="c:ResourceType">
         </objectRef>
-        <recurrence>single</recurrence>
-<!--        <recurrence>recurring</recurrence>-->
+<!--        <recurrence>single</recurrence>-->
+        <recurrence>recurring</recurrence>
         <binding>tight</binding>
         <schedule>
-            <interval>10</interval>
+            <interval>300</interval>
             <misfireAction>reschedule</misfireAction>
         </schedule>
         <threadStopAction>restart</threadStopAction>
@@ -723,11 +722,11 @@
         <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/synchronization/task/import/handler-3</handlerUri>
         <objectRef oid="dafe0482-faef-47b7-ae08-66b150929bb7" type="c:ResourceType">
         </objectRef>
-        <recurrence>single</recurrence>
-<!--        <recurrence>recurring</recurrence>-->
+<!--        <recurrence>single</recurrence>-->
+        <recurrence>recurring</recurrence>
         <binding>tight</binding>
         <schedule>
-            <interval>10</interval>
+            <interval>300</interval>
             <misfireAction>reschedule</misfireAction>
         </schedule>
         <threadStopAction>restart</threadStopAction>

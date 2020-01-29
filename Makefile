@@ -11,6 +11,9 @@ clean_all:
 	- docker rm $$(docker ps -a --filter name=simple | awk '{print$$1}' | tail -n +2)
 	- docker volume rm $$(docker volume ls -q --filter name=simple)
 
+prune:
+	- docker system prune
+
 # Starts all the containers (midpoint, ldap and postgres servers)
 start_all:
 	cd demo/simple/; docker-compose up -d --build

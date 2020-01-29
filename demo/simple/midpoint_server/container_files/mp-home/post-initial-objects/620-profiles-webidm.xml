@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2010-2017 Evolveum
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<c:objects
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
+        xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3"
+        xmlns:q="http://prism.evolveum.com/xml/ns/public/query-3"
+        xmlns:icfc="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/connector-schema-3"
+        xmlns:icfs="http://midpoint.evolveum.com/xml/ns/public/connector/icf-1/resource-schema-3"
+        xmlns:cap="http://midpoint.evolveum.com/xml/ns/public/resource/capabilities-3"
+        xmlns:org="http://midpoint.evolveum.com/xml/ns/public/common/org-3"
+        xmlns:t="http://prism.evolveum.com/xml/ns/public/types-3"
+        xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3"
+        xmlns:mext="http://midpoint.evolveum.com/xml/ns/public/model/extension-3">
+
+    <role oid="20bb2e95-a622-4833-b0c8-5e95407e08e8">
+        <name>JiraUser</name>
+        <description>Access to Jira</description>
+        <roleType>application</roleType>
+
+        <!-- Meta Role that assigns user to group with name JiraUser -->
+        <assignment>
+            <targetRef oid="d8565b3a-891c-4ae2-a035-b0233b4e016a" relation="org:default" type="RoleType">
+            </targetRef>
+        </assignment>
+
+    </role>
+
+    <role oid="77cc3051-e5e5-4103-b25e-49cc976e5192">
+        <name>BesosUser</name>
+        <description>Access to BESOS</description>
+        <roleType>application</roleType>
+
+        <!-- Meta Role that assigns user to group with name BesosUser -->
+        <assignment>
+            <targetRef oid="d8565b3a-891c-4ae2-a035-b0233b4e016a" relation="org:default" type="RoleType">
+            </targetRef>
+        </assignment>
+
+    </role>
+
+    <role oid="6dce0c5b-3668-4ee3-811b-818481855eb4">
+        <name>VIP</name>
+        <description>VIP Profile (i.e. mapping from privilege to technical roles)</description>
+        <roleType>privilege</roleType>
+
+        <!-- 🚀 disable/enable this when going back/forth to hierarchy -->
+        <assignment>
+            <targetRef oid="20bb2e95-a622-4833-b0c8-5e95407e08e8" type="RoleType" />
+        </assignment>
+
+    </role>
+
+    <role oid="5cd1ec50-b0ba-4b2d-b92f-f39633b6297d">
+        <name>Milieucoordinator</name>
+        <description>Milieucoordinator Profile (i.e. mapping from privilege to technical roles)</description>
+        <roleType>privilege</roleType>
+
+        <!-- 🚀 disable/enable this when going back/forth to hierarchy -->
+        <assignment>
+            <targetRef oid="77cc3051-e5e5-4103-b25e-49cc976e5192" type="RoleType" />
+        </assignment>
+
+    </role>
+
+</c:objects>

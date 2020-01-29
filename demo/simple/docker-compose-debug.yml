@@ -27,8 +27,7 @@ services:
     secrets:
       - src_database_password.txt
     volumes:
-      - source_data:/var/lib/postgresql/data
-      - ./configs-and-secrets/source-db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./configs-and-secrets/source-db/.:/docker-entrypoint-initdb.d/.
 
   midpoint_data:
     image: postgres:11.6
@@ -89,6 +88,5 @@ secrets:
     file: ./configs-and-secrets/midpoint/keystore_password.txt
     
 volumes:
-  source_data:
   midpoint_data:
   midpoint_home:
