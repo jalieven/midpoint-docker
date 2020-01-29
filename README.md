@@ -108,25 +108,7 @@ git checkout tags/v4.0.1 -b my-4.0.1
 cd midpoint
 ```
 
-The remove the "import org.bouncycastle.util.Arrays" from the following files:
-    repo/repo-test-util/src/main/java/com/evolveum/midpoint/test/asserter/LinkFinder.java
-    repo/repo-test-util/src/main/java/com/evolveum/midpoint/test/asserter/ShadowAssociationAsserter.java
-    repo/repo-test-util/src/main/java/com/evolveum/midpoint/test/asserter/TriggerFinder.java
-
-Because: [ERROR] Failed to execute goal on project schema: Could not resolve dependencies for project com.evolveum.midpoint.infra:schema:jar:4.1-SNAPSHOT: Failed to collect dependencies at net.sf.jasperreports:jasperreports:jar:6.5.0 -> com.lowagie:itext:jar:2.1.7.js6: Failed to read artifact descriptor for com.lowagie:itext:jar:2.1.7.js6: Could not transfer artifact com.lowagie:itext:pom:2.1.7.js6 from/to evolveum-snapshots (https://nexus.evolveum.com/nexus/content/repositories/snapshots/): Transfer failed for https://nexus.evolveum.com/nexus/content/repositories/snapshots/com/lowagie/itext/2.1.7.js6/itext-2.1.7.js6.pom 400 Repository version policy: SNAPSHOT does not allow version: 2.1.7.js6 -> [Help 1]
-Where can we find this dependency with that specific version?
-https://mvnrepository.com/artifact/com.lowagie/itext/2.1.7.js6 points to this repo:
-https://maven.ceon.pl/artifactory/repo/com/lowagie/itext/ but that version is also not available there
-
-I have circumvented this problem by adding the dependencyManagement for itext (transitive dep of the jasperreports dependency (net.sf.jasperreports:jasperreports)) in build-system/pom.xml:
-    <dependency>
-        <groupId>com.lowagie</groupId>
-        <artifactId>itext</artifactId>
-        <version>2.1.7</version>
-    </dependency>
-But then I get an error in the tests of the report module. 
-
-Then finally:
+Then to "fast" build:
 ```
 mvn install -DskipTests=true
 ```
@@ -152,6 +134,20 @@ When that is done build the docker image with following command (the n-switch is
 And simply start as usual:
 ```
 make restart
+```
+
+# I don't want to run the midpoint server in docker
+
+When you see the time going backwards 😅 for midPoint it is time to run midPoint on your host itself.
+
+First only start the ldap and the postgresql resources in docker:
+
+```
+make start_resources
+```
+
+```
+./local-midpoint.sh
 ```
 
 ## Documentation

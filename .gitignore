@@ -1,2 +1,4 @@
 *.tar.gz
 .DS_Store
+midpoint-dist
+midpoint-dist.tar.gz

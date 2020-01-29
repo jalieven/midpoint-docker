@@ -22,6 +22,9 @@ start_all:
 start_all_debug:
 	cd demo/simple/; docker-compose -f docker-compose-debug.yml up -d --build
 
+start_resources:
+	cd demo/simple/; docker-compose up -d ldap postgres_resource
+
 # Bashes into docker more specifically the midPoint home directory of the midPoint server where all the goodness happens
 bash_midpoint:
 	- docker exec -w /opt/midpoint/var -it $$(docker ps -a --filter name=simple_midpoint_server | awk '{print$$1}' | tail -n +2) bash
@@ -56,3 +59,5 @@ restart: stop_all clean_all start_all logs_midpoint
 
 # Composite command to restart all in debug mode
 restart_debug: stop_all clean_all start_all_debug logs_midpoint
+
+restart_resources: stop_all clean_all start_resources
