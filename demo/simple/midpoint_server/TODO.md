@@ -12,6 +12,7 @@
 
 - Scenario checken voor X aantal users (hoe lang loopt zo een import task)
 - Daarna wat disaster scenarios runnen
+- REST connector fabriceren: https://wiki.evolveum.com/display/midPoint/REST+Connector+Superclass
 
 - Outbound association leggen interessante thread: http://lists.evolveum.com/pipermail/midpoint/2016-September/002491.html
 
@@ -539,6 +540,8 @@
     - Crisis scenario indien er assignments zijn gemaakt van rollen aan users (manueel in midPoint), alle accounts in DB zijn leeg, import gebeurt, nadien zijn de users terug => zijn de assignments dan nog gelegd?
     - Wat kunnen we doen om de import sneller te laten verlopen?
     - Is er een betere manier om de tasks te chainen? Partitioned Tasks... kleine introductie
+    - Wanneer we 2 outbound resources (A en B) hebben en we willen adhv een attribuut die laten terecht komen in A of B. Hoe doe je dat?
+    - Kan self-servicing werken als we niet per se email hebben en we geen passwords hebben?
     - Soms zien we in de logs een "time moved back" exception: what is that all about? En dan werken sommige tasks niet meer naar behoren. (is enkel in docker containers op Mac OS X)
     
             org.apache.wicket.WicketRuntimeException: Error attaching this container for rendering: [WebMarkupContainer [Component id = body]]
