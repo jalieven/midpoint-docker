@@ -30,6 +30,10 @@ start_resources:
 start_local_midpoint:
 	./start-local-midpoint.sh
 
+# Resume a specific task
+resume_import_task:
+	curl --user administrator:5ecr3t -X POST http://localhost:8080/midpoint/ws/rest/tasks/ef99c20d-215d-4c76-91ba-24380f342c59/resume
+
 # Only stops the local midPoint server (so not using Docker)
 stop_local_midpoint:
 	- ./stop-local-midpoint.sh
