@@ -22,8 +22,21 @@ start_all:
 start_all_debug:
 	cd demo/simple/; docker-compose -f docker-compose-debug.yml up -d --build
 
+# Only starts the resources (ldap and 2 databases)
 start_resources:
-	cd demo/simple/; docker-compose up -d ldap postgres_resource
+	cd demo/simple/; docker-compose up -d ldap midpoint_data postgres_resource
+
+# Only starts the local midPoint server (so not using Docker)
+start_local_midpoint:
+	./start-local-midpoint.sh
+
+# Only stops the local midPoint server (so not using Docker)
+stop_local_midpoint:
+	- ./stop-local-midpoint.sh
+
+# Displays the logs from the local midpoint server
+local_logs_midpoint:
+	- tail -400f ./midpoint-dist/var/log/midpoint.log
 
 # Bashes into docker more specifically the midPoint home directory of the midPoint server where all the goodness happens
 bash_midpoint:
@@ -61,3 +74,5 @@ restart: stop_all clean_all start_all logs_midpoint
 restart_debug: stop_all clean_all start_all_debug logs_midpoint
 
 restart_resources: stop_all clean_all start_resources
+
+restart_local_midpoint: stop_local_midpoint restart_resources start_local_midpoint

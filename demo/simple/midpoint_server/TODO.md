@@ -531,15 +531,17 @@
 
     - Vragen wat dat zinneke betekent: Using the normal (non-action) methods is also generally a preferred way because such definition is applied to all changes resulting in a consistent policy in Confluence (https://wiki.evolveum.com/display/midPoint/Synchronization+Configuration#SynchronizationConfiguration-Reactions)
     - Ook daarbij wat meer uitleg vragen wat die zaken zoals unmatched/unlinked nu juist betekenen. Reactions uitleggen
+        En dan ook samen daarmee wat als activation overschreven wordt in de GUI => worden outbound overschreven?
     - Waarom die scripting task recompute voor die technische rollen om ze in LDAP te krijgen?
     - Die verschillende soorten tasks (reconcile/live/recompute/import), wat zijn de verschillen hier tussen en wanneer welke te runnen? Is het in onze use-case enkel nodig om een import task te runnen van tijd tot tijd?
-    - Wanneer een entitlement bijkomt in DB dan hangt het af van of de entitlement import task eerst loopt en dan accounts pas om effectief in die run een ldap uniqueMember te genereren. Als de volgorde omgekeerd voordoet dan duurt het 2 runs van die tasks om alles in orde te krijgen.
+    - Wanneer een entitlement bijkomt in DB dan hangt het af van of de entitlement import task eerst loopt en dan accounts pas om effectief in die run een ldap uniqueMember te genereren. Als de volgorde omgekeerd voordoet dan duurt het 2 import runs van die tasks om alles in orde te krijgen.
     - Kunnen wij associationTargetSearch gebruiken bij inbound assigment? Hoe doe je dat?
     - Crisis scenario indien er assignments zijn gemaakt van rollen aan users (manueel in midPoint), alle accounts in DB zijn leeg, import gebeurt, nadien zijn de users terug => zijn de assignments dan nog gelegd?
-    - Soms zien we in de logs een "time moved back" exception: what is that all about? En dan werken sommige tasks niet meer naar behoren.
     
-            2020-01-28 14:21:12,132 [] [http-nio-8080-exec-9] ERROR (com.evolveum.midpoint.web.security.LoggingRequestCycleListener): Error occurred during page rendering.
+    - Soms zien we in de logs een "time moved back" exception: what is that all about? En dan werken sommige tasks niet meer naar behoren. (is enkel in docker containers op Mac OS X)
+    
             org.apache.wicket.WicketRuntimeException: Error attaching this container for rendering: [WebMarkupContainer [Component id = body]]
+            2020-01-28 14:21:12,132 [] [http-nio-8080-exec-9] ERROR (com.evolveum.midpoint.web.security.LoggingRequestCycleListener): Error occurred during page rendering.
             	at org.apache.wicket.MarkupContainer.onBeforeRenderChildren(MarkupContainer.java:1766)
             	at org.apache.wicket.Component.onBeforeRender(Component.java:3801)
             	at org.apache.wicket.Component.beforeRender(Component.java:939)
