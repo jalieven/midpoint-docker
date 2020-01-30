@@ -11,3 +11,6 @@ curl --user administrator:5ecr3t -X POST http://localhost:8080/midpoint/ws/rest/
 
 # test the CSV resource connection:
 curl --user administrator:5ecr3t -X POST http://localhost:8080/midpoint/ws/rest/resources/ef2bc95b-76e0-59e2-86d6-9999cccccccc/test
+
+# resume the task with oid:
+curl --user administrator:5ecr3t -X POST http://localhost:8080/midpoint/ws/rest/tasks/ef99c20d-215d-4c76-91ba-24380f342c59/resume

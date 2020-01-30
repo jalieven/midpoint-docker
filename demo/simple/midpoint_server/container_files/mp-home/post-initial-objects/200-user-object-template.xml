@@ -11,7 +11,7 @@
         oid="10000000-0000-0000-0000-000000000223" version="3">
     <name>User Object Template</name>
 
-    <mapping id="1">
+    <mapping>
         <strength>strong</strength>
         <source>
             <c:path>$user/givenName</c:path>
@@ -42,10 +42,10 @@
         It works as follows:
             - every user object gets a fixed WebIDM role assigned to it
             - when that happens it gets synced to the OpenDJ resource
-            - since midPoint only knows how to sync IdmAccounts (the file 400-opendj-resource.xml)
+            - since midPoint only knows how to sync IdmAccounts (the file 300-opendj-resource.xml)
                 and IdmGroup objectClasses it will only sync the users
     -->
-    <mapping id="3">
+    <mapping>
         <name>webidm role</name>
         <strength>strong</strength>
         <expression>

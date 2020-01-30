@@ -32,7 +32,7 @@
     <!-- A Resource describes a Store with Identity data that is imported to midPoint or exported to the Resource -->
     <resource oid="dafe0482-faef-47b7-ae08-66b150929bb7">
 
-        <name>Scripted SQL</name>
+        <name>PostgreSQL</name>
 
         <description>Scripted SQL resource that is using single identifier (accountId) for accounts</description>
 
@@ -404,7 +404,6 @@
                                         <expression>
                                             <script>
                                                 <code>
-                                                    log.info('#### Encountered entitlement ##### {}', input)
                                                     return input
                                                 </code>
                                             </script>
@@ -678,60 +677,5 @@
             </objectSynchronization>
         </synchronization>
     </resource>
-
-    <!--
-        Task definitions are a way to trigger a synchronization (immediately of scheduled) with a resource.
-        It typically points to a resource (objectRef) and selects an ObjectClass (extension) to sync to
-        together with technical configuration on when it should fire.
-    -->
-    <task oid="ef99c20d-215d-4c76-91ba-24380f342c59">
-        <name>Accounts import from Scripted SQL resource</name>
-        <extension xsi:type="c:ExtensionType">
-            <mext:kind>account</mext:kind>
-            <mext:intent>webidm</mext:intent>
-            <mext:workerThreads>10</mext:workerThreads>
-        </extension>
-        <!-- We need the entitlements to sync first before accounts -->
-        <dependent>1539330292502-0-2</dependent>
-        <taskIdentifier>1539330292502-0-1</taskIdentifier>
-        <ownerRef oid="00000000-0000-0000-0000-000000000002"/>
-        <executionStatus>runnable</executionStatus>
-<!--        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/synchronization/task/reconciliation/handler-3</handlerUri>-->
-        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/synchronization/task/import/handler-3</handlerUri>
-        <objectRef oid="dafe0482-faef-47b7-ae08-66b150929bb7" type="c:ResourceType">
-        </objectRef>
-<!--        <recurrence>single</recurrence>-->
-        <recurrence>recurring</recurrence>
-        <binding>tight</binding>
-        <schedule>
-            <interval>300</interval>
-            <misfireAction>reschedule</misfireAction>
-        </schedule>
-        <threadStopAction>restart</threadStopAction>
-    </task>
-
-    <task oid="da99c20d-215d-4c76-91ba-24380f342c60">
-        <name>Entitlements import from Scripted SQL resource</name>
-        <extension xsi:type="c:ExtensionType">
-            <mext:kind>entitlement</mext:kind>
-            <mext:intent>privileges</mext:intent>
-            <mext:workerThreads>10</mext:workerThreads>
-        </extension>
-        <taskIdentifier>1539330292502-0-2</taskIdentifier>
-        <ownerRef oid="00000000-0000-0000-0000-000000000002"/>
-        <executionStatus>runnable</executionStatus>
-<!--        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/synchronization/task/reconciliation/handler-3</handlerUri>-->
-        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/synchronization/task/import/handler-3</handlerUri>
-        <objectRef oid="dafe0482-faef-47b7-ae08-66b150929bb7" type="c:ResourceType">
-        </objectRef>
-<!--        <recurrence>single</recurrence>-->
-        <recurrence>recurring</recurrence>
-        <binding>tight</binding>
-        <schedule>
-            <interval>300</interval>
-            <misfireAction>reschedule</misfireAction>
-        </schedule>
-        <threadStopAction>restart</threadStopAction>
-    </task>
 
 </c:objects>

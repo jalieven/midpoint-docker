@@ -537,7 +537,8 @@
     - Wanneer een entitlement bijkomt in DB dan hangt het af van of de entitlement import task eerst loopt en dan accounts pas om effectief in die run een ldap uniqueMember te genereren. Als de volgorde omgekeerd voordoet dan duurt het 2 import runs van die tasks om alles in orde te krijgen.
     - Kunnen wij associationTargetSearch gebruiken bij inbound assigment? Hoe doe je dat?
     - Crisis scenario indien er assignments zijn gemaakt van rollen aan users (manueel in midPoint), alle accounts in DB zijn leeg, import gebeurt, nadien zijn de users terug => zijn de assignments dan nog gelegd?
-    
+    - Wat kunnen we doen om de import sneller te laten verlopen?
+    - Is er een betere manier om de tasks te chainen? Partitioned Tasks... kleine introductie
     - Soms zien we in de logs een "time moved back" exception: what is that all about? En dan werken sommige tasks niet meer naar behoren. (is enkel in docker containers op Mac OS X)
     
             org.apache.wicket.WicketRuntimeException: Error attaching this container for rendering: [WebMarkupContainer [Component id = body]]

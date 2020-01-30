@@ -28,12 +28,40 @@
         xmlns:ri="http://midpoint.evolveum.com/xml/ns/public/resource/instance-3"
         xmlns:mext="http://midpoint.evolveum.com/xml/ns/public/model/extension-3">
 
+    <!-- ######## TECHNICAL ROLES ######### -->
+
     <role oid="20bb2e95-a622-4833-b0c8-5e95407e08e8">
         <name>JiraUser</name>
         <description>Access to Jira</description>
         <roleType>application</roleType>
 
         <!-- Meta Role that assigns user to group with name JiraUser -->
+        <assignment>
+            <targetRef oid="d8565b3a-891c-4ae2-a035-b0233b4e016a" relation="org:default" type="RoleType">
+            </targetRef>
+        </assignment>
+
+    </role>
+
+    <role oid="c3930e23-a192-42ff-a2fe-ae2dff899d8f">
+        <name>ConfluenceUser</name>
+        <description>Access to Confluence</description>
+        <roleType>application</roleType>
+
+        <!-- Meta Role that assigns user to group with name ConfluenceUser -->
+        <assignment>
+            <targetRef oid="d8565b3a-891c-4ae2-a035-b0233b4e016a" relation="org:default" type="RoleType">
+            </targetRef>
+        </assignment>
+
+    </role>
+
+    <role oid="5bb5d53d-2803-440e-b37b-0a0cddb830eb">
+        <name>BambooUser</name>
+        <description>Access to Bamboo</description>
+        <roleType>application</roleType>
+
+        <!-- Meta Role that assigns user to group with name BambooUser -->
         <assignment>
             <targetRef oid="d8565b3a-891c-4ae2-a035-b0233b4e016a" relation="org:default" type="RoleType">
             </targetRef>
@@ -54,26 +82,155 @@
 
     </role>
 
+    <role oid="c62dbbba-98a6-4f72-a872-b04a2cf79efc">
+        <name>DSIUser</name>
+        <description>Access to DSI</description>
+        <roleType>application</roleType>
+
+        <!-- Meta Role that assigns user to group with name BesosUser -->
+        <assignment>
+            <targetRef oid="d8565b3a-891c-4ae2-a035-b0233b4e016a" relation="org:default" type="RoleType">
+            </targetRef>
+        </assignment>
+
+    </role>
+
+    <role oid="0bbfe988-b099-48e0-a6a1-17aa14746018">
+        <name>IMJVUser</name>
+        <description>Access to IMJV</description>
+        <roleType>application</roleType>
+
+        <!-- Meta Role that assigns user to group with name BesosUser -->
+        <assignment>
+            <targetRef oid="d8565b3a-891c-4ae2-a035-b0233b4e016a" relation="org:default" type="RoleType">
+            </targetRef>
+        </assignment>
+
+    </role>
+
+    <!-- ######## PRIVILEGES ROLES ######### -->
+
     <role oid="6dce0c5b-3668-4ee3-811b-818481855eb4">
         <name>VIP</name>
-        <description>VIP Profile (i.e. mapping from privilege to technical roles)</description>
+        <description>VIP Privilege (i.e. mapping from privilege to technical roles)</description>
         <roleType>privilege</roleType>
 
-        <!-- 🚀 disable/enable this when going back/forth to hierarchy -->
         <assignment>
             <targetRef oid="20bb2e95-a622-4833-b0c8-5e95407e08e8" type="RoleType" />
+        </assignment>
+
+        <assignment>
+            <targetRef oid="0bbfe988-b099-48e0-a6a1-17aa14746018" type="RoleType" />
+        </assignment>
+
+        <assignment>
+            <targetRef oid="c62dbbba-98a6-4f72-a872-b04a2cf79efc" type="RoleType" />
+        </assignment>
+
+        <assignment>
+            <targetRef oid="77cc3051-e5e5-4103-b25e-49cc976e5192" type="RoleType" />
+        </assignment>
+
+        <assignment>
+            <targetRef oid="c3930e23-a192-42ff-a2fe-ae2dff899d8f" type="RoleType" />
+        </assignment>
+
+        <assignment>
+            <targetRef oid="5bb5d53d-2803-440e-b37b-0a0cddb830eb" type="RoleType" />
         </assignment>
 
     </role>
 
     <role oid="5cd1ec50-b0ba-4b2d-b92f-f39633b6297d">
-        <name>Milieucoordinator</name>
-        <description>Milieucoordinator Profile (i.e. mapping from privilege to technical roles)</description>
+        <name>Milieumedewerker</name>
+        <description>Milieumedewerker Privilege (i.e. mapping from privilege to technical roles)</description>
         <roleType>privilege</roleType>
 
-        <!-- 🚀 disable/enable this when going back/forth to hierarchy -->
+        <assignment>
+            <targetRef oid="20bb2e95-a622-4833-b0c8-5e95407e08e8" type="RoleType" />
+        </assignment>
+
+        <assignment>
+            <targetRef oid="5bb5d53d-2803-440e-b37b-0a0cddb830eb" type="RoleType" />
+        </assignment>
+
+    </role>
+
+    <role oid="a32e6e16-a173-40ce-9cd8-182a9807e007">
+        <name>SysAdmin</name>
+        <description>SysAdmin Privilege (i.e. mapping from privilege to technical roles)</description>
+        <roleType>privilege</roleType>
+
+        <assignment>
+            <targetRef oid="20bb2e95-a622-4833-b0c8-5e95407e08e8" type="RoleType" />
+        </assignment>
+
+        <assignment>
+            <targetRef oid="0bbfe988-b099-48e0-a6a1-17aa14746018" type="RoleType" />
+        </assignment>
+
+        <assignment>
+            <targetRef oid="c62dbbba-98a6-4f72-a872-b04a2cf79efc" type="RoleType" />
+        </assignment>
+
+    </role>
+
+    <role oid="f02481e7-411e-4333-916f-e62dc07b57c0">
+        <name>GISMedewerker</name>
+        <description>GISMedewerker Privilege (i.e. mapping from privilege to technical roles)</description>
+        <roleType>privilege</roleType>
+
+        <assignment>
+            <targetRef oid="20bb2e95-a622-4833-b0c8-5e95407e08e8" type="RoleType" />
+        </assignment>
+
+        <assignment>
+            <targetRef oid="5bb5d53d-2803-440e-b37b-0a0cddb830eb" type="RoleType" />
+        </assignment>
+
+    </role>
+
+    <role oid="a0e8a2b1-ee06-42bf-b64b-65638662f283">
+        <name>TijdelijkeMedewerker</name>
+        <description>TijdelijkeMedewerker Privilege (i.e. mapping from privilege to technical roles)</description>
+        <roleType>privilege</roleType>
+
+        <assignment>
+            <targetRef oid="5bb5d53d-2803-440e-b37b-0a0cddb830eb" type="RoleType" />
+        </assignment>
+
+    </role>
+
+    <role oid="ac2c2295-e0b2-4d50-8384-c8ae2a11d6d0">
+        <name>Developer</name>
+        <description>Developer Privilege (i.e. mapping from privilege to technical roles)</description>
+        <roleType>privilege</roleType>
+
+        <assignment>
+            <targetRef oid="20bb2e95-a622-4833-b0c8-5e95407e08e8" type="RoleType" />
+        </assignment>
+
+        <assignment>
+            <targetRef oid="0bbfe988-b099-48e0-a6a1-17aa14746018" type="RoleType" />
+        </assignment>
+
+    </role>
+
+    <role oid="d8789e14-614f-4819-ae6e-5ea5af0a4d31">
+        <name>TechnicalLead</name>
+        <description>TechnicalLead Privilege (i.e. mapping from privilege to technical roles)</description>
+        <roleType>privilege</roleType>
+
+        <assignment>
+            <targetRef oid="0bbfe988-b099-48e0-a6a1-17aa14746018" type="RoleType" />
+        </assignment>
+
         <assignment>
             <targetRef oid="77cc3051-e5e5-4103-b25e-49cc976e5192" type="RoleType" />
+        </assignment>
+
+        <assignment>
+            <targetRef oid="5bb5d53d-2803-440e-b37b-0a0cddb830eb" type="RoleType" />
         </assignment>
 
     </role>

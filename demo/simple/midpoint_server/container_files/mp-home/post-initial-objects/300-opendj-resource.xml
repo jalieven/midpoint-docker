@@ -322,52 +322,11 @@
 
         </schemaHandling>
 
-        <!--<capabilities>
-            <configured>
-                <cap:liveSync>
-                    <cap:enabled>true</cap:enabled>
-                </cap:liveSync>
-                <cap:activation>
-                    <cap:status>
-                        <cap:attribute>ri:ds-pwp-account-disabled</cap:attribute>
-                        <cap:enableValue/>
-                        <cap:disableValue>true</cap:disableValue>
-                    </cap:status>
-                </cap:activation>
-            </configured>
-        </capabilities>-->
-
         <capabilities>
             <cachingMetadata>
                 <retrievalTimestamp>2019-03-07T21:46:39.904Z</retrievalTimestamp>
                 <serialNumber>d5d2b0113448065b-fd82f7ab9a00b7ae</serialNumber>
             </cachingMetadata>
-<!--            <native xmlns:cap="http://midpoint.evolveum.com/xml/ns/public/resource/capabilities-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="c:CapabilityCollectionType">-->
-<!--                <cap:schema/>-->
-<!--                <cap:liveSync/>-->
-<!--                <cap:testConnection/>-->
-<!--                <cap:create/>-->
-<!--                <cap:update>-->
-<!--                    <cap:delta>true</cap:delta>-->
-<!--                </cap:update>-->
-<!--                <cap:delete/>-->
-<!--                <cap:script>-->
-<!--                    <cap:host>-->
-<!--                        <cap:type>connector</cap:type>-->
-<!--                    </cap:host>-->
-<!--                </cap:script>-->
-<!--                <cap:addRemoveAttributeValues/>-->
-<!--                <cap:credentials>-->
-<!--                    <cap:password>-->
-<!--                        <cap:returnedByDefault>false</cap:returnedByDefault>-->
-<!--                    </cap:password>-->
-<!--                </cap:credentials>-->
-<!--                <cap:auxiliaryObjectClasses/>-->
-<!--                <cap:pagedSearch/>-->
-<!--                <cap:read>-->
-<!--                    <cap:returnDefaultAttributesOption>true</cap:returnDefaultAttributesOption>-->
-<!--                </cap:read>-->
-<!--            </native>-->
         </capabilities>
 
         <synchronization>
@@ -416,7 +375,6 @@
                 </reaction>
             </objectSynchronization>
 
-            <!-- 🚨🚨🚨 It appears that this is never used -->
             <objectSynchronization>
                 <name>Induced Roles Sync</name>
                 <focusType>c:RoleType</focusType>
@@ -462,151 +420,5 @@
         </synchronization>
 
     </resource>
-
-    <!--
-        FIXME: question: Do we have to explicitly define a task for recomputing to work correctly or are groups
-        synced through the defined role inducements in file 100-profiles-webidm?
-        This is what they mean between liveSync (sync through inducement creation) vs provisioning sync (this task)
-
-    <task oid="0fc66475-f293-4976-a47d-d6330997544a">
-        <name>Reconcile LDAP accounts</name>
-        <extension xsi:type="c:ExtensionType">
-            <mext:kind>account</mext:kind>
-            <mext:intent>ldap</mext:intent>
-        </extension>
-        <taskIdentifier>1579257412095-0-1</taskIdentifier>
-        <ownerRef oid="00000000-0000-0000-0000-000000000002"/>
-        <executionStatus>runnable</executionStatus>
-        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/synchronization/task/reconciliation/handler-3</handlerUri>
-        <objectRef oid="d0811790-6420-11e4-86b2-3c9755567874" type="c:ResourceType">
-        </objectRef>
-        <recurrence>recurring</recurrence>
-        <binding>tight</binding>
-        <schedule>
-            <interval>10</interval>
-            <misfireAction>executeImmediately</misfireAction>
-        </schedule>
-        <threadStopAction>restart</threadStopAction>
-    </task>
-      -->
-
-    <!--
-        This task is needed to get the initial technical roles (groups) into LDAP.
-        Since these are abstract roles that have a meta-role (with an inducement construction attached
-        midPoint does not detect this at once and does not create these groups into the LDAP resource.
-        Thus we nudge midPoint to recompute these roles.
-    -->
-    <task>
-        <name>Recompute all application roles</name>
-        <extension>
-            <scext:executeScript xmlns:scext="http://midpoint.evolveum.com/xml/ns/public/model/scripting/extension-3">
-                <s:pipeline xmlns:s="http://midpoint.evolveum.com/xml/ns/public/model/scripting-3">
-                    <s:expression xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="s:SearchExpressionType">
-                        <s:type>RoleType</s:type>
-                        <s:query>
-                            <q:filter>
-                                <q:equal>
-                                    <q:path>roleType</q:path>
-                                    <q:value>application</q:value>
-                                </q:equal>
-                            </q:filter>
-                        </s:query>
-                    </s:expression>
-                    <s:expression xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="s:ActionExpressionType">
-                        <s:type>execute-script</s:type>
-                        <s:parameter>
-                            <s:name>script</s:name>
-                            <c:value xsi:type="c:ScriptExpressionEvaluatorType">
-                                <c:code>
-                                    import com.evolveum.midpoint.xml.ns._public.common.common_3.RoleType
-                                    log.info('Encountered Application Role {} to recompute', input.name)
-                                    log.info('Role with oid {}', input.oid)
-                                    log.info('Recomputing role {}', input.name)
-                                    midpoint.recompute(RoleType.class, input.oid)
-                                </c:code>
-                            </c:value>
-                        </s:parameter>
-                    </s:expression>
-              </s:pipeline>
-              <options>
-                  <continueOnAnyError>true</continueOnAnyError>
-              </options>
-            </scext:executeScript>
-        </extension>
-        <taskIdentifier>1579257412095-0-1</taskIdentifier>
-        <ownerRef oid="00000000-0000-0000-0000-000000000002"/>
-        <executionStatus>runnable</executionStatus>
-        <category>BulkActions</category>
-        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/scripting/handler-3</handlerUri>
-        <recurrence>single</recurrence>
-    </task>
-
-<!--    <task>-->
-<!--        <name>Recompute the meta-role</name>-->
-<!--        <extension>-->
-<!--            <scext:executeScript xmlns:scext="http://midpoint.evolveum.com/xml/ns/public/model/scripting/extension-3">-->
-<!--                <s:pipeline xmlns:s="http://midpoint.evolveum.com/xml/ns/public/model/scripting-3">-->
-<!--                    <s:expression xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="s:SearchExpressionType">-->
-<!--                        <s:type>RoleType</s:type>-->
-<!--                        <s:query>-->
-<!--                            <q:filter>-->
-<!--                                <q:equal>-->
-<!--                                    <q:path>roleType</q:path>-->
-<!--                                    <q:value>meta</q:value>-->
-<!--                                </q:equal>-->
-<!--                            </q:filter>-->
-<!--                        </s:query>-->
-<!--                    </s:expression>-->
-<!--                    <s:expression xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="s:ActionExpressionType">-->
-<!--                        <s:type>execute-script</s:type>-->
-<!--                        <s:parameter>-->
-<!--                            <s:name>script</s:name>-->
-<!--                            <c:value xsi:type="c:ScriptExpressionEvaluatorType">-->
-<!--                                <c:code>-->
-<!--                                    import com.evolveum.midpoint.xml.ns._public.common.common_3.RoleType-->
-<!--                                    log.info('Encountered Meta Role {} to recompute', input.name)-->
-<!--                                    log.info('Role with oid {}', input.oid)-->
-<!--                                    log.info('Recomputing role {}', input.name)-->
-<!--                                    midpoint.recompute(RoleType.class, input.oid)-->
-<!--                                </c:code>-->
-<!--                            </c:value>-->
-<!--                        </s:parameter>-->
-<!--                    </s:expression>-->
-<!--                </s:pipeline>-->
-<!--                <options>-->
-<!--                    <continueOnAnyError>true</continueOnAnyError>-->
-<!--                </options>-->
-<!--            </scext:executeScript>-->
-<!--        </extension>-->
-<!--        <taskIdentifier>3974257412095-0-1</taskIdentifier>-->
-<!--        <ownerRef oid="00000000-0000-0000-0000-000000000002"/>-->
-<!--        <executionStatus>runnable</executionStatus>-->
-<!--        <category>BulkActions</category>-->
-<!--        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/scripting/handler-3</handlerUri>-->
-<!--        <recurrence>single</recurrence>-->
-<!--    </task>-->
-
-<!--    <task>-->
-<!--        <name>Reconcile LDAP groups</name>-->
-<!--        <extension xmlns:mext="http://midpoint.evolveum.com/xml/ns/public/model/extension-3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:c="http://midpoint.evolveum.com/xml/ns/public/common/common-3" xsi:type="c:ExtensionType">-->
-<!--            <mext:kind>entitlement</mext:kind>-->
-<!--            <mext:intent>group</mext:intent>-->
-<!--            <mext:objectclass>ri:groupOfUniqueNames</mext:objectclass>-->
-<!--        </extension>-->
-<!--        <taskIdentifier>1579604436378-0-1</taskIdentifier>-->
-<!--        <ownerRef oid="00000000-0000-0000-0000-000000000002" />-->
-<!--        <executionStatus>suspended</executionStatus>-->
-<!--        <category>Reconciliation</category>-->
-<!--        <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/synchronization/task/reconciliation/handler-3</handlerUri>-->
-<!--        <objectRef oid="d0811790-6420-11e4-86b2-3c9755567874" relation="org:default" type="c:ResourceType">-->
-<!--            &lt;!&ndash; OpenDJ &ndash;&gt;-->
-<!--        </objectRef>-->
-<!--        <recurrence>single</recurrence>-->
-<!--        <binding>loose</binding>-->
-<!--        <schedule>-->
-<!--            <misfireAction>executeImmediately</misfireAction>-->
-<!--        </schedule>-->
-<!--        <threadStopAction>restart</threadStopAction>-->
-<!--    </task>-->
 
 </c:objects>
