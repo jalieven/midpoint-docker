@@ -38,6 +38,7 @@ Or if you are in a lazy mood: go to root of this project and just go
 ```
 $ make restart
 ```
+
 Every time you run this command if will clear all things (in the resources) and reset the whole midPoint server.
 See the Makefile in the root of this project for more easy docker manipulating commands.
 
@@ -50,6 +51,16 @@ and verify that these files have a .done extension:
 make check_midpoint
 ```
 
+## Start the import tasks
+
+Since all tasks are suspended (import from PostgreSQL is not immediately triggered) you must start the account import task with:
+
+```
+make resume_import_task
+```
+
+This will first import the accounts and then the entitlements after which a reconciliation of the accounts is triggered.
+
 ## Access MidPoint:
 - URL: http://127.0.0.1:8080/midpoint
 - username: Administrator
@@ -61,13 +72,6 @@ Pre-requisities:
 
     1. Java (JDK) 11
     2. Apache Maven 3
-
-Because there is some hacking going on in midPoint (maven plugin versions that work with java11 or something)
-```
-wget https://nexus.evolveum.com/nexus/repository/releases/org/apache/maven/plugins/maven-dependency-plugin/3.1.1e1/maven-dependency-plugin-3.1.1e1.pom
-wget https://nexus.evolveum.com/nexus/repository/releases/org/apache/maven/plugins/maven-dependency-plugin/3.1.1e1/maven-dependency-plugin-3.1.1e1.jar
-mvn install:install-file -Dfile=maven-dependency-plugin-3.1.1e1.jar -DpomFile=maven-dependency-plugin-3.1.1e1.pom
-```
 
 ```
 git checkout git@github.com:Evolveum/midpoint.git
@@ -90,16 +94,19 @@ Build the midpoint project (latest) with your fix applied and place the midpoint
 (which can be found here: {midpoint-root}/dist/target/midpoint-4.1-SNAPSHOT-dist.tar.gz which you must rename to midpoint-dist.tar.gz).
 
 For example:
+
 ```
 cp ../midpoint/dist/target/midpoint-4.1-SNAPSHOT-dist.tar.gz ./midpoint-dist.tar.gz
 ```
 
 When that is done build the docker image with following command (the n-switch is added to prevent downloading of the midpoint dist in favour of using our fixed version):
+
 ```
 ./build.sh -n
 ```
 
 And simply start as usual:
+
 ```
 make restart
 ```
