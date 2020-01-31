@@ -11,6 +11,19 @@
 -   Map everything (orgs, roles, contactinfo) into LDAP structure
 
 - Scenario checken voor X aantal users (hoe lang loopt zo een import task)
+        
+    Accounts import task:
+    First run: Processed 500 objects in 89 seconds
+    Second run: Processed 500 objects in 46 seconds
+    
+    Entitlements import task:
+    First run: Processed 1500 objects in 62 seconds
+    Second run: Processed 1500 objects in 36 seconds
+    
+    Reconcile accounts task:
+    First run: Processed 500 account(s), got 0 error(s). Average time for one object: 77.67 ms (wall clock time average: 84.246 ms).
+    Second run: Processed 500 account(s), got 0 error(s). Average time for one object: 171.814 ms 
+   
 - Daarna wat disaster scenarios runnen
 - REST connector fabriceren: https://wiki.evolveum.com/display/midPoint/REST+Connector+Superclass
 

@@ -30,51 +30,15 @@ $ docker build -t evolveum/midpoint ./
 ```
 $ ./build.sh
 ```
-You can then continue with image or one of demo composition, e.g. postgresql or clustering one.
 
-## Launch:
-- run image on port 8080:
-```
-$ docker run -p 8080:8080 --name midpoint evolveum/midpoint
-```
-- run image on port 8080 with increased heap size:
-```
-$ docker run -p 8080:8080 -e MP_MEM_MAX='4096M' -e MP_MEM_INIT='4096M' --name midpoint evolveum/midpoint
-```
-- run one of demo composition, e.g. postgresql:
-```
-$ cd demo/postgresql/
-$ docker-compose up --build
-```
-
-## Access MidPoint:
-- URL: http://127.0.0.1:8080/midpoint
-- username: Administrator
-- password: 5ecr3t
-
-## Starting overnew
-
-Since this is a playground the need to start all over again with a clean PostgreSQL and LDAP perform these 2 steps:
-
-```
-$ docker system prune --all
-$ docker volume rm $(docker volume ls -q)
-```
-
-The first command is kind of intrusive in that it deletes everything from your docker :(
-To be more precise in your cleanup:
-
-```
-$ docker rm $(docker ps -a --filter name=simple | awk '{print$1}'| tail -n +2)
-$ docker volume rm $(docker volume ls -q --filter name=simple)
-```
+## Starting midPoint
 
 Or if you are in a lazy mood: go to root of this project and just go
 
 ```
 $ make restart
 ```
-
+Every time you run this command if will clear all things (in the resources) and reset the whole midPoint server.
 See the Makefile in the root of this project for more easy docker manipulating commands.
 
 ## Checks after startup
@@ -83,10 +47,13 @@ To see which object xml files that were successfully imported at startup perform
 and verify that these files have a .done extension:
 
 ```
-docker ps
-docker exec -it <container_id_of_simple_midpoint_server> bash
-ls -alt /opt/midpoint/var/post-initial-objects
+make check_midpoint
 ```
+
+## Access MidPoint:
+- URL: http://127.0.0.1:8080/midpoint
+- username: Administrator
+- password: 5ecr3t
 
 ## To Remote Debug MidPoint
 
@@ -119,7 +86,8 @@ Happy de-🐞ging!
 
 ## If you want to "fix" something in the midPoint source and run the configuration with that code
 
-Build the midpoint project (latest) with your fix applied and place the midpoint-dist.tar.gz (which can be found here {midpoint-root}/dist/target/midpoint-4.1-SNAPSHOT-dist.tar.gz which you must rename to midpoint-dist.tar.gz) in the root of this project.
+Build the midpoint project (latest) with your fix applied and place the midpoint-dist.tar.gz in the root of this project
+(which can be found here: {midpoint-root}/dist/target/midpoint-4.1-SNAPSHOT-dist.tar.gz which you must rename to midpoint-dist.tar.gz).
 
 For example:
 ```
@@ -139,16 +107,18 @@ make restart
 # I don't want to run the midpoint server in docker
 
 When you see the time going backwards 😅 for midPoint it is time to run midPoint on your host itself.
+Because of docker time drift: https://www.docker.com/blog/addressing-time-drift-in-docker-desktop-for-mac/ and the fact
+that midPoint checks against time inconsistencies (LightweightIdentifierGeneratorImpl.java:45) for identifier generation
+purposes, you might see these time errors from time to time.
 
-First only start the ldap and the postgresql resources in docker:
+The following command will only start the ldap and the postgresql resources in docker and then run the midPoint server locally.
+See the start-local-midpoint.sh script on how we set up midPoint for local use. Just make sure there is a midpoint-dist.tar.gz file in the root.
 
 ```
-make start_resources
+make restart_local_midpoint
 ```
 
-```
-./local-midpoint.sh
-```
+Every time you run this command if will clear all things (in the resources) and reset the whole midPoint server.
 
 ## Documentation
 Please see [Dockerized midPoint](https://wiki.evolveum.com/display/midPoint/Dockerized+midPoint) wiki page.
