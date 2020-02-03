@@ -77,9 +77,6 @@ switch (objectClass) {
     case BaseScript.ENTITLEMENT:
         handleEntitlement(sql)
         break
-//    case BaseScript.ORGANIZATION:
-//        handleOrganization(sql)
-//        break
     default:
         throw new ConnectorException("Unknown object class " + objectClass)
 }
@@ -91,7 +88,7 @@ void handleAccount(Sql sql) {
     Closure closure = { row ->
         log.info("#### Account Row from DB: {0} ####", row)
         //def entitlementsQuery = "select g.name from groups g join user_groups ug on ug.group_id = g.group_id join users u on u.user_id = ug.user_id" + where;
-        String entitlementsQuery = "SELECT s_ent.entitlementid FROM source_entitlements s_ent WHERE s_ent.accountid = '" + row.accountid + "'"
+        String entitlementsQuery = "SELECT s_ent.entitlementid FROM source_entitlements s_ent WHERE s_ent.accountid = '" + row.accountid + "' AND s_ent.deleted IS NULL"
         List<GroovyRowResult> entitlementsResults = sql.rows(entitlementsQuery);
         List entitlementIds = entitlementsResults.entitlementid as List;
         log.info("#### Found Entitlements: {0} for Account: {1}", entitlementIds, row.accountid)
@@ -114,7 +111,6 @@ void handleAccount(Sql sql) {
 
     sql.eachRow(params, "SELECT * FROM source_accounts " + where, closure);
 }
-
 
 void handleEntitlement(Sql sql) {
     Closure closure = { row ->
@@ -140,23 +136,8 @@ void handleEntitlement(Sql sql) {
 
     Map params = [:]
     String where = buildWhereClause(filter, params, 'entitlementid', 'entitlementid')
-
+    log.info('########QUERY### {0}', "SELECT * FROM source_entitlements " + where + " AND deleted IS NULL")
     sql.eachRow(params, "SELECT * FROM source_entitlements " + where, closure)
-}
-
-void handleOrganization(Sql sql) {
-    Closure closure = { row ->
-        ICFObjectBuilder.co {
-            uid row.id as String
-            id row.name
-            attribute 'description', row.description
-        }
-    }
-
-    Map params = [:]
-    String where = buildWhereClause(filter, params, 'id', 'name')
-
-    sql.eachRow(params, "SELECT * FROM Organizations " + where, closure)
 }
 
 String buildWhereClause(Filter filter, Map sqlParams, String uidColumn, String nameColumn) {
@@ -199,14 +180,14 @@ String buildWhereClause(Filter filter, Map sqlParams, String uidColumn, String n
     def engine = new groovy.text.SimpleTemplateEngine()
 
     def whereTemplates = [
-            CONTAINS          : 'WHERE $left ${not ? "not " : ""}like $right',
-            ENDSWITH          : 'WHERE $left ${not ? "not " : ""}like $right',
-            STARTSWITH        : 'WHERE $left ${not ? "not " : ""}like $right',
-            EQUALS            : 'WHERE $left ${not ? "<>" : "="} $right',
-            GREATERTHAN       : 'WHERE $left ${not ? "<=" : ">"} $right',
-            GREATERTHANOREQUAL: 'WHERE $left ${not ? "<" : ">="} $right',
-            LESSTHAN          : 'WHERE $left ${not ? ">=" : "<"} $right',
-            LESSTHANOREQUAL   : 'WHERE $left ${not ? ">" : "<="} $right'
+            CONTAINS          : 'WHERE $left ${not ? "not " : ""}like $right AND deleted IS NULL',
+            ENDSWITH          : 'WHERE $left ${not ? "not " : ""}like $right AND deleted IS NULL',
+            STARTSWITH        : 'WHERE $left ${not ? "not " : ""}like $right AND deleted IS NULL',
+            EQUALS            : 'WHERE $left ${not ? "<>" : "="} $right AND deleted IS NULL',
+            GREATERTHAN       : 'WHERE $left ${not ? "<=" : ">"} $right AND deleted IS NULL',
+            GREATERTHANOREQUAL: 'WHERE $left ${not ? "<" : ">="} $right AND deleted IS NULL',
+            LESSTHAN          : 'WHERE $left ${not ? ">=" : "<"} $right AND deleted IS NULL',
+            LESSTHANOREQUAL   : 'WHERE $left ${not ? ">" : "<="} $right AND deleted IS NULL'
     ]
 
     def wt = whereTemplates.get(operation)
@@ -215,7 +196,12 @@ String buildWhereClause(Filter filter, Map sqlParams, String uidColumn, String n
     def where = template.toString()
 
     log.info("#### Where clause: {0}, with parameters {1} ####", where, sqlParams)
+    if (where.isEmpty()) {
+        return 'WHERE deleted IS NULL'
+    } else {
+        return where
+    }
 
-    return where
+
 }
 

@@ -5,6 +5,8 @@ CREATE TABLE source_accounts (
     lastname                VARCHAR(64),
     rijksregisternummer     VARCHAR(11),
     disabled                BOOLEAN,
+    deleted                 BOOLEAN,
+    lastmodification        TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     PRIMARY KEY (accountId)
 );
 
@@ -22,6 +24,8 @@ CREATE TABLE source_entitlements (
     telefoonnr              VARCHAR(32),
     privileges              VARCHAR(128),
     disabled                BOOLEAN,
+    deleted                 BOOLEAN,
+    lastmodification        TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     PRIMARY KEY (entitlementid)
 );
 
