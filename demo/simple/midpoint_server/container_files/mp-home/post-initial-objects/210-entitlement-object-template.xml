@@ -11,6 +11,8 @@
     <name>Entitlement Object Template</name>
     <mapping>
         <name>Privileges assignment</name>
+        <authoritative>true</authoritative>
+        <strength>strong</strength>
         <source>
             <name>privileges</name>
             <path>$focus/extension/privileges</path>
@@ -34,24 +36,37 @@
                         </expression>
                     </q:equal>
                 </filter>
-                <populateObject>
-                    <populateItem>
-                        <expression>
-                            <script>
-                                <code>
-                                    return privileges
-                                </code>
-                            </script>
-                        </expression>
-                        <target>
-                            <path>name</path>
-                        </target>
-                    </populateItem>
-                </populateObject>
+                <assignmentProperties>
+                    <subtype>privilege-assignment</subtype>
+                </assignmentProperties>
             </assignmentTargetSearch>
         </expression>
         <target>
             <c:path>assignment</c:path>
+            <set>
+<!--                <condition>-->
+<!--                    <script>-->
+<!--                        <trace>true</trace>-->
+<!--                        <code>-->
+<!--                            import com.evolveum.midpoint.schema.constants.*-->
+<!--                            log.info("assignment: " + assignment)-->
+<!--                            log.info("assignmentPath: " + assignmentPath)-->
+<!--                            log.info("input: " + input)-->
+<!--                            log.info("operation: " + operation)-->
+<!--                            input.targetRef != null-->
+<!--                        </code>-->
+<!--                    </script>-->
+<!--                </condition>-->
+                <predefined>all</predefined>
+                <!-- This is to ensure that only assignments created by this mappings will be removed by it. -->
+<!--                <condition>-->
+<!--                    <script>-->
+<!--                        <code>-->
+<!--                            assignment?.subtype.contains('privilege-assignment')-->
+<!--                        </code>-->
+<!--                    </script>-->
+<!--                </condition>-->
+            </set>
         </target>
     </mapping>
 </objectTemplate>

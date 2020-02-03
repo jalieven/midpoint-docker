@@ -210,10 +210,6 @@
             <targetRef oid="20bb2e95-a622-4833-b0c8-5e95407e08e8" type="RoleType" />
         </assignment>
 
-        <assignment>
-            <targetRef oid="0bbfe988-b099-48e0-a6a1-17aa14746018" type="RoleType" />
-        </assignment>
-
     </role>
 
     <role oid="d8789e14-614f-4819-ae6e-5ea5af0a4d31">
@@ -223,14 +219,6 @@
 
         <assignment>
             <targetRef oid="0bbfe988-b099-48e0-a6a1-17aa14746018" type="RoleType" />
-        </assignment>
-
-        <assignment>
-            <targetRef oid="77cc3051-e5e5-4103-b25e-49cc976e5192" type="RoleType" />
-        </assignment>
-
-        <assignment>
-            <targetRef oid="5bb5d53d-2803-440e-b37b-0a0cddb830eb" type="RoleType" />
         </assignment>
 
     </role>

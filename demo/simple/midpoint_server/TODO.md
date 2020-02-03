@@ -24,7 +24,114 @@
     First run: Processed 500 account(s), got 0 error(s). Average time for one object: 77.67 ms (wall clock time average: 84.246 ms).
     Second run: Processed 500 account(s), got 0 error(s). Average time for one object: 171.814 ms 
    
-- Daarna wat disaster scenarios runnen
+- Daarna wat scenarios runnen
+
+    SCENARIOS:
+    
+        ⛔️ Aanpassen van de entitlement privileges:
+        
+            - Import van 1 account en 1 entitlement (met privileges A, B en C) dan reconciliation
+            - Update van entitlement privileges naar B, D en E dan reconciliation
+            - Zijn dan alle technische rollen ok?
+                => momenteel heeft die entitlement privileges A, B, C, D en E (union dus) => 🚨🚨🚨🚨
+        
+                make restart_local_midpoint
+                make insert_account
+                make insert_entitlement
+                make resume_import_task
+                make update_entitlement_privileges
+                make run_import_entitlements_task
+                make run_reconciliation_accounts_task
+                
+                
+        ⛔ Verwijderen van een account (en dus by definition ook zijn entitlements ref-integrity gewijs):
+        
+            - Import van 1 account en 1 entitlement dan reconciliation
+            
+                make restart_local_midpoint
+                make insert_account
+                make insert_entitlement
+                make resume_import_task
+                make delete_entitlement
+                make delete_account
+                make run_import_entitlements_task
+                make run_import_accounts_task
+                make run_reconciliation_accounts_task
+                
+                => LDAP ok
+                🚨🚨🚨🚨 maar midPoint ziet nog de entitlement alsof die bestaat in PostgreSQL (projection is er nog steeds)
+                   SHADOW (is not tombstoned):
+                        <synchronizationSituation>linked</synchronizationSituation> 
+                        <exists>true</exists>
+                 en wanneer we die ene entitlement reconcilen:
+                 
+                    com.evolveum.midpoint.util.exception.ObjectNotFoundException: Object of type 'RoleType' with oid '6e2e9360-96b2-43b1-8bee-ae37ec68a286' was not found.     
+                   
+                !!! Hetzelfde gebeurt eigenlijk wanneer er gewoon een entitlement wordt verwijderd en een reconcile wordt getriggered op die entitlement
+                dus die run_import_entitlements_task doet eigenlijk niets uit. midPoint gaat dan foobar bij insert en import van die entitlement komt het niet meer goed
+                java.lang.IllegalStateException: More than one shadows found in repository for RAC(identifiers):[PCV(null):[RA({.../connector/icf-1/resource-schema-3}name):[PPV(String:20001-Milieumedewerker-01)]]]
+
+                Gerelateerd daarmee is het volgende (zonder de import tasks te runnen):
+                    make restart_local_midpoint
+                    make insert_account
+                    make insert_entitlement
+                    make run_reconciliation_accounts_task
+
+            - Oplossing:
+            
+                make restart_local_midpoint
+                make insert_account
+                make insert_entitlement
+                make run_reconciliation_entitlements_task
+                make run_reconciliation_accounts_task
+                make delete_entitlement
+                make delete_account
+                make run_reconciliation_entitlements_task  (hier is de entitlement wel weg maar de assignment in account->entitlement is "Not Found")
+                make run_reconciliation_accounts_task      (hier wordt dan de assignment opgekuisd maar wel dus die ObjectNotFoundException in de logs)
+
+            HET IS DUS ZAAK OM EERST ALTIJD (ipv de import tasks) DE RECONCILIATION TASKS UIT TE VOEREN EN DAN BEST EERST DE ENTITLEMENTS EN DAN PAS ACCOUNTS
+        
+        
+        ✅ Verwijderen van entitlement:
+        
+            - Import van 1 account en 1 entitlement (met privileges A, B en C) dan reconciliation
+            - Delete van entitlement dan reconciliation
+            - Zijn dan alle rollen ok.
+                => idd de account heeft geen rol meer in LDAP en midPoint 
+        
+                make restart_local_midpoint
+                make insert_account
+                make insert_entitlement
+                make resume_import_task
+                make delete_entitlement
+                make run_import_entitlements_task
+                make run_reconciliation_accounts_task
+               
+        ✅ Aanpassen van account gegevens:
+        
+            - Import van 1 account en 1 entitlement (met privileges A, B en C) dan reconciliation
+            - Aanpassen van account dan reconciliation
+            - Is dan de account in orde? LDAP en midPoint in orde
+            
+                make restart_local_midpoint
+                make insert_account
+                make insert_entitlement
+                make resume_import_task
+                make update_account
+                make run_import_accounts_task
+                make run_reconciliation_accounts_task
+                
+         TO TEST Aanpassen van attributen (met uitzondering van privileges) van de entitlement:
+         
+         
+         
+         In de WebIDM provisioning SOAP service wordt er zo iets als renameAccount gedaan (en dan worden die accountIds old en new meegegeven)
+            => Ik denk dus dat we het RRN als primary key best nemen?
+            => Wat is het doel eigenlijk van deze operatie?
+         
+            
+
+
 - REST connector fabriceren: https://wiki.evolveum.com/display/midPoint/REST+Connector+Superclass
 
 - Outbound association leggen interessante thread: http://lists.evolveum.com/pipermail/midpoint/2016-September/002491.html
@@ -345,198 +452,7 @@
                     	at com.evolveum.midpoint.gui.impl.factory.PrismObjectWrapperFactoryImpl.createObjectWrapper(PrismObjectWrapperFactoryImpl.java:89)
                     	at com.evolveum.midpoint.web.page.admin.PageAdminFocus.loadShadowWrapper(PageAdminFocus.java:293)
                     	at com.evolveum.midpoint.web.page.admin.PageAdminFocus.loadShadowWrappers(PageAdminFocus.java:264)
-                    	at com.evolveum.midpoint.web.page.admin.PageAdminFocus$1.load(PageAdminFocus.java:123)
-                    	at com.evolveum.midpoint.web.page.admin.PageAdminFocus$1.load(PageAdminFocus.java:118)
-                    	at com.evolveum.midpoint.gui.api.model.LoadableModel.getObject(LoadableModel.java:59)
-                    	at com.evolveum.midpoint.web.component.objectdetails.FocusMainPanel$4.getCount(FocusMainPanel.java:231)
-                    	at com.evolveum.midpoint.gui.api.component.tabs.CountablePanelTab$1.getObject(CountablePanelTab.java:42)
-                    	at com.evolveum.midpoint.gui.api.component.tabs.CountablePanelTab$1.getObject(CountablePanelTab.java:36)
-                    	at com.evolveum.midpoint.web.component.TabbedPanel$2$1.getObject(TabbedPanel.java:141)
-                    	at com.evolveum.midpoint.web.component.TabbedPanel$2$1.getObject(TabbedPanel.java:133)
-                    	at org.apache.wicket.AttributeModifier.getReplacementOrNull(AttributeModifier.java:218)
-                    	at org.apache.wicket.AttributeModifier.replaceAttributeValue(AttributeModifier.java:173)
-                    	at org.apache.wicket.AttributeModifier.onComponentTag(AttributeModifier.java:155)
-                    	at org.apache.wicket.Component.renderComponentTag(Component.java:3929)
-                    	at org.apache.wicket.Component.internalRenderComponent(Component.java:2482)
-                    	at org.apache.wicket.markup.html.WebComponent.onRender(WebComponent.java:60)
-                    	at org.apache.wicket.Component.internalRender(Component.java:2296)
-                    	at org.apache.wicket.Component.render(Component.java:2227)
-                    	at org.apache.wicket.MarkupContainer.renderNext(MarkupContainer.java:1454)
-                    	at org.apache.wicket.MarkupContainer.renderAll(MarkupContainer.java:1654)
-                    	at org.apache.wicket.MarkupContainer.renderComponentTagBody(MarkupContainer.java:1629)
-                    	at org.apache.wicket.MarkupContainer.onComponentTagBody(MarkupContainer.java:1587)
-                    	at org.apache.wicket.markup.html.link.AbstractLink.onComponentTagBody(AbstractLink.java:82)
-                    	at org.apache.wicket.markup.html.panel.DefaultMarkupSourcingStrategy.onComponentTagBody(DefaultMarkupSourcingStrategy.java:70)
-                    	at org.apache.wicket.Component.internalRenderComponent(Component.java:2491)
-                    	at org.apache.wicket.MarkupContainer.onRender(MarkupContainer.java:1593)
-                    	at org.apache.wicket.Component.internalRender(Component.java:2296)
-                    	at org.apache.wicket.Component.render(Component.java:2227)
-                    	at org.apache.wicket.MarkupContainer.renderNext(MarkupContainer.java:1454)
-                    	at org.apache.wicket.MarkupContainer.renderAll(MarkupContainer.java:1654)
-                    	at org.apache.wicket.MarkupContainer.renderComponentTagBody(MarkupContainer.java:1629)
-                    	at org.apache.wicket.MarkupContainer.onComponentTagBody(MarkupContainer.java:1587)
-                    	at org.apache.wicket.markup.html.panel.DefaultMarkupSourcingStrategy.onComponentTagBody(DefaultMarkupSourcingStrategy.java:70)
-                    	at org.apache.wicket.Component.internalRenderComponent(Component.java:2491)
-                    	at org.apache.wicket.MarkupContainer.onRender(MarkupContainer.java:1593)
-                    	at org.apache.wicket.Component.internalRender(Component.java:2296)
-                    	at org.apache.wicket.Component.render(Component.java:2227)
-                    	at org.apache.wicket.markup.html.list.Loop.renderItem(Loop.java:167)
-                    	at org.apache.wicket.markup.html.list.Loop.renderChild(Loop.java:156)
-                    	at org.apache.wicket.markup.repeater.AbstractRepeater.onRender(AbstractRepeater.java:102)
-                    	at org.apache.wicket.Component.internalRender(Component.java:2296)
-                    	at org.apache.wicket.Component.render(Component.java:2227)
-                    	at org.apache.wicket.MarkupContainer.renderNext(MarkupContainer.java:1454)
-                    	at org.apache.wicket.MarkupContainer.renderAll(MarkupContainer.java:1654)
-                    	at org.apache.wicket.MarkupContainer.renderComponentTagBody(MarkupContainer.java:1629)
-                    	at org.apache.wicket.MarkupContainer.onComponentTagBody(MarkupContainer.java:1587)
-                    	at org.apache.wicket.markup.html.panel.DefaultMarkupSourcingStrategy.onComponentTagBody(DefaultMarkupSourcingStrategy.java:70)
-                    	at org.apache.wicket.Component.internalRenderComponent(Component.java:2491)
-                    	at org.apache.wicket.MarkupContainer.onRender(MarkupContainer.java:1593)
-                    	at org.apache.wicket.Component.internalRender(Component.java:2296)
-                    	at org.apache.wicket.Component.render(Component.java:2227)
-                    	at org.apache.wicket.MarkupContainer.renderNext(MarkupContainer.java:1454)
-                    	at org.apache.wicket.MarkupContainer.renderAll(MarkupContainer.java:1654)
-                    	at org.apache.wicket.MarkupContainer.renderComponentTagBody(MarkupContainer.java:1629)
-                    	at org.apache.wicket.MarkupContainer.renderAssociatedMarkup(MarkupContainer.java:798)
-                    	at org.apache.wicket.markup.html.panel.AssociatedMarkupSourcingStrategy.renderAssociatedMarkup(AssociatedMarkupSourcingStrategy.java:77)
-                    	at org.apache.wicket.markup.html.panel.PanelMarkupSourcingStrategy.onComponentTagBody(PanelMarkupSourcingStrategy.java:112)
-                    	at org.apache.wicket.Component.internalRenderComponent(Component.java:2491)
-                    	at org.apache.wicket.MarkupContainer.onRender(MarkupContainer.java:1593)
-                    	at org.apache.wicket.Component.internalRender(Component.java:2296)
-                    	at org.apache.wicket.Component.render(Component.java:2227)
-                    	at org.apache.wicket.MarkupContainer.renderNext(MarkupContainer.java:1454)
-                    	at org.apache.wicket.MarkupContainer.renderAll(MarkupContainer.java:1654)
-                    	at org.apache.wicket.MarkupContainer.renderComponentTagBody(MarkupContainer.java:1629)
-                    	at org.apache.wicket.MarkupContainer.onComponentTagBody(MarkupContainer.java:1587)
-                    	at org.apache.wicket.markup.html.form.Form.onComponentTagBody(Form.java:1708)
-                    	at com.evolveum.midpoint.web.component.form.Form.onComponentTagBody(Form.java:43)
-                    	at org.apache.wicket.markup.html.panel.DefaultMarkupSourcingStrategy.onComponentTagBody(DefaultMarkupSourcingStrategy.java:70)
-                    	at org.apache.wicket.Component.internalRenderComponent(Component.java:2491)
-                    	at org.apache.wicket.MarkupContainer.onRender(MarkupContainer.java:1593)
-                    	at org.apache.wicket.Component.internalRender(Component.java:2296)
-                    	at org.apache.wicket.Component.render(Component.java:2227)
-                    	at org.apache.wicket.MarkupContainer.renderNext(MarkupContainer.java:1454)
-                    	at org.apache.wicket.MarkupContainer.renderAll(MarkupContainer.java:1654)
-                    	at org.apache.wicket.MarkupContainer.renderComponentTagBody(MarkupContainer.java:1629)
-                    	at org.apache.wicket.MarkupContainer.renderAssociatedMarkup(MarkupContainer.java:798)
-                    	at org.apache.wicket.markup.html.panel.AssociatedMarkupSourcingStrategy.renderAssociatedMarkup(AssociatedMarkupSourcingStrategy.java:77)
-                    	at org.apache.wicket.markup.html.panel.PanelMarkupSourcingStrategy.onComponentTagBody(PanelMarkupSourcingStrategy.java:112)
-                    	at org.apache.wicket.Component.internalRenderComponent(Component.java:2491)
-                    	at org.apache.wicket.MarkupContainer.onRender(MarkupContainer.java:1593)
-                    	at org.apache.wicket.Component.internalRender(Component.java:2296)
-                    	at org.apache.wicket.Component.render(Component.java:2227)
-                    	at org.apache.wicket.MarkupContainer.renderNext(MarkupContainer.java:1454)
-                    	at org.apache.wicket.MarkupContainer.renderAll(MarkupContainer.java:1654)
-                    	at org.apache.wicket.MarkupContainer.renderComponentTagBody(MarkupContainer.java:1629)
-                    	at org.apache.wicket.MarkupContainer.onComponentTagBody(MarkupContainer.java:1587)
-                    	at org.apache.wicket.markup.html.panel.DefaultMarkupSourcingStrategy.onComponentTagBody(DefaultMarkupSourcingStrategy.java:70)
-                    	at org.apache.wicket.Component.internalRenderComponent(Component.java:2491)
-                    	at org.apache.wicket.MarkupContainer.onRender(MarkupContainer.java:1593)
-                    	at org.apache.wicket.Component.internalRender(Component.java:2296)
-                    	at org.apache.wicket.Component.render(Component.java:2227)
-                    	at org.apache.wicket.MarkupContainer.renderNext(MarkupContainer.java:1454)
-                    	at org.apache.wicket.MarkupContainer.renderAll(MarkupContainer.java:1654)
-                    	at org.apache.wicket.Page.onRender(Page.java:858)
-                    	at org.apache.wicket.markup.html.WebPage.onRender(WebPage.java:126)
-                    	at org.apache.wicket.Component.internalRender(Component.java:2296)
-                    	at org.apache.wicket.Component.render(Component.java:2227)
-                    	at org.apache.wicket.Page.renderPage(Page.java:998)
-                    	at org.apache.wicket.request.handler.render.WebPageRenderer.renderPage(WebPageRenderer.java:124)
-                    	at org.apache.wicket.request.handler.render.WebPageRenderer.respond(WebPageRenderer.java:236)
-                    	at org.apache.wicket.core.request.handler.RenderPageRequestHandler.respond(RenderPageRequestHandler.java:202)
-                    	at org.apache.wicket.request.cycle.RequestCycle$HandlerExecutor.respond(RequestCycle.java:914)
-                    	at org.apache.wicket.request.RequestHandlerExecutor.execute(RequestHandlerExecutor.java:65)
-                    	at org.apache.wicket.request.cycle.RequestCycle.execute(RequestCycle.java:282)
-                    	at org.apache.wicket.request.cycle.RequestCycle.processRequest(RequestCycle.java:253)
-                    	at org.apache.wicket.request.cycle.RequestCycle.processRequestAndDetach(RequestCycle.java:221)
-                    	at org.apache.wicket.protocol.http.WicketFilter.processRequestCycle(WicketFilter.java:275)
-                    	at org.apache.wicket.protocol.http.WicketFilter.processRequest(WicketFilter.java:206)
-                    	at org.apache.wicket.protocol.http.WicketFilter.doFilter(WicketFilter.java:299)
-                    	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
-                    	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
-                    	at com.evolveum.midpoint.web.util.MidPointProfilingServletFilter.doFilter(MidPointProfilingServletFilter.java:85)
-                    	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
-                    	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
-                    	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:320)
-                    	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:84)
-                    	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-                    	at com.evolveum.midpoint.web.security.filter.MidpointAuthFilter$VirtualFilterChain.doFilter(MidpointAuthFilter.java:240)
-                    	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.invoke(FilterSecurityInterceptor.java:127)
-                    	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.doFilter(FilterSecurityInterceptor.java:91)
-                    	at com.evolveum.midpoint.web.security.filter.MidpointAuthFilter$VirtualFilterChain.doFilter(MidpointAuthFilter.java:254)
-                    	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:137)
-                    	at com.evolveum.midpoint.web.security.filter.MidpointAuthFilter$VirtualFilterChain.doFilter(MidpointAuthFilter.java:254)
-                    	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:119)
-                    	at com.evolveum.midpoint.web.security.filter.MidpointAuthFilter$VirtualFilterChain.doFilter(MidpointAuthFilter.java:254)
-                    	at com.evolveum.midpoint.web.security.filter.MidpointAnonymousAuthenticationFilter.doFilter(MidpointAnonymousAuthenticationFilter.java:66)
-                    	at com.evolveum.midpoint.web.security.filter.MidpointAuthFilter$VirtualFilterChain.doFilter(MidpointAuthFilter.java:254)
-                    	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:170)
-                    	at com.evolveum.midpoint.web.security.filter.MidpointAuthFilter$VirtualFilterChain.doFilter(MidpointAuthFilter.java:254)
-                    	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
-                    	at com.evolveum.midpoint.web.security.filter.MidpointAuthFilter$VirtualFilterChain.doFilter(MidpointAuthFilter.java:254)
-                    	at org.springframework.security.web.session.ConcurrentSessionFilter.doFilter(ConcurrentSessionFilter.java:155)
-                    	at com.evolveum.midpoint.web.security.filter.MidpointAuthFilter$VirtualFilterChain.doFilter(MidpointAuthFilter.java:254)
-                    	at org.springframework.security.web.csrf.CsrfFilter.doFilterInternal(CsrfFilter.java:100)
-                    	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:118)
-                    	at com.evolveum.midpoint.web.security.filter.MidpointAuthFilter$VirtualFilterChain.doFilter(MidpointAuthFilter.java:254)
-                    	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:74)
-                    	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:118)
-                    	at com.evolveum.midpoint.web.security.filter.MidpointAuthFilter$VirtualFilterChain.doFilter(MidpointAuthFilter.java:254)
-                    	at com.evolveum.midpoint.web.security.filter.MidpointAuthFilter.processingInMidpoint(MidpointAuthFilter.java:209)
-                    	at com.evolveum.midpoint.web.security.filter.MidpointAuthFilter.doFilterInternal(MidpointAuthFilter.java:119)
-                    	at com.evolveum.midpoint.web.security.filter.MidpointAuthFilter.doFilter(MidpointAuthFilter.java:105)
-                    	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-                    	at org.springframework.security.web.session.ConcurrentSessionFilter.doFilter(ConcurrentSessionFilter.java:155)
-                    	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-                    	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:105)
-                    	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-                    	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:56)
-                    	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:118)
-                    	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-                    	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:215)
-                    	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:178)
-                    	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:357)
-                    	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:270)
-                    	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
-                    	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
-                    	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:99)
-                    	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:118)
-                    	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
-                    	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
-                    	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:92)
-                    	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:118)
-                    	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
-                    	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
-                    	at org.springframework.web.filter.HiddenHttpMethodFilter.doFilterInternal(HiddenHttpMethodFilter.java:93)
-                    	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:118)
-                    	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
-                    	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
-                    	at org.springframework.boot.actuate.metrics.web.servlet.WebMvcMetricsFilter.filterAndRecordMetrics(WebMvcMetricsFilter.java:114)
-                    	at org.springframework.boot.actuate.metrics.web.servlet.WebMvcMetricsFilter.doFilterInternal(WebMvcMetricsFilter.java:104)
-                    	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:118)
-                    	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
-                    	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
-                    	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:200)
-                    	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:118)
-                    	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
-                    	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
-                    	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:202)
-                    	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:96)
-                    	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:526)
-                    	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:139)
-                    	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)
-                    	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
-                    	at com.evolveum.midpoint.web.boot.TomcatRootValve.invoke(TomcatRootValve.java:60)
-                    	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:343)
-                    	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:408)
-                    	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:66)
-                    	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:860)
-                    	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1587)
-                    	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
-                    	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
-                    	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
-                    	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
-                    	at java.base/java.lang.Thread.run(Thread.java:834)
+                    	
 
         Al het bovenstaand gezever is niet nodig gewoon in de opendj resource file de native capabilities verwijderen does the trick!
             
@@ -556,273 +472,16 @@
     - Wanneer we 2 outbound resources (A en B) hebben en we willen adhv een attribuut die laten terecht komen in A of B. Hoe doe je dat?
     - Kan self-servicing werken als we niet per se email hebben en we geen passwords hebben?
     - Soms zien we in de logs een "time moved back" exception: what is that all about? En dan werken sommige tasks niet meer naar behoren. (is enkel in docker containers op Mac OS X)
+    - Probleem waarbij de privileges in entitlements upgedate worden (verwijderen bvb) dan blijft de union zitten in midPoint ook als is de mapping authoritative. <set><predefined>all</predefined> werkt niet
+        Dus er worden geen entitlements verwijderd...
+    - Kunnen we gericht de accounts en entitlements reconciliaten (via REST api calls) wanneer we die aangepast zien vanuit de provisioning? (en zo live syncing doen)
+
+    
+    - Stacktrace van docker time float
     
             org.apache.wicket.WicketRuntimeException: Error attaching this container for rendering: [WebMarkupContainer [Component id = body]]
             2020-01-28 14:21:12,132 [] [http-nio-8080-exec-9] ERROR (com.evolveum.midpoint.web.security.LoggingRequestCycleListener): Error occurred during page rendering.
-            	at org.apache.wicket.MarkupContainer.onBeforeRenderChildren(MarkupContainer.java:1766)
-            	at org.apache.wicket.Component.onBeforeRender(Component.java:3801)
-            	at org.apache.wicket.Component.beforeRender(Component.java:939)
-            	at org.apache.wicket.MarkupContainer.onBeforeRenderChildren(MarkupContainer.java:1754)
-            	at org.apache.wicket.Component.onBeforeRender(Component.java:3801)
-            	at org.apache.wicket.Component.beforeRender(Component.java:939)
-            	at org.apache.wicket.MarkupContainer.onBeforeRenderChildren(MarkupContainer.java:1754)
-            	at org.apache.wicket.Component.onBeforeRender(Component.java:3801)
-            	at org.apache.wicket.Component.beforeRender(Component.java:939)
-            	at org.apache.wicket.MarkupContainer.onBeforeRenderChildren(MarkupContainer.java:1754)
-            	at org.apache.wicket.Component.onBeforeRender(Component.java:3801)
-            	at org.apache.wicket.Component.beforeRender(Component.java:939)
-            	at org.apache.wicket.MarkupContainer.onBeforeRenderChildren(MarkupContainer.java:1754)
-            	at org.apache.wicket.Component.onBeforeRender(Component.java:3801)
-            	at org.apache.wicket.Component.beforeRender(Component.java:939)
-            	at org.apache.wicket.MarkupContainer.onBeforeRenderChildren(MarkupContainer.java:1754)
-            	at org.apache.wicket.Component.onBeforeRender(Component.java:3801)
-            	at org.apache.wicket.markup.html.form.Form.onBeforeRender(Form.java:1816)
-            	at org.apache.wicket.Component.beforeRender(Component.java:939)
-            	at org.apache.wicket.MarkupContainer.onBeforeRenderChildren(MarkupContainer.java:1754)
-            	at org.apache.wicket.Component.onBeforeRender(Component.java:3801)
-            	at org.apache.wicket.Page.onBeforeRender(Page.java:789)
-            	at com.evolveum.midpoint.gui.api.page.PageBase.onBeforeRender(PageBase.java:782)
-            	at org.apache.wicket.Component.beforeRender(Component.java:939)
-            	at org.apache.wicket.Page.renderPage(Page.java:991)
-            	at org.apache.wicket.request.handler.render.WebPageRenderer.renderPage(WebPageRenderer.java:124)
-            	at org.apache.wicket.request.handler.render.WebPageRenderer.respond(WebPageRenderer.java:236)
-            	at org.apache.wicket.core.request.handler.RenderPageRequestHandler.respond(RenderPageRequestHandler.java:202)
-            	at org.apache.wicket.request.cycle.RequestCycle$HandlerExecutor.respond(RequestCycle.java:914)
-            	at org.apache.wicket.request.RequestHandlerExecutor.execute(RequestHandlerExecutor.java:65)
-            	at org.apache.wicket.request.cycle.RequestCycle.execute(RequestCycle.java:282)
-            	at org.apache.wicket.request.cycle.RequestCycle.processRequest(RequestCycle.java:253)
-            	at org.apache.wicket.request.cycle.RequestCycle.processRequestAndDetach(RequestCycle.java:221)
-            	at org.apache.wicket.protocol.http.WicketFilter.processRequestCycle(WicketFilter.java:275)
-            	at org.apache.wicket.protocol.http.WicketFilter.processRequest(WicketFilter.java:206)
-            	at org.apache.wicket.protocol.http.WicketFilter.doFilter(WicketFilter.java:299)
-            	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
-            	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
-            	at com.evolveum.midpoint.web.util.MidPointProfilingServletFilter.doFilter(MidPointProfilingServletFilter.java:85)
-            	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
-            	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
-            	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:320)
-            	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.invoke(FilterSecurityInterceptor.java:127)
-            	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.doFilter(FilterSecurityInterceptor.java:91)
-            	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-            	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:119)
-            	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-            	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:137)
-            	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-            	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:111)
-            	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-            	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:170)
-            	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-            	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
-            	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-            	at org.springframework.security.web.session.ConcurrentSessionFilter.doFilter(ConcurrentSessionFilter.java:155)
-            	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-            	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:200)
-            	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-            	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:116)
-            	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-            	at org.springframework.security.web.csrf.CsrfFilter.doFilterInternal(CsrfFilter.java:100)
-            	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:118)
-            	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-            	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:74)
-            	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:118)
-            	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-            	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:105)
-            	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-            	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:56)
-            	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:118)
-            	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-            	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:215)
-            	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:178)
-            	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:357)
-            	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:270)
-            	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
-            	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
-            	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:99)
-            	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:118)
-            	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
-            	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
-            	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:92)
-            	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:118)
-            	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
-            	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
-            	at org.springframework.web.filter.HiddenHttpMethodFilter.doFilterInternal(HiddenHttpMethodFilter.java:93)
-            	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:118)
-            	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
-            	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
-            	at org.springframework.boot.actuate.metrics.web.servlet.WebMvcMetricsFilter.filterAndRecordMetrics(WebMvcMetricsFilter.java:114)
-            	at org.springframework.boot.actuate.metrics.web.servlet.WebMvcMetricsFilter.doFilterInternal(WebMvcMetricsFilter.java:104)
-            	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:118)
-            	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
-            	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
-            	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:200)
-            	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:118)
-            	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
-            	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
-            	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:202)
-            	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:96)
-            	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:526)
-            	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:139)
-            	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)
-            	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
-            	at com.evolveum.midpoint.web.boot.TomcatRootValve.invoke(TomcatRootValve.java:60)
-            	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:343)
-            	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:408)
-            	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:66)
-            	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:860)
-            	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1587)
-            	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
-            	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
-            	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
-            	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
-            	at java.base/java.lang.Thread.run(Thread.java:834)
-            Caused by: java.lang.IllegalStateException: The time has moved back, possible consistency violation
-            	at com.evolveum.midpoint.task.quartzimpl.LightweightIdentifierGeneratorImpl.generate(LightweightIdentifierGeneratorImpl.java:45)
-            	at com.evolveum.midpoint.task.quartzimpl.TaskManagerQuartzImpl.generateTaskIdentifier(TaskManagerQuartzImpl.java:827)
-            	at com.evolveum.midpoint.task.quartzimpl.TaskManagerQuartzImpl.createTaskInstance(TaskManagerQuartzImpl.java:822)
-            	at com.evolveum.midpoint.task.quartzimpl.TaskManagerQuartzImpl.createTaskInstance(TaskManagerQuartzImpl.java:132)
-            	at jdk.internal.reflect.GeneratedMethodAccessor962.invoke(Unknown Source)
-            	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-            	at java.base/java.lang.reflect.Method.invoke(Method.java:566)
-            	at org.apache.wicket.proxy.LazyInitProxyFactory$JdkHandler.invoke(LazyInitProxyFactory.java:521)
-            	at com.sun.proxy.$Proxy244.createTaskInstance(Unknown Source)
-            	at com.evolveum.midpoint.gui.api.util.WebModelServiceUtils.createSimpleTask(WebModelServiceUtils.java:640)
-            	at com.evolveum.midpoint.gui.api.page.PageBase.createSimpleTask(PageBase.java:752)
-            	at com.evolveum.midpoint.gui.api.page.PageBase.createSimpleTask(PageBase.java:744)
-            	at com.evolveum.midpoint.gui.api.page.PageBase.getCompiledUserProfile(PageBase.java:623)
-            	at com.evolveum.midpoint.gui.api.page.PageBase.executeResultScriptHook(PageBase.java:1407)
-            	at com.evolveum.midpoint.gui.api.page.PageBase.showResult(PageBase.java:1371)
-            	at com.evolveum.midpoint.gui.api.page.PageBase.showResult(PageBase.java:1340)
-            	at com.evolveum.midpoint.web.component.data.RepositoryObjectDataProvider.internalSize(RepositoryObjectDataProvider.java:175)
-            	at com.evolveum.midpoint.web.component.data.BaseSortableDataProvider.size(BaseSortableDataProvider.java:315)
-            	at org.apache.wicket.markup.repeater.data.DataViewBase.internalGetItemCount(DataViewBase.java:142)
-            	at org.apache.wicket.markup.repeater.AbstractPageableView.getItemCount(AbstractPageableView.java:214)
-            	at org.apache.wicket.markup.repeater.AbstractPageableView.getRowCount(AbstractPageableView.java:195)
-            	at org.apache.wicket.markup.repeater.AbstractPageableView.getViewSize(AbstractPageableView.java:293)
-            	at org.apache.wicket.markup.repeater.AbstractPageableView.getItemModels(AbstractPageableView.java:97)
-            	at org.apache.wicket.markup.repeater.RefreshingView.onPopulate(RefreshingView.java:93)
-            	at org.apache.wicket.markup.repeater.AbstractRepeater.onBeforeRender(AbstractRepeater.java:124)
-            	at org.apache.wicket.markup.repeater.AbstractPageableView.onBeforeRender(AbstractPageableView.java:113)
-            	at org.apache.wicket.Component.beforeRender(Component.java:939)
-            	at org.apache.wicket.MarkupContainer.onBeforeRenderChildren(MarkupContainer.java:1754)
-            	... 115 common frames omitted
-            2020-01-28 14:21:12,148 [] [http-nio-8080-exec-9] WARN (com.evolveum.midpoint.web.page.error.PageError): Creating error page for code org.apache.wicket.WicketRuntimeException, exception Error attaching this container for rendering: [WebMarkupContainer [Component id = body]]: {}
-            org.apache.wicket.WicketRuntimeException: Error attaching this container for rendering: [WebMarkupContainer [Component id = body]]
-            	at org.apache.wicket.MarkupContainer.onBeforeRenderChildren(MarkupContainer.java:1766)
-            	at org.apache.wicket.Component.onBeforeRender(Component.java:3801)
-            	at org.apache.wicket.Component.beforeRender(Component.java:939)
-            	at org.apache.wicket.MarkupContainer.onBeforeRenderChildren(MarkupContainer.java:1754)
-            	at org.apache.wicket.Component.onBeforeRender(Component.java:3801)
-            	at org.apache.wicket.Component.beforeRender(Component.java:939)
-            	at org.apache.wicket.MarkupContainer.onBeforeRenderChildren(MarkupContainer.java:1754)
-            	at org.apache.wicket.Component.onBeforeRender(Component.java:3801)
-            	at org.apache.wicket.Component.beforeRender(Component.java:939)
-            	at org.apache.wicket.MarkupContainer.onBeforeRenderChildren(MarkupContainer.java:1754)
-            	at org.apache.wicket.Component.onBeforeRender(Component.java:3801)
-            	at org.apache.wicket.Component.beforeRender(Component.java:939)
-            	at org.apache.wicket.MarkupContainer.onBeforeRenderChildren(MarkupContainer.java:1754)
-            	at org.apache.wicket.Component.onBeforeRender(Component.java:3801)
-            	at org.apache.wicket.Component.beforeRender(Component.java:939)
-            	at org.apache.wicket.MarkupContainer.onBeforeRenderChildren(MarkupContainer.java:1754)
-            	at org.apache.wicket.Component.onBeforeRender(Component.java:3801)
-            	at org.apache.wicket.markup.html.form.Form.onBeforeRender(Form.java:1816)
-            	at org.apache.wicket.Component.beforeRender(Component.java:939)
-            	at org.apache.wicket.MarkupContainer.onBeforeRenderChildren(MarkupContainer.java:1754)
-            	at org.apache.wicket.Component.onBeforeRender(Component.java:3801)
-            	at org.apache.wicket.Page.onBeforeRender(Page.java:789)
-            	at com.evolveum.midpoint.gui.api.page.PageBase.onBeforeRender(PageBase.java:782)
-            	at org.apache.wicket.Component.beforeRender(Component.java:939)
-            	at org.apache.wicket.Page.renderPage(Page.java:991)
-            	at org.apache.wicket.request.handler.render.WebPageRenderer.renderPage(WebPageRenderer.java:124)
-            	at org.apache.wicket.request.handler.render.WebPageRenderer.respond(WebPageRenderer.java:236)
-            	at org.apache.wicket.core.request.handler.RenderPageRequestHandler.respond(RenderPageRequestHandler.java:202)
-            	at org.apache.wicket.request.cycle.RequestCycle$HandlerExecutor.respond(RequestCycle.java:914)
-            	at org.apache.wicket.request.RequestHandlerExecutor.execute(RequestHandlerExecutor.java:65)
-            	at org.apache.wicket.request.cycle.RequestCycle.execute(RequestCycle.java:282)
-            	at org.apache.wicket.request.cycle.RequestCycle.processRequest(RequestCycle.java:253)
-            	at org.apache.wicket.request.cycle.RequestCycle.processRequestAndDetach(RequestCycle.java:221)
-            	at org.apache.wicket.protocol.http.WicketFilter.processRequestCycle(WicketFilter.java:275)
-            	at org.apache.wicket.protocol.http.WicketFilter.processRequest(WicketFilter.java:206)
-            	at org.apache.wicket.protocol.http.WicketFilter.doFilter(WicketFilter.java:299)
-            	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
-            	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
-            	at com.evolveum.midpoint.web.util.MidPointProfilingServletFilter.doFilter(MidPointProfilingServletFilter.java:85)
-            	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
-            	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
-            	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:320)
-            	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.invoke(FilterSecurityInterceptor.java:127)
-            	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.doFilter(FilterSecurityInterceptor.java:91)
-            	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-            	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:119)
-            	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-            	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:137)
-            	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-            	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:111)
-            	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-            	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:170)
-            	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-            	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
-            	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-            	at org.springframework.security.web.session.ConcurrentSessionFilter.doFilter(ConcurrentSessionFilter.java:155)
-            	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-            	at org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:200)
-            	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-            	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:116)
-            	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-            	at org.springframework.security.web.csrf.CsrfFilter.doFilterInternal(CsrfFilter.java:100)
-            	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:118)
-            	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-            	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:74)
-            	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:118)
-            	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-            	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:105)
-            	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-            	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:56)
-            	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:118)
-            	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
-            	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:215)
-            	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:178)
-            	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:357)
-            	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:270)
-            	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
-            	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
-            	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:99)
-            	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:118)
-            	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
-            	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
-            	at org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:92)
-            	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:118)
-            	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
-            	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
-            	at org.springframework.web.filter.HiddenHttpMethodFilter.doFilterInternal(HiddenHttpMethodFilter.java:93)
-            	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:118)
-            	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
-            	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
-            	at org.springframework.boot.actuate.metrics.web.servlet.WebMvcMetricsFilter.filterAndRecordMetrics(WebMvcMetricsFilter.java:114)
-            	at org.springframework.boot.actuate.metrics.web.servlet.WebMvcMetricsFilter.doFilterInternal(WebMvcMetricsFilter.java:104)
-            	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:118)
-            	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
-            	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
-            	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:200)
-            	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:118)
-            	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
-            	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
-            	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:202)
-            	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:96)
-            	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:526)
-            	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:139)
-            	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:92)
-            	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:74)
-            	at com.evolveum.midpoint.web.boot.TomcatRootValve.invoke(TomcatRootValve.java:60)
-            	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:343)
-            	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:408)
-            	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:66)
-            	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:860)
-            	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1587)
-            	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
-            	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
-            	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
-            	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
-            	at java.base/java.lang.Thread.run(Thread.java:834)
+            	
             Caused by: java.lang.IllegalStateException: The time has moved back, possible consistency violation
             	at com.evolveum.midpoint.task.quartzimpl.LightweightIdentifierGeneratorImpl.generate(LightweightIdentifierGeneratorImpl.java:45)
             	at com.evolveum.midpoint.task.quartzimpl.TaskManagerQuartzImpl.generateTaskIdentifier(TaskManagerQuartzImpl.java:827)
