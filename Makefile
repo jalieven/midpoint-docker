@@ -46,6 +46,10 @@ run_import_entitlements_task:
 run_reconciliation_accounts_task:
 	curl --user administrator:5ecr3t -X POST http://localhost:8080/midpoint/ws/rest/tasks/37e6eee9-f92a-4e78-a634-7bdaf6eec8ec/run
 
+# Resume the reconciliation task for the accounts
+resume_reconciliation_accounts_task:
+	curl --user administrator:5ecr3t -X POST http://localhost:8080/midpoint/ws/rest/tasks/37e6eee9-f92a-4e78-a634-7bdaf6eec8ec/resume
+
 # Run the reconciliation task for the entitlements
 run_reconciliation_entitlements_task:
 	curl --user administrator:5ecr3t -X POST http://localhost:8080/midpoint/ws/rest/tasks/fda23770-7902-4963-a81f-e2b01293ad6f/run

@@ -499,8 +499,13 @@
                 <attribute>
                     <ref>ri:privileges</ref>
                     <inbound>
+                        <authoritative>true</authoritative>
+                        <strength>strong</strength>
                         <target>
                             <path>$focus/extension/privileges</path>
+                            <set>
+                                <predefined>all</predefined>
+                            </set>
                         </target>
                     </inbound>
                 </attribute>
