@@ -17,9 +17,7 @@
             <name>privileges</name>
             <path>$focus/extension/privileges</path>
         </source>
-<!--        <trace>true</trace>-->
         <expression>
-<!--            <trace>true</trace>-->
             <assignmentTargetSearch xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                                     xsi:type="c:SearchObjectRefExpressionEvaluatorType">
                 <targetType>c:RoleType</targetType>
@@ -44,28 +42,14 @@
         <target>
             <c:path>assignment</c:path>
             <set>
-<!--                <condition>-->
-<!--                    <script>-->
-<!--                        <trace>true</trace>-->
-<!--                        <code>-->
-<!--                            import com.evolveum.midpoint.schema.constants.*-->
-<!--                            log.info("assignment: " + assignment)-->
-<!--                            log.info("assignmentPath: " + assignmentPath)-->
-<!--                            log.info("input: " + input)-->
-<!--                            log.info("operation: " + operation)-->
-<!--                            input.targetRef != null-->
-<!--                        </code>-->
-<!--                    </script>-->
-<!--                </condition>-->
-                <predefined>all</predefined>
                 <!-- This is to ensure that only assignments created by this mappings will be removed by it. -->
-<!--                <condition>-->
-<!--                    <script>-->
-<!--                        <code>-->
-<!--                            assignment?.subtype.contains('privilege-assignment')-->
-<!--                        </code>-->
-<!--                    </script>-->
-<!--                </condition>-->
+                <condition>
+                    <script>
+                        <code>
+                            assignment?.subtype.contains('privilege-assignment')
+                        </code>
+                    </script>
+                </condition>
             </set>
         </target>
     </mapping>

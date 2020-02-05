@@ -476,7 +476,6 @@
     - Probleem waarbij de privileges in entitlements upgedate worden (verwijderen bvb) dan blijft de union zitten in midPoint ook als is de mapping authoritative. <set><predefined>all</predefined> werkt niet
         Dus er worden geen entitlements verwijderd...
     - Kunnen we gericht de accounts en entitlements reconciliaten (via REST api calls) wanneer we die aangepast zien vanuit de provisioning? (en zo live syncing doen)
-
     
     - Stacktrace van docker time float
     
