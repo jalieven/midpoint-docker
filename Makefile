@@ -111,6 +111,14 @@ update_entitlement_privileges:
 delete_account:
 	- docker exec -it $$(docker ps -a --filter name=simple_postgres_resource_1 | awk '{print$$1}' | tail -n +2) /usr/bin/psql -h localhost -p 8432 -U pgres -d pgres -c "UPDATE public.source_accounts SET deleted = true, lastmodification = LOCALTIMESTAMP + '1 hour'::interval WHERE accountId = '3fd83cd4-d1bb-4d7f-9a1a-12a02ed85a95'"
 
+insert_accounts:
+	- docker exec -it $$(docker ps -a --filter name=simple_postgres_resource_1 | awk '{print$$1}' | tail -n +2) /usr/bin/psql -h localhost -p 8432 -U pgres -d pgres -a -f /db-scripts/100_accounts.sql
+
+insert_entitlements:
+	- docker exec -it $$(docker ps -a --filter name=simple_postgres_resource_1 | awk '{print$$1}' | tail -n +2) /usr/bin/psql -h localhost -p 8432 -U pgres -d pgres -a -f /db-scripts/200_entitlements.sql
+
+insert_all: insert_accounts insert_entitlements
+
 # Composite command to restart all over again
 restart: stop_all clean_all start_all logs_midpoint
 

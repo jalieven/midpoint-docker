@@ -28,6 +28,7 @@ services:
       - src_database_password.txt
     volumes:
       - ./configs-and-secrets/source-db/.:/docker-entrypoint-initdb.d/.
+      - ./configs-and-secrets/source-scripts/.:/db-scripts/.
 
   midpoint_data:
     image: postgres:11.6

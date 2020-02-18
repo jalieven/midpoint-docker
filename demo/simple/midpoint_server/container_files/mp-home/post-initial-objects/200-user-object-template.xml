@@ -36,6 +36,55 @@
         </condition>
     </mapping>
 
+    <mapping>
+        <strength>strong</strength>
+        <source>
+            <c:path>$user/extension/entitlements</c:path>
+        </source>
+        <expression>
+            <assignmentTargetSearch xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="c:AssignmentTargetSearchExpressionEvaluatorType">
+                <targetType>c:RoleType</targetType>
+                <filter>
+                    <q:equal>
+                        <q:path>name</q:path>
+                        <expression>
+                            <trace>true</trace>
+                            <path>$entitlements</path>
+                        </expression>
+                    </q:equal>
+                </filter>
+                <createOnDemand>true</createOnDemand>
+                <populateObject>
+                    <populateItem>
+                        <expression>
+                            <trace>true</trace>
+                            <path>$entitlements</path>
+                        </expression>
+                        <target>
+                            <path>name</path>
+                        </target>
+                    </populateItem>
+                </populateObject>
+                <!-- This marks assignments created by this mapping -->
+                <assignmentProperties>
+                    <subtype>user-assignment</subtype>
+                </assignmentProperties>
+            </assignmentTargetSearch>
+        </expression>
+        <target>
+            <c:path>assignment</c:path>
+            <set>
+                <condition>
+                    <script>
+                        <code>
+                            assignment?.subtype.contains('user-assignment')
+                        </code>
+                    </script>
+                </condition>
+            </set>
+        </target>
+    </mapping>
+
     <!--
         This is a way of liveSyncing all the accounts (regardless if they have a technical role assigned to them).
         This role has no projections so does not appear in any resource but midPoints repo.

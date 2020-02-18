@@ -22,6 +22,16 @@
                     </xsd:appinfo>
                 </xsd:annotation>
             </xsd:element>
+            <xsd:element name="entitlements" type="xsd:string" minOccurs="0" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:appinfo>
+                        <a:indexed>true</a:indexed>
+                        <a:displayName>Entitlements</a:displayName>
+                        <a:displayOrder>130</a:displayOrder>
+                        <a:help>De Entitlements of a User</a:help>
+                    </xsd:appinfo>
+                </xsd:annotation>
+            </xsd:element>
         </xsd:sequence>
     </xsd:complexType>
 

@@ -459,6 +459,27 @@
         
 - Vragen voor DAASI:
 
+    - Hoe verschillende accounts in 1 resource mappen naar verschillende intents?
+    - Hoe de techniche rol assignments (die bovenop de synced zijn ontdekt) terug te laten stromen naar postgres
+    - Hoe ervoor zorgen dat verschillende privil
+    
+        In midPoint komt het volgende binnen:
+            - natuurlijke persoon X:
+                * account GID:
+                    - entitlement A heeft privileges
+                        ° Besosgebruiker
+                        ° JiraGebruiker
+                    - entitlement B heeft privileges
+                        ° IMJVGebruiker
+                * account BURGER:
+                    - entitlement C heeft privileges
+                        ° Developer
+                    
+        Wat moet er dan in doelsysteem LDAP en keycloak terecht komen en op basis van wat?
+
+            
+
+
     - Vragen wat dat zinneke betekent: Using the normal (non-action) methods is also generally a preferred way because such definition is applied to all changes resulting in a consistent policy in Confluence (https://wiki.evolveum.com/display/midPoint/Synchronization+Configuration#SynchronizationConfiguration-Reactions)
     - Ook daarbij wat meer uitleg vragen wat die zaken zoals unmatched/unlinked nu juist betekenen. Reactions uitleggen
         En dan ook samen daarmee wat als activation overschreven wordt in de GUI => worden outbound overschreven?
