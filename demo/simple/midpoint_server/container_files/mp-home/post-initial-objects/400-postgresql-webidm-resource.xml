@@ -660,7 +660,7 @@
                     <q:equal>
                         <q:path>c:name</q:path>
                         <expression>
-                            <path>$c:focus/c:attributes/icfs:name</path>
+                            <path>$c:focus/c:attributes/c:name</path>
                         </expression>
                     </q:equal>
                 </correlation>
