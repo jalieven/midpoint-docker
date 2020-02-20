@@ -59,22 +59,16 @@ void handleSync(Sql sql, String token, SyncResultsHandler handler) {
 void handleAccountSync(Sql sql, String token, SyncResultsHandler handler) {
     Closure closure = { row ->
         log.info("#### Account Row from DB: {0} ####", row)
-
-        String entitlementsQuery = "SELECT s_ent.entitlementid FROM source_entitlements s_ent WHERE s_ent.accountid = '" + row.accountid + "' AND s_ent.deleted IS NULL"
-        List<GroovyRowResult> entitlementsResults = sql.rows(entitlementsQuery);
-        List entitlementIds = entitlementsResults.entitlementid as List;
-        log.info("#### Found Entitlements: {0} for Account: {1}", entitlementIds, row.accountid)
-
         ConnectorObjectBuilder connObjBuilder = new ConnectorObjectBuilder();
-        connObjBuilder.addAttribute(new Uid(row.accountid))
+        connObjBuilder.addAttribute(new Uid(row.account_id))
         connObjBuilder.addAttribute(new Name(row.rijksregisternummer))
-        connObjBuilder.addAttribute(AttributeBuilder.build('username', row.username))
-        connObjBuilder.addAttribute(AttributeBuilder.build('firstname', row.firstname))
-        connObjBuilder.addAttribute(AttributeBuilder.build('lastname', row.lastname))
+        connObjBuilder.addAttribute(AttributeBuilder.build('__ENABLE__', row.enabled))
+        connObjBuilder.addAttribute(AttributeBuilder.build('firstname', row.given_name))
+        connObjBuilder.addAttribute(AttributeBuilder.build('lastname', row.surname))
         connObjBuilder.addAttribute(AttributeBuilder.build('rijksregisternummer', row.rijksregisternummer))
-        connObjBuilder.addAttribute(AttributeBuilder.build('entitlements', entitlementIds))
+        connObjBuilder.addAttribute(AttributeBuilder.build('entitlements', row.entitlements.split(";")))
         SyncDeltaBuilder synDeltaBuilder = new SyncDeltaBuilder();
-        synDeltaBuilder.setToken(new SyncToken(row.lastmodification.toString()));
+        synDeltaBuilder.setToken(new SyncToken(row.last_modified_date.toString()));
         synDeltaBuilder.setObject(connObjBuilder.build());
         if (row.deleted) {
             synDeltaBuilder.setDeltaType(SyncDeltaType.DELETE);
@@ -85,30 +79,34 @@ void handleAccountSync(Sql sql, String token, SyncResultsHandler handler) {
         log.info("#### SyncDelta {0}", syncDelta)
         handler.handle(syncDelta);
     }
-    log.info("SELECT * FROM source_accounts WHERE lastmodification > TO_TIMESTAMP('" + token + "', 'YYYY-MM-DD HH24:MI:SS.US')")
-    sql.eachRow([:], "SELECT * FROM source_accounts WHERE lastmodification > TO_TIMESTAMP('" + token + "', 'YYYY-MM-DD HH24:MI:SS.US')", closure)
+    String select = "SELECT acc.*, usr.*, string_agg(ent.entitlement_id, ';') as entitlements FROM webidm_accounts acc LEFT JOIN webidm_entitlements ent ON ent.account_id = acc.account_id LEFT JOIN webidm_users usr ON usr.rijksregisternummer = acc.user_rijksregisternummer ";
+    String where = "WHERE ent.deleted = false AND acc.last_modified_date > TO_TIMESTAMP('" + token + "', 'YYYY-MM-DD HH24:MI:SS.US') ";
+    String group = "GROUP BY acc.account_id, usr.rijksregisternummer";
+    String sqlQuery = select + where + group;
+    log.info('########QUERY### {0}', sqlQuery)
+    sql.eachRow([:], sqlQuery, closure)
 }
 
 void handleEntitlementSync(Sql sql, String token, SyncResultsHandler handler) {
     Closure closure = { row ->
         log.info("#### Entitlements Row from DB: {0} ####", row)
         ConnectorObjectBuilder connObjBuilder = new ConnectorObjectBuilder();
-        connObjBuilder.addAttribute(new Uid(row.entitlementid))
-        connObjBuilder.addAttribute(new Name(row.entitlementid))
-        connObjBuilder.addAttribute(AttributeBuilder.build('__ENABLE__', !row.disabled))
-        connObjBuilder.addAttribute(AttributeBuilder.build('accountId', row.accountid))
+        connObjBuilder.addAttribute(new Uid(row.entitlement_id))
+        connObjBuilder.addAttribute(new Name(row.entitlement_id))
+        connObjBuilder.addAttribute(AttributeBuilder.build('accountId', row.account_id))
         connObjBuilder.addAttribute(AttributeBuilder.build('privileges', row.privileges.split(";")))
-        connObjBuilder.addAttribute(AttributeBuilder.build('organisatiecode', row.organisatiecode))
-        connObjBuilder.addAttribute(AttributeBuilder.build('departement', row.departement))
-        connObjBuilder.addAttribute(AttributeBuilder.build('dienst', row.dienst))
-        connObjBuilder.addAttribute(AttributeBuilder.build('functie', row.functie))
+        connObjBuilder.addAttribute(AttributeBuilder.build('organisatiecode', row.organisation_code))
+        connObjBuilder.addAttribute(AttributeBuilder.build('organisatiecodedetail', row.organisation_code_detail))
+        connObjBuilder.addAttribute(AttributeBuilder.build('departement', row.department))
+        connObjBuilder.addAttribute(AttributeBuilder.build('dienst', row.service))
+        connObjBuilder.addAttribute(AttributeBuilder.build('functie', row.function))
         connObjBuilder.addAttribute(AttributeBuilder.build('email', row.email))
-        connObjBuilder.addAttribute(AttributeBuilder.build('personeelsnummer', row.personeelsnummer))
+        connObjBuilder.addAttribute(AttributeBuilder.build('personeelsnummer', row.employee_number))
         connObjBuilder.addAttribute(AttributeBuilder.build('fax', row.fax))
-        connObjBuilder.addAttribute(AttributeBuilder.build('gsm', row.gsm))
-        connObjBuilder.addAttribute(AttributeBuilder.build('telefoonnr', row.telefoonnr))
+        connObjBuilder.addAttribute(AttributeBuilder.build('gsm', row.mobile))
+        connObjBuilder.addAttribute(AttributeBuilder.build('telefoonnr', row.telephone))
         SyncDeltaBuilder synDeltaBuilder = new SyncDeltaBuilder();
-        synDeltaBuilder.setToken(new SyncToken(row.lastmodification.toString()));
+        synDeltaBuilder.setToken(new SyncToken(row.last_modified_date.toString()));
         synDeltaBuilder.setObject(connObjBuilder.build());
         if (row.deleted) {
             synDeltaBuilder.setDeltaType(SyncDeltaType.DELETE);
@@ -119,23 +117,27 @@ void handleEntitlementSync(Sql sql, String token, SyncResultsHandler handler) {
         log.info("#### SyncDelta {0}", syncDelta)
         handler.handle(syncDelta);
     }
-    log.info("SELECT * FROM source_entitlements WHERE lastmodification > TO_TIMESTAMP('" + token + "', 'YYYY-MM-DD HH24:MI:SS.US')")
-    sql.eachRow([:], "SELECT * FROM source_entitlements WHERE lastmodification > TO_TIMESTAMP('" + token + "', 'YYYY-MM-DD HH24:MI:SS.US')", closure)
+    String select = "SELECT ent.*, string_agg(priv.name, ';' ORDER BY priv.name) as privileges FROM webidm_entitlements ent LEFT JOIN webidm_entitlement_privilege ent_priv ON ent_priv.entitlement_entitlement_id = ent.entitlement_id LEFT JOIN webidm_privileges priv ON priv.name = ent_priv.privilege_name ";
+    String where = "WHERE ent.last_modified_date > TO_TIMESTAMP('" + token + "', 'YYYY-MM-DD HH24:MI:SS.US') ";
+    String group = "GROUP BY ent.entitlement_id";
+    String sqlQuery = select + where + group;
+    log.info('########QUERY### {0}', sqlQuery)
+    sql.eachRow([:], sqlQuery, closure)
 }
 
 Object handleGetLatestSyncToken(Sql sql) {
     switch (objectClass) {
         case ObjectClass.ACCOUNT:
-            return handleSyncToken(sql, 'source_accounts')
+            return handleSyncToken(sql, 'webidm_accounts')
         case BaseScript.ENTITLEMENT:
-            return handleSyncToken(sql, 'source_entitlements')
+            return handleSyncToken(sql, 'webidm_entitlements')
         default:
             throw new ConnectorException("Unknown object class " + objectClass)
     }
 }
 
 Object handleSyncToken(Sql sql, String table) {
-    def first = sql.firstRow("SELECT MAX(lastmodification) AS max_modification, LOCALTIMESTAMP AS now FROM " + table)
+    def first = sql.firstRow("SELECT MAX(last_modified_date) AS max_modification, LOCALTIMESTAMP AS now FROM " + table)
     log.info("VVVVVV {0}", first.values())
     if (first.values() != null &&  first.values()[0] != null) {
         def maxLastModification = first.values()[0]

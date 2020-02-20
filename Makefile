@@ -87,37 +87,20 @@ check_ldap_groups:
 check_ldap_users:
 	- docker exec -it $$(docker ps -a --filter name=simple_ldap | awk '{print$$1}' | tail -n +2) /opt/opendj/bin/ldapsearch --port 1389 --bindDN "cn=admin,dc=didm,dc=be" --bindPassword secret --baseDN dc=didm,dc=be "(&(objectClass=inetOrgPerson))"
 
-# Inserts an account to PostgreSQL
-insert_account:
-	- docker exec -it $$(docker ps -a --filter name=simple_postgres_resource_1 | awk '{print$$1}' | tail -n +2) /usr/bin/psql -h localhost -p 8432 -U pgres -d pgres -c "INSERT INTO public.source_accounts(accountId, username, firstname, lastname, rijksregisternummer, disabled, lastmodification) VALUES ('3fd83cd4-d1bb-4d7f-9a1a-12a02ed85a95', 'jalie', 'Jan', 'Lievens', '81071032345', false, LOCALTIMESTAMP + '1 hour'::interval);"
-
-# Adds an entitlement to PostgreSQL
-insert_entitlement:
-	- docker exec -it $$(docker ps -a --filter name=simple_postgres_resource_1 | awk '{print$$1}' | tail -n +2) /usr/bin/psql -h localhost -p 8432 -U pgres -d pgres -c "INSERT INTO public.source_entitlements(entitlementid, accountid, email, organisatiecode, departement, dienst, functie, personeelsnummer, fax, gsm, telefoonnr, privileges, disabled, lastmodification) VALUES ('20001-Milieumedewerker-01', '3fd83cd4-d1bb-4d7f-9a1a-12a02ed85a95', 'jan.lievens@vlaanderen.be', '20001', 'Omgeving', 'DIDM', 'Developer', NULL, NULL, '0494846697', '053839066', 'Milieumedewerker;Developer;VIP', false, LOCALTIMESTAMP + '1 hour'::interval);"
-
-# Removes entitlement from PostgreSQL
-delete_entitlement:
-	- docker exec -it $$(docker ps -a --filter name=simple_postgres_resource_1 | awk '{print$$1}' | tail -n +2) /usr/bin/psql -h localhost -p 8432 -U pgres -d pgres -c "UPDATE public.source_entitlements SET deleted = true, lastmodification = LOCALTIMESTAMP + '1 hour'::interval WHERE entitlementid = '20001-Milieumedewerker-01'"
-
-# Updates the account in PostgreSQL
-update_account:
-	- docker exec -it $$(docker ps -a --filter name=simple_postgres_resource_1 | awk '{print$$1}' | tail -n +2) /usr/bin/psql -h localhost -p 8432 -U pgres -d pgres -c "UPDATE public.source_accounts SET username = 'tvangulck', firstname = 'Tom', lastname = 'Van Gulck', rijksregisternummer = '77071032345', disabled = true, lastmodification = LOCALTIMESTAMP + '1 hour'::interval WHERE accountId = '3fd83cd4-d1bb-4d7f-9a1a-12a02ed85a95';"
-
-# Updates the entitlements priviliges in PostgreSQL
-update_entitlement_privileges:
-	- docker exec -it $$(docker ps -a --filter name=simple_postgres_resource_1 | awk '{print$$1}' | tail -n +2) /usr/bin/psql -h localhost -p 8432 -U pgres -d pgres -c "UPDATE public.source_entitlements SET privileges = 'TechnicalLead;Developer', lastmodification = LOCALTIMESTAMP + '1 hour'::interval WHERE entitlementid = '20001-Milieumedewerker-01';"
-
 # Deletes the account from PostgreSQL
 delete_account:
 	- docker exec -it $$(docker ps -a --filter name=simple_postgres_resource_1 | awk '{print$$1}' | tail -n +2) /usr/bin/psql -h localhost -p 8432 -U pgres -d pgres -c "UPDATE public.source_accounts SET deleted = true, lastmodification = LOCALTIMESTAMP + '1 hour'::interval WHERE accountId = '3fd83cd4-d1bb-4d7f-9a1a-12a02ed85a95'"
 
+insert_privileges:
+	- docker exec -it $$(docker ps -a --filter name=simple_postgres_resource_1 | awk '{print$$1}' | tail -n +2) /usr/bin/psql -h localhost -p 8432 -U pgres -d pgres -a -f /db-scripts/100_privileges.sql
+
 insert_accounts:
-	- docker exec -it $$(docker ps -a --filter name=simple_postgres_resource_1 | awk '{print$$1}' | tail -n +2) /usr/bin/psql -h localhost -p 8432 -U pgres -d pgres -a -f /db-scripts/100_accounts.sql
+	- docker exec -it $$(docker ps -a --filter name=simple_postgres_resource_1 | awk '{print$$1}' | tail -n +2) /usr/bin/psql -h localhost -p 8432 -U pgres -d pgres -a -f /db-scripts/200_accounts.sql
 
 insert_entitlements:
-	- docker exec -it $$(docker ps -a --filter name=simple_postgres_resource_1 | awk '{print$$1}' | tail -n +2) /usr/bin/psql -h localhost -p 8432 -U pgres -d pgres -a -f /db-scripts/200_entitlements.sql
+	- docker exec -it $$(docker ps -a --filter name=simple_postgres_resource_1 | awk '{print$$1}' | tail -n +2) /usr/bin/psql -h localhost -p 8432 -U pgres -d pgres -a -f /db-scripts/300_entitlements.sql
 
-insert_all: insert_accounts insert_entitlements
+insert_all: insert_privileges insert_accounts insert_entitlements
 
 # Composite command to restart all over again
 restart: stop_all clean_all start_all logs_midpoint

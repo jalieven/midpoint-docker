@@ -84,66 +84,66 @@ switch (objectClass) {
 // =================================================================================
 
 void handleAccount(Sql sql) {
-
     Closure closure = { row ->
         log.info("#### Account Row from DB: {0} ####", row)
-        //def entitlementsQuery = "select g.name from groups g join user_groups ug on ug.group_id = g.group_id join users u on u.user_id = ug.user_id" + where;
-        String entitlementsQuery = "SELECT s_ent.entitlementid FROM source_entitlements s_ent WHERE s_ent.accountid = '" + row.accountid + "' AND s_ent.deleted IS NULL"
-        List<GroovyRowResult> entitlementsResults = sql.rows(entitlementsQuery);
-        List entitlementIds = entitlementsResults.entitlementid as List;
-        log.info("#### Found Entitlements: {0} for Account: {1}", entitlementIds, row.accountid)
         handler(ICFObjectBuilder.co {
-            uid row.accountid as String
+            uid row.account_id as String
             id row.rijksregisternummer
-            attribute '__UID__', row.accountid
-            attribute '__ENABLE__', !row.disabled
+            attribute '__UID__', row.account_id
+            attribute '__ENABLE__', row.enabled
             attribute '__NAME__', row.rijksregisternummer
-            attribute 'username', row.username
-            attribute 'firstname', row.firstname
-            attribute 'lastname', row.lastname
+            attribute 'firstname', row.given_name
+            attribute 'lastname', row.surname
             attribute 'rijksregisternummer', row.rijksregisternummer
-            attribute 'entitlements', entitlementIds
+            attribute 'entitlements', row.entitlements.split(";")
         })
     }
-
     Map params = [:]
-    String where = buildWhereClause(filter, params, 'accountid', 'username')
-
-    sql.eachRow(params, "SELECT * FROM source_accounts " + where, closure);
+    String customWhere = "acc.deleted = false AND ent.deleted = false";
+    String where = buildWhereClause(filter, params, 'account_id', 'rijksregisternummer', customWhere)
+    String select = "SELECT acc.*, usr.*, string_agg(ent.entitlement_id, ';') as entitlements FROM webidm_accounts acc LEFT JOIN webidm_entitlements ent ON ent.account_id = acc.account_id LEFT JOIN webidm_users usr ON usr.rijksregisternummer = acc.user_rijksregisternummer ";
+    String group = " GROUP BY acc.account_id, usr.rijksregisternummer";
+    String sqlQuery = select + where + group;
+    log.info('########QUERY### {0}', sqlQuery)
+    sql.eachRow(params, sqlQuery, closure);
 }
 
 void handleEntitlement(Sql sql) {
     Closure closure = { row ->
         log.info("#### Entitlement Row from DB: {0} ####", row)
         handler(ICFObjectBuilder.co {
-            uid row.entitlementid as String
-            id row.entitlementid
-            attribute '__NAME__', row.entitlementid
-            attribute '__ENABLE__', !row.disabled
-            attribute 'accountId', row.accountid
+            uid row.entitlement_id as String
+            id row.entitlement_id
+            attribute '__NAME__', row.entitlement_id
+            attribute 'accountId', row.account_id
             attribute 'privileges', row.privileges.split(";")
-            attribute 'organisatiecode', row.organisatiecode
-            attribute 'departement', row.departement
-            attribute 'dienst', row.dienst
-            attribute 'functie', row.functie
+            attribute 'organisatiecode', row.organisation_code
+            attribute 'organisatiecodedetail', row.organisation_code_detail
+            attribute 'departement', row.department
+            attribute 'dienst', row.service
+            attribute 'functie', row.function
             attribute 'email', row.email
-            attribute 'personeelsnummer', row.personeelsnummer
+            attribute 'personeelsnummer', row.employee_number
             attribute 'fax', row.fax
-            attribute 'gsm', row.gsm
-            attribute 'telefoonnr', row.telefoonnr
+            attribute 'gsm', row.mobile
+            attribute 'telefoonnr', row.telephone
         })
     }
 
     Map params = [:]
-    String where = buildWhereClause(filter, params, 'entitlementid', 'entitlementid')
-    log.info('########QUERY### {0}', "SELECT * FROM source_entitlements " + where + " AND deleted IS NULL")
-    sql.eachRow(params, "SELECT * FROM source_entitlements " + where, closure)
+    String customWhere = "ent.deleted = false";
+    String where = buildWhereClause(filter, params, 'entitlement_id', 'entitlement_id', customWhere)
+    String select = "SELECT ent.*, string_agg(priv.name, ';' ORDER BY priv.name) as privileges FROM webidm_entitlements ent LEFT JOIN webidm_entitlement_privilege ent_priv ON ent_priv.entitlement_entitlement_id = ent.entitlement_id LEFT JOIN webidm_privileges priv ON priv.name = ent_priv.privilege_name ";
+    String group = " GROUP BY ent.entitlement_id";
+    String sqlQuery = select + where + group;
+    log.info('########QUERY### {0}', sqlQuery)
+    sql.eachRow(params, sqlQuery, closure)
 }
 
-String buildWhereClause(Filter filter, Map sqlParams, String uidColumn, String nameColumn) {
+String buildWhereClause(Filter filter, Map sqlParams, String uidColumn, String nameColumn, String customWhere) {
     if (filter == null) {
         log.info("#### Returning empty where clause #####")
-        return ""
+        return "WHERE " + customWhere
     }
 
     Map query = filter.accept(MapFilterVisitor.INSTANCE, null)
@@ -180,24 +180,24 @@ String buildWhereClause(Filter filter, Map sqlParams, String uidColumn, String n
     def engine = new groovy.text.SimpleTemplateEngine()
 
     def whereTemplates = [
-            CONTAINS          : 'WHERE $left ${not ? "not " : ""}like $right AND deleted IS NULL',
-            ENDSWITH          : 'WHERE $left ${not ? "not " : ""}like $right AND deleted IS NULL',
-            STARTSWITH        : 'WHERE $left ${not ? "not " : ""}like $right AND deleted IS NULL',
-            EQUALS            : 'WHERE $left ${not ? "<>" : "="} $right AND deleted IS NULL',
-            GREATERTHAN       : 'WHERE $left ${not ? "<=" : ">"} $right AND deleted IS NULL',
-            GREATERTHANOREQUAL: 'WHERE $left ${not ? "<" : ">="} $right AND deleted IS NULL',
-            LESSTHAN          : 'WHERE $left ${not ? ">=" : "<"} $right AND deleted IS NULL',
-            LESSTHANOREQUAL   : 'WHERE $left ${not ? ">" : "<="} $right AND deleted IS NULL'
+            CONTAINS          : 'WHERE $left ${not ? "not " : ""}like $right AND $custom',
+            ENDSWITH          : 'WHERE $left ${not ? "not " : ""}like $right AND $custom',
+            STARTSWITH        : 'WHERE $left ${not ? "not " : ""}like $right AND $custom',
+            EQUALS            : 'WHERE $left ${not ? "<>" : "="} $right AND $custom',
+            GREATERTHAN       : 'WHERE $left ${not ? "<=" : ">"} $right AND $custom',
+            GREATERTHANOREQUAL: 'WHERE $left ${not ? "<" : ">="} $right AND $custom',
+            LESSTHAN          : 'WHERE $left ${not ? ">=" : "<"} $right AND $custom',
+            LESSTHANOREQUAL   : 'WHERE $left ${not ? ">" : "<="} $right AND $custom'
     ]
 
     def wt = whereTemplates.get(operation)
-    def binding = [left: left, right: right, not: query.get("not")]
+    def binding = [left: left, right: right, not: query.get("not"), custom: customWhere]
     def template = engine.createTemplate(wt).make(binding)
     def where = template.toString()
 
     log.info("#### Where clause: {0}, with parameters {1} ####", where, sqlParams)
     if (where.isEmpty()) {
-        return 'WHERE deleted IS NULL'
+        return 'WHERE ' + customWhere
     } else {
         return where
     }

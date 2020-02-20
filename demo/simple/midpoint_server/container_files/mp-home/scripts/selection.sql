@@ -1,4 +1,4 @@
-# SearchScript
+-- SearchScript
 
 SELECT
     acc.*,
@@ -23,7 +23,7 @@ WHERE ent.deleted = false
 GROUP BY ent.entitlement_id;
 
 
-# SyncScript
+-- SyncScript
 
 SELECT
     acc.*,
@@ -44,7 +44,7 @@ FROM webidm_entitlements ent
                    ON ent_priv.entitlement_entitlement_id = ent.entitlement_id
          LEFT JOIN webidm_privileges priv
                    ON priv.name = ent_priv.privilege_name
-WHERE ent.deleted = false
+WHERE ent.deleted = false AND ent.last_modified_date > TO_TIMESTAMP('2020-02-17 10:32:53.505000', 'YYYY-MM-DD HH24:MI:SS.US')
 GROUP BY ent.entitlement_id;
 
 

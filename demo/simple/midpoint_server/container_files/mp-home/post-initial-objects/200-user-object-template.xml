@@ -66,22 +66,22 @@
                     </populateItem>
                 </populateObject>
                 <!-- This marks assignments created by this mapping -->
-                <assignmentProperties>
-                    <subtype>user-assignment</subtype>
-                </assignmentProperties>
+<!--                <assignmentProperties>-->
+<!--                    <subtype>user-assignment</subtype>-->
+<!--                </assignmentProperties>-->
             </assignmentTargetSearch>
         </expression>
         <target>
             <c:path>assignment</c:path>
-            <set>
-                <condition>
-                    <script>
-                        <code>
-                            assignment?.subtype.contains('user-assignment')
-                        </code>
-                    </script>
-                </condition>
-            </set>
+<!--            <set>-->
+<!--                <condition>-->
+<!--                    <script>-->
+<!--                        <code>-->
+<!--                            assignment?.subtype.contains('user-assignment')-->
+<!--                        </code>-->
+<!--                    </script>-->
+<!--                </condition>-->
+<!--            </set>-->
         </target>
     </mapping>
 

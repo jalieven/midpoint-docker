@@ -242,6 +242,14 @@
                                     </xsd:appinfo>
                                 </xsd:annotation>
                             </xsd:element>
+                            <xsd:element minOccurs="0" name="organisatiecodedetail" type="xsd:string">
+                                <xsd:annotation>
+                                    <xsd:appinfo>
+                                        <a:displayOrder>205</a:displayOrder>
+                                        <ra:frameworkAttributeName>organisatiecodedetail</ra:frameworkAttributeName>
+                                    </xsd:appinfo>
+                                </xsd:annotation>
+                            </xsd:element>
                             <xsd:element minOccurs="0" name="departement" type="xsd:string">
                                 <xsd:annotation>
                                     <xsd:appinfo>
@@ -647,14 +655,12 @@
                         Correlation expression is a search query.
                         Following search query will look for users that have "name"
                         equal to the "name" attribute of the account. Simply speaking,
-                        it will look for match in usernames in the IDM and the resource.
-                        The correlation rule always looks for users, so it will not match
-                        any other object type.
+                        it will look for match in names in the IDM and the resource.
                     </q:description>
                     <q:equal>
                         <q:path>c:name</q:path>
                         <expression>
-                            <path>$c:focus/c:attributes/ri:entitlementId</path>
+                            <path>$c:focus/c:attributes/icfs:name</path>
                         </expression>
                     </q:equal>
                 </correlation>
