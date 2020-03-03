@@ -16,11 +16,11 @@ rsync -va ./demo/simple/midpoint_server/container_files/mp-home/ midpoint-dist/v
 echo "############## Replacing midPoint var file snippets ##############"
 # Replacing the hostnames and paths to localhost
 current_dir=`pwd`/
-sed -i '' 's/jdbc\:postgresql\:\/\/postgres_resource\:8432\/pgres/jdbc\:postgresql\:\/\/localhost\:8432\/pgres/' midpoint-dist/var/post-initial-objects/400-postgresql-webidm-resource.xml
-sed -i '' "s/\<icscscriptedsql\:scriptRoots\>\/opt\/midpoint\/var\/scripts\<\/icscscriptedsql\:scriptRoots\>/\<icscscriptedsql\:scriptRoots\>${current_dir//\//\\/}midpoint-dist\/var\/scripts<\/icscscriptedsql\:scriptRoots\>/" midpoint-dist/var/post-initial-objects/400-postgresql-webidm-resource.xml
-sed -i '' 's/\<gen67\:host\>ldap\<\/gen67\:host\>/\<gen67\:host\>localhost\<\/gen67\:host\>/' midpoint-dist/var/post-initial-objects/300-opendj-resource.xml
+sed -i 's/jdbc\:postgresql\:\/\/postgres_resource\:8432\/pgres/jdbc\:postgresql\:\/\/localhost\:8432\/pgres/' midpoint-dist/var/post-initial-objects/400-postgresql-webidm-resource.xml
+sed -i "s/\<icscscriptedsql\:scriptRoots\>\/opt\/midpoint\/var\/scripts\<\/icscscriptedsql\:scriptRoots\>/\<icscscriptedsql\:scriptRoots\>${current_dir//\//\\/}midpoint-dist\/var\/scripts<\/icscscriptedsql\:scriptRoots\>/" midpoint-dist/var/post-initial-objects/400-postgresql-webidm-resource.xml
+sed -i 's/\<gen67\:host\>ldap\<\/gen67\:host\>/\<gen67\:host\>localhost\<\/gen67\:host\>/' midpoint-dist/var/post-initial-objects/300-opendj-resource.xml
 
-sed -i '' 's/Starting midPoint.../Starting midPoint... ($JAVA_OPTS)/'  midpoint-dist/bin/midpoint.sh
+sed -i 's/Starting midPoint.../Starting midPoint... ($JAVA_OPTS)/'  midpoint-dist/bin/midpoint.sh
 # If you do not understand what is going on in the startup script uncomment following line
 # gsed -i '2s;^;set -x\n;' midpoint-dist/bin/midpoint.sh
 

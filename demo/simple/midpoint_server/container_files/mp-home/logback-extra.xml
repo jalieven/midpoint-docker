@@ -4,7 +4,7 @@
     and midPoint configures the loggers according to what is inside its repository.
     See com.evolveum.midpoint.common.LoggingConfigurationManager to see if we can
     break inside this lifecycle. There existed a way in the past to circumvent this
-    mechanisme (see https://wiki.evolveum.com/display/midPoint/Initial+Logging+Setup+HOWTO)
+    mechanism (see https://wiki.evolveum.com/display/midPoint/Initial+Logging+Setup+HOWTO)
     but this configuration was removed in the past. So really if you want logging
     in the ScriptedSQL Connector's Groovy scripts you have to configure it from the
     admin tool:
