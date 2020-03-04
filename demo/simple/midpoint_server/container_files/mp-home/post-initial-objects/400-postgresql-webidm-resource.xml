@@ -654,7 +654,7 @@
                     <q:equal>
                         <q:path>c:name</q:path>
                         <expression>
-                            <path>$c:focus/c:attributes/ri:entitlementId</path>
+                            <path>$account/attributes/icfs:name</path>
                         </expression>
                     </q:equal>
                 </correlation>

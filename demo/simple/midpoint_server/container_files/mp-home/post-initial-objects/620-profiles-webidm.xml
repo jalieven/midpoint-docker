@@ -87,7 +87,7 @@
         <description>Access to DSI</description>
         <roleType>application</roleType>
 
-        <!-- Meta Role that assigns user to group with name BesosUser -->
+        <!-- Meta Role that assigns user to group with name DSIUser -->
         <assignment>
             <targetRef oid="d8565b3a-891c-4ae2-a035-b0233b4e016a" relation="org:default" type="RoleType">
             </targetRef>
@@ -100,7 +100,7 @@
         <description>Access to IMJV</description>
         <roleType>application</roleType>
 
-        <!-- Meta Role that assigns user to group with name BesosUser -->
+        <!-- Meta Role that assigns user to group with name IMJVUser -->
         <assignment>
             <targetRef oid="d8565b3a-891c-4ae2-a035-b0233b4e016a" relation="org:default" type="RoleType">
             </targetRef>

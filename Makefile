@@ -97,7 +97,7 @@ insert_entitlement:
 
 # Removes entitlement from PostgreSQL
 delete_entitlement:
-	- docker exec -it $$(docker ps -a --filter name=simple_postgres_resource_1 | awk '{print$$1}' | tail -n +2) /usr/bin/psql -h localhost -p 8432 -U pgres -d pgres -c "UPDATE public.source_entitlements SET deleted = true, lastmodification = LOCALTIMESTAMP + '1 hour'::interval WHERE entitlementid = '20001-Milieumedewerker-01'"
+	- docker exec -it $$(docker ps -a --filter name=simple_postgres_resource_1 | awk '{print$$1}' | tail -n +2) /usr/bin/psql -h localhost -p 8432 -U pgres -d pgres -c "UPDATE public.source_entitlements SET deleted = true, lastmodification = LOCALTIMESTAMP + '1 hour'::interval WHERE entitlementid = 'e0c6496f-c28a-4747-81d9-e50a8f1a553d'"
 
 # Updates the account in PostgreSQL
 update_account:
