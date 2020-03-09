@@ -89,27 +89,27 @@ check_ldap_users:
 
 # Inserts an account to PostgreSQL
 insert_account:
-	- docker exec -it $$(docker ps -a --filter name=simple_postgres_resource_1 | awk '{print$$1}' | tail -n +2) /usr/bin/psql -h localhost -p 8432 -U pgres -d pgres -c "INSERT INTO public.source_accounts(accountId, username, firstname, lastname, rijksregisternummer, disabled, lastmodification) VALUES ('3fd83cd4-d1bb-4d7f-9a1a-12a02ed85a95', 'jalie', 'Jan', 'Lievens', '81071032345', false, LOCALTIMESTAMP + '1 hour'::interval);"
+	- docker exec -it $$(docker ps -a --filter name=simple_postgres_resource_1 | awk '{print$$1}' | tail -n +2) /usr/bin/psql -h localhost -p 8432 -U pgres -d pgres -c "INSERT INTO public.source_accounts(accountId, username, firstname, lastname, rijksregisternummer, disabled, lastmodification) VALUES ('3fd83cd4-d1bb-4d7f-9a1a-12a02ed85a95', 'jalie', 'Jan', 'Lievens', '81071032345', false, now() AT TIME ZONE 'UTC');"
 
 # Adds an entitlement to PostgreSQL
 insert_entitlement:
-	- docker exec -it $$(docker ps -a --filter name=simple_postgres_resource_1 | awk '{print$$1}' | tail -n +2) /usr/bin/psql -h localhost -p 8432 -U pgres -d pgres -c "INSERT INTO public.source_entitlements(entitlementid, accountid, email, organisatiecode, departement, dienst, functie, personeelsnummer, fax, gsm, telefoonnr, privileges, disabled, lastmodification) VALUES ('20001-Milieumedewerker-01', '3fd83cd4-d1bb-4d7f-9a1a-12a02ed85a95', 'jan.lievens@vlaanderen.be', '20001', 'Omgeving', 'DIDM', 'Developer', NULL, NULL, '0494846697', '053839066', 'Milieumedewerker;Developer;VIP', false, LOCALTIMESTAMP + '1 hour'::interval);"
+	- docker exec -it $$(docker ps -a --filter name=simple_postgres_resource_1 | awk '{print$$1}' | tail -n +2) /usr/bin/psql -h localhost -p 8432 -U pgres -d pgres -c "INSERT INTO public.source_entitlements(entitlementid, accountid, email, organisatiecode, departement, dienst, functie, personeelsnummer, fax, gsm, telefoonnr, privileges, disabled, lastmodification) VALUES ('20001-Milieumedewerker-01', '3fd83cd4-d1bb-4d7f-9a1a-12a02ed85a95', 'jan.lievens@vlaanderen.be', '20001', 'Omgeving', 'DIDM', 'Developer', NULL, NULL, '0494846697', '053839066', 'Milieumedewerker;Developer;VIP', false, now() AT TIME ZONE 'UTC');"
 
 # Removes entitlement from PostgreSQL
 delete_entitlement:
-	- docker exec -it $$(docker ps -a --filter name=simple_postgres_resource_1 | awk '{print$$1}' | tail -n +2) /usr/bin/psql -h localhost -p 8432 -U pgres -d pgres -c "UPDATE public.source_entitlements SET deleted = true, lastmodification = LOCALTIMESTAMP + '1 hour'::interval WHERE entitlementid = 'e0c6496f-c28a-4747-81d9-e50a8f1a553d'"
+	- docker exec -it $$(docker ps -a --filter name=simple_postgres_resource_1 | awk '{print$$1}' | tail -n +2) /usr/bin/psql -h localhost -p 8432 -U pgres -d pgres -c "UPDATE public.source_entitlements SET deleted = true, lastmodification = now() AT TIME ZONE 'UTC' WHERE entitlementid = 'e0c6496f-c28a-4747-81d9-e50a8f1a553d'"
 
 # Updates the account in PostgreSQL
 update_account:
-	- docker exec -it $$(docker ps -a --filter name=simple_postgres_resource_1 | awk '{print$$1}' | tail -n +2) /usr/bin/psql -h localhost -p 8432 -U pgres -d pgres -c "UPDATE public.source_accounts SET username = 'tvangulck', firstname = 'Tom', lastname = 'Van Gulck', rijksregisternummer = '77071032345', disabled = true, lastmodification = LOCALTIMESTAMP + '1 hour'::interval WHERE accountId = '3fd83cd4-d1bb-4d7f-9a1a-12a02ed85a95';"
+	- docker exec -it $$(docker ps -a --filter name=simple_postgres_resource_1 | awk '{print$$1}' | tail -n +2) /usr/bin/psql -h localhost -p 8432 -U pgres -d pgres -c "UPDATE public.source_accounts SET username = 'tvangulck', firstname = 'Tom', lastname = 'Van Gulck', rijksregisternummer = '77071032345', disabled = true, lastmodification = now() AT TIME ZONE 'UTC' WHERE accountId = '3fd83cd4-d1bb-4d7f-9a1a-12a02ed85a95';"
 
 # Updates the entitlements priviliges in PostgreSQL
 update_entitlement_privileges:
-	- docker exec -it $$(docker ps -a --filter name=simple_postgres_resource_1 | awk '{print$$1}' | tail -n +2) /usr/bin/psql -h localhost -p 8432 -U pgres -d pgres -c "UPDATE public.source_entitlements SET privileges = 'TechnicalLead;Developer', lastmodification = LOCALTIMESTAMP + '1 hour'::interval WHERE entitlementid = '20001-Milieumedewerker-01';"
+	- docker exec -it $$(docker ps -a --filter name=simple_postgres_resource_1 | awk '{print$$1}' | tail -n +2) /usr/bin/psql -h localhost -p 8432 -U pgres -d pgres -c "UPDATE public.source_entitlements SET privileges = 'TechnicalLead;Developer', lastmodification = now() AT TIME ZONE 'UTC' WHERE entitlementid = '20001-Milieumedewerker-01';"
 
 # Deletes the account from PostgreSQL
 delete_account:
-	- docker exec -it $$(docker ps -a --filter name=simple_postgres_resource_1 | awk '{print$$1}' | tail -n +2) /usr/bin/psql -h localhost -p 8432 -U pgres -d pgres -c "UPDATE public.source_accounts SET deleted = true, lastmodification = LOCALTIMESTAMP + '1 hour'::interval WHERE accountId = '3fd83cd4-d1bb-4d7f-9a1a-12a02ed85a95'"
+	- docker exec -it $$(docker ps -a --filter name=simple_postgres_resource_1 | awk '{print$$1}' | tail -n +2) /usr/bin/psql -h localhost -p 8432 -U pgres -d pgres -c "UPDATE public.source_accounts SET deleted = true, lastmodification = now() AT TIME ZONE 'UTC' WHERE accountId = '3fd83cd4-d1bb-4d7f-9a1a-12a02ed85a95'"
 
 insert_accounts:
 	- docker exec -it $$(docker ps -a --filter name=simple_postgres_resource_1 | awk '{print$$1}' | tail -n +2) /usr/bin/psql -h localhost -p 8432 -U pgres -d pgres -a -f /db-scripts/100_accounts.sql

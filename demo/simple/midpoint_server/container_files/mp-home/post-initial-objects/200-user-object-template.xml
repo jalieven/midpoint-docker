@@ -48,7 +48,7 @@
                     <q:equal>
                         <q:path>name</q:path>
                         <expression>
-                            <trace>true</trace>
+<!--                            <trace>true</trace>-->
                             <path>$entitlements</path>
                         </expression>
                     </q:equal>
@@ -57,7 +57,7 @@
                 <populateObject>
                     <populateItem>
                         <expression>
-                            <trace>true</trace>
+<!--                            <trace>true</trace>-->
                             <path>$entitlements</path>
                         </expression>
                         <target>

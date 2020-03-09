@@ -671,6 +671,7 @@
                 </reaction>
                 <reaction>
                     <situation>deleted</situation>
+                    <synchronize>true</synchronize>
                     <action>
                         <handlerUri>http://midpoint.evolveum.com/xml/ns/public/model/action-3#deleteFocus</handlerUri>
                     </action>

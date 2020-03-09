@@ -66,6 +66,7 @@ void handleAccountSync(Sql sql, String token, SyncResultsHandler handler) {
         log.info("#### Found Entitlements: {0} for Account: {1}", entitlementIds, row.accountid)
 
         ConnectorObjectBuilder connObjBuilder = new ConnectorObjectBuilder();
+        connObjBuilder.setObjectClass(ObjectClass.ACCOUNT)
         connObjBuilder.addAttribute(new Uid(row.accountid))
         connObjBuilder.addAttribute(new Name(row.rijksregisternummer))
         connObjBuilder.addAttribute(AttributeBuilder.build('username', row.username))
@@ -93,6 +94,7 @@ void handleEntitlementSync(Sql sql, String token, SyncResultsHandler handler) {
     Closure closure = { row ->
         log.info("#### Entitlements Row from DB: {0} ####", row)
         ConnectorObjectBuilder connObjBuilder = new ConnectorObjectBuilder();
+        connObjBuilder.setObjectClass(BaseScript.ENTITLEMENT)
         connObjBuilder.addAttribute(new Uid(row.entitlementid))
         connObjBuilder.addAttribute(new Name(row.entitlementid))
         connObjBuilder.addAttribute(AttributeBuilder.build('__ENABLE__', !row.disabled))
@@ -135,7 +137,7 @@ Object handleGetLatestSyncToken(Sql sql) {
 }
 
 Object handleSyncToken(Sql sql, String table) {
-    def first = sql.firstRow("SELECT MAX(lastmodification) AS max_modification, LOCALTIMESTAMP AS now FROM " + table)
+    def first = sql.firstRow("SELECT MAX(lastmodification) AS max_modification, now() AT TIME ZONE 'UTC' AS now FROM " + table)
     log.info("VVVVVV {0}", first.values())
     if (first.values() != null &&  first.values()[0] != null) {
         def maxLastModification = first.values()[0]
